@@ -70,18 +70,6 @@ export function ChatSidebar({ isOpen, onToggle }: ChatSidebarProps) {
 
     setMessages((prev) => [...prev, newMessage])
     setInputValue('')
-
-    // Simulate bot response
-    setTimeout(() => {
-      const botResponse: Message = {
-        id: messages.length + 2,
-        text: 'Thanks for your message! This is a demo response.',
-        username: 'Support Bot',
-        level: 99,
-        timestamp: new Date(),
-      }
-      setMessages((prev) => [...prev, botResponse])
-    }, 1000)
   }
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
