@@ -39,6 +39,8 @@ export default function Home() {
                 width={1920}
                 height={600}
                 className="rounded-lg"
+                placeholder="blur"
+                blurDataURL={newBanner.src}
               />
             </div>
 
