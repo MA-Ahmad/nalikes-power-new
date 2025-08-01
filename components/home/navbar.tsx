@@ -2,6 +2,7 @@
 
 import {
   ChevronDown,
+  Gamepad2,
   GamepadIcon,
   Menu,
   Trophy,
@@ -22,7 +23,7 @@ import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
 import Image from 'next/image'
 import { Separator } from '../ui/separator'
 import { AuthModal } from './auth-modal'
-// import logo from '@/public/images/logo.svg'
+import { GiftBoxIcon } from '../ions'
 
 export default function Navbar() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
@@ -69,21 +70,21 @@ export default function Navbar() {
                     href="#"
                     className="flex items-center gap-3 px-2 py-2 text-white hover:bg-neutral-800 rounded-md"
                   >
-                    <GamepadIcon className="h-5 w-5 text-green-400" />
+                    <Gamepad2 className="w-5 h-5" />
                     <span>All Games</span>
                   </Link>
                   <Link
                     href="#"
                     className="flex items-center gap-3 px-2 py-2 text-white hover:bg-neutral-800 rounded-md"
                   >
-                    <Trophy className="h-5 w-5 text-yellow-400" />
+                    <Trophy className="h-5 w-5 text-white" />
                     <span>Tournaments</span>
                   </Link>
                   <Link
                     href="#"
                     className="flex items-center gap-3 px-2 py-2 text-white hover:bg-neutral-800 rounded-md"
                   >
-                    <User className="h-5 w-5 text-purple-400" />
+                    <User className="h-5 w-5 text-white" />
                     <span>Leaderboard</span>
                   </Link>
                 </div>
@@ -153,7 +154,7 @@ export default function Navbar() {
                 variant="ghost"
                 className="text-white flex hover:bg-neutral-700 items-center gap-2"
               >
-                <GamepadIcon className="h-4 w-4 text-green-400" />
+                <Gamepad2 className="w-4 h-4" />
                 Games
                 <ChevronDown
                   className={`h-4 w-4 transition-transform duration-200 ${
@@ -164,15 +165,15 @@ export default function Navbar() {
             </DropdownMenuTrigger>
             <DropdownMenuContent>
               <DropdownMenuItem className="hover:bg-neutral-800 focus:bg-neutral-800">
-                <GamepadIcon className="h-4 w-4 mr-3 text-green-400" />
+                <Gamepad2 className="w-4 h-4 mr-3 text-white" />
                 All Games
               </DropdownMenuItem>
               <DropdownMenuItem className="hover:bg-neutral-800 focus:bg-neutral-800">
-                <Trophy className="h-4 w-4 mr-3 text-yellow-400" />
+                <Trophy className="h-4 w-4 mr-3 text-white" />
                 Tournaments
               </DropdownMenuItem>
               <DropdownMenuItem className="hover:bg-neutral-800 focus:bg-neutral-800">
-                <User className="h-4 w-4 mr-3 text-purple-400" />
+                <User className="h-4 w-4 mr-3 text-white" />
                 Leaderboard
               </DropdownMenuItem>
             </DropdownMenuContent>
@@ -183,7 +184,7 @@ export default function Navbar() {
             href="#"
             className="flex items-center gap-2 text-white hover:bg-neutral-800 px-3 py-1.5 rounded-md transition-colors"
           >
-            <Trophy className="h-4 w-4 text-orange-400" />
+            <GiftBoxIcon className="h-4 w-4" />
             Rewards
           </Link>
         </div>
