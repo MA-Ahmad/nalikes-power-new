@@ -15,6 +15,7 @@ interface GameCardProps {
   }>
   isNew?: boolean
   isHot?: boolean
+  image?: string
 }
 
 export function GameCard({
@@ -24,31 +25,32 @@ export function GameCard({
   badges = [],
   isNew = false,
   isHot = false,
+  image,
 }: GameCardProps) {
   const [isHovered, setIsHovered] = useState(false)
 
   return (
     <Card
-      className="bg-card text-white overflow-hidden cursor-pointer transition-transform hover:scale-102 px-4 min-h-[18rem]"
+      className="relative bg-card text-white overflow-hidden cursor-pointer transition-transform hover:scale-102 px-4 min-h-[18rem]"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <CardContent className="flex flex-col justify-between px-2 h-full">
+      <img
+        src={image}
+        alt="Solana themed items"
+        className="absolute inset-0 w-full h-full object-contain object-center"
+      />
+      <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black to-transparent z-10" />
+      <CardContent className="flex flex-col justify-between px-2 h-full z-10">
         {/* Header with badges and star */}
         <div className="flex justify-between items-start pb-2">
           <div className="flex gap-2">
             {isNew && (
-              //   <Badge className="bg-gradient-to-b from-[#6F6BFF] to-[#434099] text-white text-xs">
-              //     NEW
-              //   </Badge>
               <div className="bg-gradient-to-b from-[#6F6BFF] to-[#434099] text-white text-xs px-2 py-1 rounded-md flex items-center justify-center">
                 NEW
               </div>
             )}
             {isHot && (
-              //   <Badge className="bg-gradient-to-b from-[#EE4FFB] to-[#8D2F95] text-white text-xs px-2 py-1">
-              //     HOT
-              //   </Badge>
               <div className="bg-gradient-to-b from-[#EE4FFB] to-[#8D2F95] text-white text-xs px-2 py-1 rounded-md flex items-center justify-center">
                 HOT
               </div>
@@ -72,15 +74,6 @@ export function GameCard({
           />
         </div>
 
-        {/* Main content area */}
-        {/* <div className="px-4 py-8 flex flex-col justify-center">
-          <h3 className="text-3xl font-bold text-white mb-2 leading-tight">
-            {title}
-          </h3>
-
-          <p className="text-gray-400 text-base mb-8">{subtitle}</p>
-        </div> */}
-
         {/* Footer with amount and play */}
         <div className="flex flex-col pt-0">
           <div className="flex flex-col justify-center mb-2">
@@ -90,7 +83,7 @@ export function GameCard({
             </h3>
 
             {/* Subtitle */}
-            <p className="text-gray-400 text-base">{subtitle}</p>
+            <p className="text-gray-300 text-base">{subtitle}</p>
           </div>
           <div className="flex justify-between items-center">
             <Badge
@@ -99,8 +92,7 @@ export function GameCard({
             >
               {amount}
             </Badge>
-            <div className="flex items-center gap-1 text-white font-medium">
-              <Play className="h-4 w-4" />
+            <div className="flex items-center gap-1 text-white font-medium underline">
               <span>Play</span>
             </div>
           </div>

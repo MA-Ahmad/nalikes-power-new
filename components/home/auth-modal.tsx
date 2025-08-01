@@ -19,7 +19,7 @@ export function AuthModal({ open, onOpenChange }: AuthModalProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
-        className="w-full lg:min-w-4xl mx-4 p-0 bg-neutral-900 border-neutral-800 overflow-hidden"
+        className="w-full lg:min-w-4xl mx-4 p-0 bg-neutral-900 border-neutral-400 overflow-hidden rounded-2xl"
         showCloseButton={false}
       >
         <div className="flex h-[600px] max-h-[90vh]">
@@ -141,7 +141,7 @@ export function AuthModal({ open, onOpenChange }: AuthModalProps) {
           </div>
 
           {/* Right side - Image */}
-          <div className="flex-1 relative min-w-0 hidden lg:flex">
+          {/* <div className="flex-1 relative min-w-0 hidden lg:flex border-l border-neutral-800">
             <button
               onClick={() => onOpenChange(false)}
               className="absolute top-4 right-4 z-10 text-white hover:text-gray-300"
@@ -157,7 +157,7 @@ export function AuthModal({ open, onOpenChange }: AuthModalProps) {
 
             <div className="absolute inset-0">
               <Image
-                src="/images/modal-hero.png"
+                src="/images/modal-hero2.png"
                 alt="Powerblocks Hero"
                 fill
                 className="object-cover object-center"
@@ -172,6 +172,29 @@ export function AuthModal({ open, onOpenChange }: AuthModalProps) {
                 </div>
                 <div className="text-lg font-semibold">Lets go dawg</div>
               </div>
+            </div>
+          </div> */}
+
+          <div className="flex-1 relative min-w-0 hidden lg:flex border-l border-neutral-800 flex-col items-center justify-center">
+            <button
+              onClick={() => onOpenChange(false)}
+              className="absolute top-4 right-4 z-10 text-white hover:text-gray-300"
+            >
+              <X className="h-6 w-6" />
+            </button>
+            <Image
+              src="/images/modal-hero2.png"
+              alt="Powerblocks Hero"
+              width={300}
+              height={400}
+              className="object-contain rounded-md"
+              priority
+            />
+            <div className="text-white mt-4 text-center">
+              <div className="text-lg font-semibold">
+                From the Streets to the Jet.
+              </div>
+              <div className="text-lg font-semibold">Lets go dawg</div>
             </div>
           </div>
         </div>

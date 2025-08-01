@@ -30,7 +30,7 @@ export default function Navbar() {
 
   return (
     <>
-      <header className="fixed top-0 left-0 right-0 z-50 flex h-16 w-full shrink-0 items-center justify-between border-b border-neutral-700 bg-sidebar px-4 md:px-6">
+      <header className="fixed top-0 left-0 right-0 z-50 flex h-16 w-full shrink-0 items-center justify-between bg-sidebar px-4 md:px-6">
         {/* Mobile Menu */}
         <div className="flex lg:hidden items-center gap-3">
           <Sheet>
@@ -189,17 +189,21 @@ export default function Navbar() {
         </div>
 
         {/* Right Section - Auth Buttons */}
-        <div className="flex items-center gap-3">
-          <Button
-            className="hidden sm:flex border-gray-700 text-white bg-neutral-800 hover:bg-neutral-700 hover:text-white"
-            onClick={() => setAuthModalOpen(true)}
-          >
-            Sign In
-          </Button>
-          <Button className="bg-[linear-gradient(to_right,_#6A2A97_0%,_#C753FD_53%,_#FA96FF_100%)] text-white cursor-pointer">
-            <Wallet className="h-4 w-4" />
-            Connect Wallet
-          </Button>
+        <div className="flex items-center gap-5">
+          <div className="h-6 w-px bg-gray-600"></div>
+
+          <div className="flex items-center gap-3">
+            <Button
+              className="hidden sm:flex border-gray-700 text-white bg-neutral-800 hover:bg-neutral-700 hover:text-white"
+              onClick={() => setAuthModalOpen(true)}
+            >
+              Sign In
+            </Button>
+            <Button className="bg-[linear-gradient(to_right,_#6A2A97_0%,_#C753FD_53%,_#FA96FF_100%)] text-white cursor-pointer">
+              <Wallet className="h-4 w-4" />
+              Connect Wallet
+            </Button>
+          </div>
 
           {/* <div className="flex items-center gap-4">
           <Button
