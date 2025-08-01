@@ -70,7 +70,7 @@ export default function Navbar() {
                     href="#"
                     className="flex items-center gap-3 px-2 py-2 text-white hover:bg-neutral-800 rounded-md"
                   >
-                    <Gamepad2 className="w-5 h-5" />
+                    <Gamepad2 className="w-5 h-5 text-white" />
                     <span>All Games</span>
                   </Link>
                   <Link
@@ -93,7 +93,7 @@ export default function Navbar() {
                   href="#"
                   className="flex items-center gap-3 px-2 py-2 text-white hover:bg-neutral-800 rounded-md transition-colors"
                 >
-                  <Trophy className="h-5 w-5 text-orange-400" />
+                  <GiftBoxIcon className="h-5 w-5 text-white" />
                   <span>Rewards</span>
                 </Link>
 
