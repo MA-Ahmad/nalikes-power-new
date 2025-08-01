@@ -32,7 +32,7 @@ export default function Home() {
 
             {/* Banner Image */}
             <div className="mb-8 mt-8">
-              <Image
+              {/* <Image
                 src={newBanner}
                 alt="Banner"
                 layout="responsive"
@@ -40,7 +40,14 @@ export default function Home() {
                 height={600}
                 className="rounded-lg"
                 placeholder="blur"
-                blurDataURL={newBanner.src}
+              /> */}
+              <Image
+                src={newBanner}
+                alt="Banner"
+                width={1920}
+                height={600}
+                className="rounded-lg object-cover w-full h-full"
+                placeholder="blur"
               />
             </div>
 
