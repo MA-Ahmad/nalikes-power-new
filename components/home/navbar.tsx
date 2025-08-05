@@ -9,6 +9,7 @@ import {
   User,
   Wallet,
   Zap,
+  LogOut,
 } from 'lucide-react'
 import Link from 'next/link'
 import { useState } from 'react'
@@ -18,16 +19,28 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu'
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
 import Image from 'next/image'
 import { Separator } from '../ui/separator'
 import { AuthModal } from './auth-modal'
 import { GiftBoxIcon } from '../ions'
+import { useAuthStore } from '@/store/auth'
+import { useAuthLogout } from '@/hooks/use-auth-logout'
 
 export default function Navbar() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
+  const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false)
   const [authModalOpen, setAuthModalOpen] = useState(false)
+
+  const { isAuthenticated, user, loading } = useAuthStore()
+  const handleLogout = useAuthLogout()
+
+  const onLogout = async () => {
+    await handleLogout()
+    setIsUserDropdownOpen(false)
+  }
 
   return (
     <>
@@ -97,17 +110,34 @@ export default function Navbar() {
                   <span>Rewards</span>
                 </Link>
 
+                {/* Mobile Auth Section */}
                 <div className="flex flex-col gap-2 mt-4">
-                  <Button
-                    className="flex border-gray-700 text-white hover:bg-neutral-800 hover:text-white bg-neutral-800"
-                    onClick={() => setAuthModalOpen(true)}
-                  >
-                    Sign In
-                  </Button>
-                  <Button className="bg-[linear-gradient(to_right,_#6A2A97_0%,_#C753FD_53%,_#FA96FF_100%)] text-white cursor-pointer">
-                    <Wallet className="h-4 w-4" />
-                    Connect Wallet
-                  </Button>
+                  {!loading && (
+                    <>
+                      {isAuthenticated && user ? (
+                        <>
+                          <div className="text-white text-sm px-2 py-1">
+                            Welcome, {user.username}!
+                          </div>
+                          <Button
+                            variant="outline"
+                            className="border-gray-700 text-white hover:bg-neutral-800 hover:text-white bg-neutral-800"
+                            onClick={onLogout}
+                          >
+                            <LogOut className="h-4 w-4 mr-2" />
+                            Logout
+                          </Button>
+                        </>
+                      ) : (
+                        <Button
+                          className="flex border-gray-700 text-white hover:bg-neutral-800 hover:text-white bg-neutral-800"
+                          onClick={() => setAuthModalOpen(true)}
+                        >
+                          Sign In
+                        </Button>
+                      )}
+                    </>
+                  )}
                 </div>
               </div>
             </SheetContent>
@@ -147,7 +177,7 @@ export default function Navbar() {
           </Link>
           <div className="h-6 w-px bg-gray-600"></div>
 
-          {/* Dropdown */}
+          {/* Games Dropdown */}
           <DropdownMenu onOpenChange={setIsDropdownOpen}>
             <DropdownMenuTrigger asChild>
               <Button
@@ -189,35 +219,60 @@ export default function Navbar() {
           </Link>
         </div>
 
-        {/* Right Section - Auth Buttons */}
+        {/* Right Section - Auth */}
         <div className="flex items-center gap-5">
           <div className="h-6 w-px bg-gray-600"></div>
 
           <div className="flex items-center gap-3">
-            <Button
-              className="hidden sm:flex border-gray-700 text-white bg-neutral-800 hover:bg-neutral-700 hover:text-white"
-              onClick={() => setAuthModalOpen(true)}
-            >
-              Sign In
-            </Button>
-            <Button className="bg-[linear-gradient(to_right,_#6A2A97_0%,_#C753FD_53%,_#FA96FF_100%)] text-white cursor-pointer">
-              <Wallet className="h-4 w-4" />
-              Connect Wallet
-            </Button>
+            {!loading && (
+              <>
+                {isAuthenticated && user ? (
+                  <DropdownMenu onOpenChange={setIsUserDropdownOpen}>
+                    <DropdownMenuTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        className="text-white flex hover:bg-neutral-700 items-center gap-2 hidden sm:flex"
+                      >
+                        <User className="w-4 h-4" />
+                        {user.username}
+                        <ChevronDown
+                          className={`h-4 w-4 transition-transform duration-200 ${
+                            isUserDropdownOpen ? 'rotate-180' : 'rotate-0'
+                          }`}
+                        />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent>
+                      <DropdownMenuItem disabled className="text-gray-400">
+                        {user.email}
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem
+                        className="hover:bg-neutral-800 focus:bg-neutral-800 cursor-pointer"
+                        onClick={onLogout}
+                      >
+                        <LogOut className="w-4 h-4 mr-2" />
+                        Logout
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                ) : (
+                  <div className="flex items-center gap-3">
+                    <Button
+                      className="hidden sm:flex border-gray-700 text-white bg-neutral-800 hover:bg-neutral-700 hover:text-white"
+                      onClick={() => setAuthModalOpen(true)}
+                    >
+                      Sign In
+                    </Button>
+                    <Button className="bg-[linear-gradient(to_right,_#6A2A97_0%,_#C753FD_53%,_#FA96FF_100%)] text-white font-medium px-4 py-2 rounded-sm flex items-center gap-2">
+                      <Wallet className="h-4 w-4" />
+                      Connect Wallet
+                    </Button>
+                  </div>
+                )}
+              </>
+            )}
           </div>
-
-          {/* <div className="flex items-center gap-4">
-          <Button
-            variant="ghost"
-            className="text-white hover:text-gray-300 hover:bg-neutral-800 font-medium"
-          >
-            Login
-          </Button>
-          <Button className="bg-[linear-gradient(to_right,_#6A2A97_0%,_#C753FD_53%,_#FA96FF_100%)] text-white font-medium px-4 py-2 rounded-sm flex items-center gap-2">
-            <Wallet className="h-4 w-4" />
-            Connect Wallet
-          </Button>
-        </div> */}
         </div>
       </header>
 

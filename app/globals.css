@@ -450,3 +450,13 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+.rc-anchor-normal {
+  height: 4.78rem !important;
+  /* width: 300px; */
+}
+
+.rc-anchor {
+  border-radius: 0.5rem !important;
+  box-shadow: none !important;
+}
