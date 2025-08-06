@@ -28,6 +28,7 @@ import { AuthModal } from './auth-modal'
 import { GiftBoxIcon } from '../ions'
 import { useAuthStore } from '@/store/auth'
 import { useAuthLogout } from '@/hooks/use-auth-logout'
+import { ConnectWalletButton } from '../wallet/connect-wallet-button'
 
 export default function Navbar() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
@@ -119,6 +120,10 @@ export default function Navbar() {
                           <div className="text-white text-sm px-2 py-1">
                             Welcome, {user.username}!
                           </div>
+                          <ConnectWalletButton
+                            variant="outline"
+                            className="border-gray-700 text-white hover:bg-neutral-800 hover:text-white bg-neutral-800"
+                          />
                           <Button
                             variant="outline"
                             className="border-gray-700 text-white hover:bg-neutral-800 hover:text-white bg-neutral-800"
@@ -227,35 +232,38 @@ export default function Navbar() {
             {!loading && (
               <>
                 {isAuthenticated && user ? (
-                  <DropdownMenu onOpenChange={setIsUserDropdownOpen}>
-                    <DropdownMenuTrigger asChild>
-                      <Button
-                        variant="ghost"
-                        className="text-white flex hover:bg-neutral-700 items-center gap-2 hidden sm:flex"
-                      >
-                        <User className="w-4 h-4" />
-                        {user.username}
-                        <ChevronDown
-                          className={`h-4 w-4 transition-transform duration-200 ${
-                            isUserDropdownOpen ? 'rotate-180' : 'rotate-0'
-                          }`}
-                        />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent>
-                      <DropdownMenuItem disabled className="text-gray-400">
-                        {user.email}
-                      </DropdownMenuItem>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem
-                        className="hover:bg-neutral-800 focus:bg-neutral-800 cursor-pointer"
-                        onClick={onLogout}
-                      >
-                        <LogOut className="w-4 h-4 mr-2" />
-                        Logout
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+                  <div className="flex items-center gap-3">
+                    <ConnectWalletButton variant="outline" />
+                    <DropdownMenu onOpenChange={setIsUserDropdownOpen}>
+                      <DropdownMenuTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          className="text-white flex hover:bg-neutral-700 items-center gap-2 hidden sm:flex"
+                        >
+                          <User className="w-4 h-4" />
+                          {user.username}
+                          <ChevronDown
+                            className={`h-4 w-4 transition-transform duration-200 ${
+                              isUserDropdownOpen ? 'rotate-180' : 'rotate-0'
+                            }`}
+                          />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent>
+                        <DropdownMenuItem disabled className="text-gray-400">
+                          {user.email}
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem
+                          className="hover:bg-neutral-800 focus:bg-neutral-800 cursor-pointer"
+                          onClick={onLogout}
+                        >
+                          <LogOut className="w-4 h-4 mr-2" />
+                          Logout
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
                 ) : (
                   <div className="flex items-center gap-3">
                     <Button

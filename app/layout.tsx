@@ -4,6 +4,7 @@ import './globals.css'
 import { ThemeProvider } from '@/components/theme-provider'
 import { QueryProvider } from '@/context/query-provider'
 import { AuthProvider } from '@/context/auth-provider'
+import { WalletProvider } from '@/context/wallet-provider'
 import { Toaster } from 'react-hot-toast'
 
 const geistSans = Geist({
@@ -34,36 +35,38 @@ export default function RootLayout({
       >
         <QueryProvider>
           <AuthProvider>
-            <ThemeProvider
-              attribute="class"
-              defaultTheme="system"
-              enableSystem
-              disableTransitionOnChange
-            >
-              {children}
-              <Toaster
-                position="top-right"
-                toastOptions={{
-                  style: {
-                    background: '#1f2937',
-                    color: '#f9fafb',
-                    border: '1px solid #374151',
-                  },
-                  success: {
-                    iconTheme: {
-                      primary: '#10b981',
-                      secondary: '#f9fafb',
+            <WalletProvider>
+              <ThemeProvider
+                attribute="class"
+                defaultTheme="system"
+                enableSystem
+                disableTransitionOnChange
+              >
+                {children}
+                <Toaster
+                  position="top-right"
+                  toastOptions={{
+                    style: {
+                      background: '#1f2937',
+                      color: '#f9fafb',
+                      border: '1px solid #374151',
                     },
-                  },
-                  error: {
-                    iconTheme: {
-                      primary: '#ef4444',
-                      secondary: '#f9fafb',
+                    success: {
+                      iconTheme: {
+                        primary: '#10b981',
+                        secondary: '#f9fafb',
+                      },
                     },
-                  },
-                }}
-              />
-            </ThemeProvider>
+                    error: {
+                      iconTheme: {
+                        primary: '#ef4444',
+                        secondary: '#f9fafb',
+                      },
+                    },
+                  }}
+                />
+              </ThemeProvider>
+            </WalletProvider>
           </AuthProvider>
         </QueryProvider>
       </body>
