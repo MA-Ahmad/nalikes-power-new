@@ -1,16 +1,16 @@
 import { api } from './axios'
 
-export interface RegisterData {
-  username: string
+export interface SendCodeData {
+  username?: string // Required for signup
   email: string
-  password: string
-  recaptchaToken: string
+  // recaptchaToken: string
+  type: 'signup' | 'signin'
 }
 
-export interface LoginData {
+export interface VerifyCodeData {
   email: string
-  password: string
-  recaptchaToken: string
+  code: string
+  type: 'signup' | 'signin'
 }
 
 export interface AuthResponse {
@@ -24,14 +24,18 @@ export interface AuthResponse {
   }
 }
 
+export interface SendCodeResponse {
+  message: string
+}
+
 export const authApi = {
-  register: async (data: RegisterData): Promise<AuthResponse> => {
-    const response = await api.post('/auth/register', data)
+  sendCode: async (data: SendCodeData): Promise<SendCodeResponse> => {
+    const response = await api.post('/auth/send-code', data)
     return response.data
   },
 
-  login: async (data: LoginData): Promise<AuthResponse> => {
-    const response = await api.post('/auth/login', data)
+  verifyCode: async (data: VerifyCodeData): Promise<AuthResponse> => {
+    const response = await api.post('/auth/verify-code', data)
     return response.data
   },
 
