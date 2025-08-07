@@ -7,8 +7,8 @@ import {
   useDisconnect,
   useAppKitNetwork,
 } from '@reown/appkit/react'
-import { useBalance, useSignMessage } from 'wagmi'
-import { formatEther } from 'viem'
+import { useBalance, useSignMessage, useSendTransaction } from 'wagmi'
+import { formatEther, parseEther } from 'viem'
 import type { WagmiAdapter } from '@reown/appkit-adapter-wagmi'
 
 export function useWallet() {
@@ -67,21 +67,75 @@ export function useWallet() {
   }
 
   // Sign message hook from wagmi
-  const { signMessage: wagmiSignMessage } = useSignMessage()
+  const { signMessageAsync } = useSignMessage()
 
-  // Sign message function
+  // Send transaction hook from wagmi
+  const { sendTransactionAsync } = useSendTransaction()
+
+  // Sign message function (first popup)
   const signMessage = async (message: string) => {
     if (!address) {
       throw new Error('Wallet not connected')
     }
 
     try {
-      const signature = await wagmiSignMessage({ message })
+      const signature = await signMessageAsync({ message })
       return signature
     } catch (error) {
       console.error('Failed to sign message:', error)
       throw error
     }
+  }
+
+  // Send transaction function (second popup - like your image)
+  const sendTransaction = async (to: string, amount: string) => {
+    if (!address) {
+      throw new Error('Wallet not connected')
+    }
+
+    try {
+      const txHash = await sendTransactionAsync({
+        to: to as `0x${string}`,
+        value: parseEther(amount),
+      })
+      return txHash
+    } catch (error) {
+      console.error('Failed to send transaction:', error)
+      throw error
+    }
+  }
+
+  // Combined sign message and send transaction (proper two-popup flow)
+  const signAndSendTransaction = async (
+    message: string,
+    to: string,
+    amount: string
+  ) => {
+    if (!address) {
+      throw new Error('Wallet not connected')
+    }
+
+    try {
+      // First popup: Sign message for verification
+      const signature = await signMessage(message)
+
+      // Second popup: Send transaction (like your image)
+      const txHash = await sendTransaction(to, amount)
+
+      return { signature, txHash }
+    } catch (error) {
+      console.error('Failed to sign and send transaction:', error)
+      throw error
+    }
+  }
+
+  // Separate functions for better control (new)
+  const signMessageOnly = async (message: string) => {
+    return await signMessage(message)
+  }
+
+  const sendTransactionOnly = async (to: string, amount: string) => {
+    return await sendTransaction(to, amount)
   }
 
   return {
@@ -105,6 +159,10 @@ export function useWallet() {
     disconnectWallet,
     openAccountModal,
     signMessage,
+    sendTransaction,
+    signAndSendTransaction,
+    signMessageOnly,
+    sendTransactionOnly,
 
     // Provider
     walletProvider,

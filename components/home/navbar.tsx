@@ -29,11 +29,14 @@ import { GiftBoxIcon } from '../ions'
 import { useAuthStore } from '@/store/auth'
 import { useAuthLogout } from '@/hooks/use-auth-logout'
 import { ConnectWalletButton } from '../wallet/connect-wallet-button'
+import { DepositWithdrawModal } from '../wallet/deposit-withdraw-modal'
 
 export default function Navbar() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
   const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false)
   const [authModalOpen, setAuthModalOpen] = useState(false)
+  const [depositWithdrawModalOpen, setDepositWithdrawModalOpen] =
+    useState(false)
 
   const { isAuthenticated, user, loading } = useAuthStore()
   const handleLogout = useAuthLogout()
@@ -120,6 +123,14 @@ export default function Navbar() {
                           <div className="text-white text-sm px-2 py-1">
                             Welcome, {user.username}!
                           </div>
+                          <Button
+                            variant="outline"
+                            onClick={() => setDepositWithdrawModalOpen(true)}
+                            className="border-gray-700 text-white hover:bg-neutral-800 hover:text-white bg-neutral-800"
+                          >
+                            <Wallet className="h-4 w-4 mr-2" />
+                            Cashier
+                          </Button>
                           <ConnectWalletButton
                             variant="outline"
                             className="border-gray-700 text-white hover:bg-neutral-800 hover:text-white bg-neutral-800"
@@ -233,6 +244,14 @@ export default function Navbar() {
               <>
                 {isAuthenticated && user ? (
                   <div className="flex items-center gap-3">
+                    <Button
+                      variant="outline"
+                      onClick={() => setDepositWithdrawModalOpen(true)}
+                      className="border-gray-700 text-white hover:bg-neutral-800 hover:text-white bg-neutral-800 hidden sm:flex"
+                    >
+                      <Wallet className="h-4 w-4 mr-2" />
+                      Cashier
+                    </Button>
                     <ConnectWalletButton variant="outline" />
                     <DropdownMenu onOpenChange={setIsUserDropdownOpen}>
                       <DropdownMenuTrigger asChild>
@@ -285,6 +304,10 @@ export default function Navbar() {
       </header>
 
       <AuthModal open={authModalOpen} onOpenChange={setAuthModalOpen} />
+      <DepositWithdrawModal
+        open={depositWithdrawModalOpen}
+        onOpenChange={setDepositWithdrawModalOpen}
+      />
     </>
   )
 }
