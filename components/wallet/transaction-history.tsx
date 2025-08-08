@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useQuery } from '@tanstack/react-query'
+import { api } from '@/lib/axios'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -52,13 +53,10 @@ export function TransactionHistory() {
   const { data, isLoading, error, refetch } = useQuery<TransactionResponse>({
     queryKey: ['transactions', currentPage],
     queryFn: async () => {
-      const response = await fetch(
-        `/api/transactions/my?page=${currentPage}&limit=${limit}`
+      const response = await api.get(
+        `/transactions/my?page=${currentPage}&limit=${limit}`
       )
-      if (!response.ok) {
-        throw new Error('Failed to fetch transactions')
-      }
-      return response.json()
+      return response.data
     },
   })
 
