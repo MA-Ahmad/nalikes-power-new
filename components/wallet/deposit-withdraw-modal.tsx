@@ -578,7 +578,7 @@ export function DepositWithdrawModal({
                           {...depositForm.register('amount')}
                         />
                         <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
-                          <Button
+                          {/* <Button
                             type="button"
                             variant="ghost"
                             size="sm"
@@ -587,7 +587,7 @@ export function DepositWithdrawModal({
                             disabled={isAnyProcessing}
                           >
                             MAX
-                          </Button>
+                          </Button> */}
                           <span className="text-gray-400 text-sm">
                             {tokenSymbol}
                           </span>
@@ -669,7 +669,7 @@ export function DepositWithdrawModal({
                           {...withdrawForm.register('amount')}
                         />
                         <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
-                          <Button
+                          {/* <Button
                             type="button"
                             variant="ghost"
                             size="sm"
@@ -678,7 +678,7 @@ export function DepositWithdrawModal({
                             disabled={isAnyProcessing}
                           >
                             MAX
-                          </Button>
+                          </Button> */}
                           <span className="text-gray-400 text-sm">
                             {tokenSymbol}
                           </span>
