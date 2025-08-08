@@ -19,9 +19,7 @@ export default function Home() {
     <div className="min-h-screen">
       <Navbar />
 
-      {/* Main Layout Container */}
       <div className="flex pt-16">
-        {/* Main Content - Adjusts margin based on sidebar state on desktop */}
         <main
           className={`flex-1 px-4 py-8 transition-all duration-300 ease-in-out ${
             isChatOpen ? 'lg:mr-80' : 'lg:mr-0'
