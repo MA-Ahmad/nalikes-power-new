@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import { api } from '@/lib/axios'
+import { walletApi, UserWalletInfo } from '@/lib/api/wallet'
 import axios from 'axios'
 
 interface User {
@@ -8,6 +9,8 @@ interface User {
   email: string
   createdAt: Date
   lastLogin?: Date
+  walletConnected: boolean
+  currentWalletAddress?: string
 }
 
 interface AuthState {
@@ -21,9 +24,12 @@ interface AuthState {
   setError: (error: string | null) => void
   setLoading: (loading: boolean) => void
   setIsAuthenticated: (isAuthenticated: boolean) => void
+  updateWalletConnection: (walletAddress: string) => Promise<void>
+  disconnectWallet: () => Promise<void>
+  syncWalletStatus: () => Promise<void>
 }
 
-export const useAuthStore = create<AuthState>()((set) => ({
+export const useAuthStore = create<AuthState>()((set, get) => ({
   isAuthenticated: false,
   user: null,
   loading: true,
@@ -71,6 +77,68 @@ export const useAuthStore = create<AuthState>()((set) => ({
           ? err.message
           : 'Logout failed',
       })
+    }
+  },
+  updateWalletConnection: async (walletAddress: string) => {
+    try {
+      if (!get().isAuthenticated) {
+        // If user is not authenticated, we can't update wallet connection yet
+        // This will be handled when they sign in
+        return
+      }
+
+      const updatedUser = await walletApi.connectWallet(walletAddress)
+      set((state) => ({
+        user: state.user
+          ? {
+              ...state.user,
+              walletConnected: updatedUser.walletConnected,
+              currentWalletAddress: updatedUser.currentWalletAddress,
+            }
+          : state.user,
+      }))
+    } catch (err) {
+      console.error('Failed to update wallet connection:', err)
+      set({
+        error: axios.isAxiosError(err)
+          ? err.response?.data?.message || err.message
+          : err instanceof Error
+          ? err.message
+          : 'Failed to update wallet connection',
+      })
+    }
+  },
+  disconnectWallet: async () => {
+    // Wallet disconnect is handled by frontend only
+    // Just update the local state, no backend call needed
+    set((state) => ({
+      user: state.user
+        ? {
+            ...state.user,
+            // Keep walletConnected true (persistent) but clear address for UI
+            currentWalletAddress: undefined,
+          }
+        : state.user,
+    }))
+  },
+  syncWalletStatus: async () => {
+    try {
+      if (!get().isAuthenticated) {
+        return
+      }
+
+      const walletInfo = await walletApi.getWalletInfo()
+      set((state) => ({
+        user: state.user
+          ? {
+              ...state.user,
+              walletConnected: walletInfo.walletConnected,
+              currentWalletAddress: walletInfo.currentWalletAddress,
+            }
+          : state.user,
+      }))
+    } catch (err) {
+      console.error('Failed to sync wallet status:', err)
     }
   },
 }))

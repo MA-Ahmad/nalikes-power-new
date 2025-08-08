@@ -145,12 +145,18 @@ export default function Navbar() {
                           </Button>
                         </>
                       ) : (
-                        <Button
-                          className="flex border-gray-700 text-white hover:bg-neutral-800 hover:text-white bg-neutral-800"
-                          onClick={() => setAuthModalOpen(true)}
-                        >
-                          Sign In
-                        </Button>
+                        <div className="flex items-center gap-3">
+                          <Button
+                            className="flex border-gray-700 text-white hover:bg-neutral-800 hover:text-white bg-neutral-800"
+                            onClick={() => setAuthModalOpen(true)}
+                          >
+                            Sign In
+                          </Button>
+                          <ConnectWalletButton
+                            variant="outline"
+                            className="border-gray-700 text-white hover:bg-neutral-800 hover:text-white bg-neutral-800"
+                          />
+                        </div>
                       )}
                     </>
                   )}
@@ -291,10 +297,14 @@ export default function Navbar() {
                     >
                       Sign In
                     </Button>
-                    <Button className="bg-[linear-gradient(to_right,_#6A2A97_0%,_#C753FD_53%,_#FA96FF_100%)] text-white font-medium px-4 py-2 rounded-sm flex items-center gap-2">
+                    {/* <Button className="bg-[linear-gradient(to_right,_#6A2A97_0%,_#C753FD_53%,_#FA96FF_100%)] text-white font-medium px-4 py-2 rounded-sm flex items-center gap-2">
                       <Wallet className="h-4 w-4" />
                       Connect Wallet
-                    </Button>
+                    </Button> */}
+                    <ConnectWalletButton
+                      variant="outline"
+                      className="border-gray-700 text-white hover:bg-neutral-800 hover:text-white bg-neutral-800"
+                    />
                   </div>
                 )}
               </>

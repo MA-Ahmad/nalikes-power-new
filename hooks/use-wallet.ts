@@ -10,6 +10,8 @@ import {
 import { useBalance, useSignMessage, useSendTransaction } from 'wagmi'
 import { formatEther, parseEther } from 'viem'
 import type { WagmiAdapter } from '@reown/appkit-adapter-wagmi'
+import { useAuthStore } from '@/store/auth'
+import { useEffect } from 'react'
 
 export function useWallet() {
   const { open, close } = useAppKit()
@@ -17,6 +19,14 @@ export function useWallet() {
   const { walletProvider } = useAppKitProvider<WagmiAdapter>('eip155')
   const { disconnect } = useDisconnect()
   const { chainId } = useAppKitNetwork()
+
+  // Auth store integration
+  const {
+    isAuthenticated,
+    updateWalletConnection,
+    disconnectWallet: disconnectWalletFromAuth,
+    syncWalletStatus,
+  } = useAuthStore()
 
   // Get balance for connected address
   const { data: balance, isLoading: isLoadingBalance } = useBalance({
@@ -50,11 +60,54 @@ export function useWallet() {
   const disconnectWallet = async () => {
     try {
       await disconnect()
+      // Also update backend if user is authenticated
+      if (isAuthenticated) {
+        await disconnectWalletFromAuth()
+      }
     } catch (error) {
       console.error('Failed to disconnect wallet:', error)
       throw error
     }
   }
+
+  // Effect to sync wallet connection with backend when wallet connects/disconnects
+  useEffect(() => {
+    const syncWalletWithBackend = async () => {
+      if (isAuthenticated && isConnected && address) {
+        // Wallet is connected and user is authenticated - update backend
+        try {
+          await updateWalletConnection(address)
+        } catch (error) {
+          console.error('Failed to sync wallet connection with backend:', error)
+        }
+      } else if (isAuthenticated && !isConnected) {
+        // User is authenticated but wallet is disconnected - update backend
+        try {
+          await disconnectWalletFromAuth()
+        } catch (error) {
+          console.error(
+            'Failed to sync wallet disconnection with backend:',
+            error
+          )
+        }
+      }
+    }
+
+    syncWalletWithBackend()
+  }, [
+    isAuthenticated,
+    isConnected,
+    address,
+    updateWalletConnection,
+    disconnectWalletFromAuth,
+  ])
+
+  // Effect to sync wallet status when user authenticates
+  useEffect(() => {
+    if (isAuthenticated) {
+      syncWalletStatus()
+    }
+  }, [isAuthenticated, syncWalletStatus])
 
   // Open account modal
   const openAccountModal = async () => {
