@@ -38,7 +38,7 @@ export default function RootLayout({
             <WalletProvider>
               <ThemeProvider
                 attribute="class"
-                defaultTheme="system"
+                defaultTheme="dark"
                 enableSystem
                 disableTransitionOnChange
               >
