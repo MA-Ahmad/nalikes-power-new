@@ -11,6 +11,7 @@ interface User {
   lastLogin?: Date
   walletConnected: boolean
   currentWalletAddress?: string
+  depositWalletAddress?: string
 }
 
 interface AuthState {
@@ -134,6 +135,7 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
               ...state.user,
               walletConnected: walletInfo.walletConnected,
               currentWalletAddress: walletInfo.currentWalletAddress,
+              depositWalletAddress: walletInfo.depositWalletAddress,
             }
           : state.user,
       }))

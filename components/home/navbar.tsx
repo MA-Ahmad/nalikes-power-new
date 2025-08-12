@@ -10,9 +10,11 @@ import {
   Wallet,
   Zap,
   LogOut,
+  Copy,
+  Check,
 } from 'lucide-react'
 import Link from 'next/link'
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -30,6 +32,7 @@ import { useAuthStore } from '@/store/auth'
 import { useAuthLogout } from '@/hooks/use-auth-logout'
 import { ConnectWalletButton } from '../wallet/connect-wallet-button'
 import { DepositWithdrawModal } from '../wallet/deposit-withdraw-modal'
+import { ChainBalanceSelector } from './balance-selector'
 
 export default function Navbar() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
@@ -38,6 +41,9 @@ export default function Navbar() {
   const [depositWithdrawModalOpen, setDepositWithdrawModalOpen] =
     useState(false)
 
+  const [copiedDeposit, setCopiedDeposit] = useState(false)
+  const copyTimeoutRef = useRef<number | null>(null)
+
   const { isAuthenticated, user, loading } = useAuthStore()
   const handleLogout = useAuthLogout()
 
@@ -45,6 +51,26 @@ export default function Navbar() {
     await handleLogout()
     setIsUserDropdownOpen(false)
   }
+
+  const handleCopyDepositAddress = async () => {
+    if (!user?.depositWalletAddress) return
+    try {
+      await navigator.clipboard.writeText(user.depositWalletAddress)
+      setCopiedDeposit(true)
+      if (copyTimeoutRef.current) window.clearTimeout(copyTimeoutRef.current)
+      copyTimeoutRef.current = window.setTimeout(() => {
+        setCopiedDeposit(false)
+      }, 1500)
+    } catch (e) {
+      // no-op
+    }
+  }
+
+  useEffect(() => {
+    return () => {
+      if (copyTimeoutRef.current) window.clearTimeout(copyTimeoutRef.current)
+    }
+  }, [])
 
   return (
     <>
@@ -123,7 +149,7 @@ export default function Navbar() {
                           <div className="text-white text-sm px-2 py-1">
                             Welcome, {user.username}!
                           </div>
-                          <Button
+                          {/* <Button
                             variant="outline"
                             onClick={() => setDepositWithdrawModalOpen(true)}
                             className="border-gray-700 text-white hover:bg-neutral-800 hover:text-white bg-neutral-800"
@@ -134,7 +160,7 @@ export default function Navbar() {
                           <ConnectWalletButton
                             variant="outline"
                             className="border-gray-700 text-white hover:bg-neutral-800 hover:text-white bg-neutral-800"
-                          />
+                          /> */}
                           <Button
                             variant="outline"
                             className="border-gray-700 text-white hover:bg-neutral-800 hover:text-white bg-neutral-800"
@@ -152,10 +178,10 @@ export default function Navbar() {
                           >
                             Sign In
                           </Button>
-                          <ConnectWalletButton
+                          {/* <ConnectWalletButton
                             variant="outline"
                             className="border-gray-700 text-white hover:bg-neutral-800 hover:text-white bg-neutral-800"
-                          />
+                          /> */}
                         </div>
                       )}
                     </>
@@ -243,6 +269,7 @@ export default function Navbar() {
 
         {/* Right Section - Auth */}
         <div className="flex items-center gap-5">
+          {isAuthenticated && user ? <ChainBalanceSelector /> : null}
           <div className="h-6 w-px bg-gray-600"></div>
 
           <div className="flex items-center gap-3">
@@ -250,7 +277,7 @@ export default function Navbar() {
               <>
                 {isAuthenticated && user ? (
                   <div className="flex items-center gap-3">
-                    <Button
+                    {/* <Button
                       variant="outline"
                       onClick={() => setDepositWithdrawModalOpen(true)}
                       className="border-gray-700 text-white hover:bg-neutral-800 hover:text-white bg-neutral-800 hidden sm:flex"
@@ -258,7 +285,7 @@ export default function Navbar() {
                       <Wallet className="h-4 w-4 mr-2" />
                       Cashier
                     </Button>
-                    <ConnectWalletButton variant="outline" />
+                    <ConnectWalletButton variant="outline" /> */}
                     <DropdownMenu onOpenChange={setIsUserDropdownOpen}>
                       <DropdownMenuTrigger asChild>
                         <Button
@@ -278,6 +305,28 @@ export default function Navbar() {
                         <DropdownMenuItem disabled className="text-gray-400">
                           {user.email}
                         </DropdownMenuItem>
+                        {user.depositWalletAddress ? (
+                          <DropdownMenuItem
+                            className="hover:bg-neutral-800 focus:bg-neutral-800 cursor-pointer flex items-center justify-between"
+                            onSelect={(e) => {
+                              e.preventDefault()
+                              handleCopyDepositAddress()
+                            }}
+                          >
+                            <span
+                              className="truncate max-w-[240px]"
+                              title={user.depositWalletAddress}
+                            >
+                              {user.depositWalletAddress.slice(0, 6)}...
+                              {user.depositWalletAddress.slice(-4)}
+                            </span>
+                            {copiedDeposit ? (
+                              <Check className="h-4 w-4 ml-2 text-green-500" />
+                            ) : (
+                              <Copy className="h-4 w-4 ml-2" />
+                            )}
+                          </DropdownMenuItem>
+                        ) : null}
                         <DropdownMenuSeparator />
                         <DropdownMenuItem
                           className="hover:bg-neutral-800 focus:bg-neutral-800 cursor-pointer"
@@ -297,14 +346,10 @@ export default function Navbar() {
                     >
                       Sign In
                     </Button>
-                    {/* <Button className="bg-[linear-gradient(to_right,_#6A2A97_0%,_#C753FD_53%,_#FA96FF_100%)] text-white font-medium px-4 py-2 rounded-sm flex items-center gap-2">
-                      <Wallet className="h-4 w-4" />
-                      Connect Wallet
-                    </Button> */}
-                    <ConnectWalletButton
+                    {/* <ConnectWalletButton
                       variant="outline"
                       className="border-gray-700 text-white hover:bg-neutral-800 hover:text-white bg-neutral-800"
-                    />
+                    /> */}
                   </div>
                 )}
               </>

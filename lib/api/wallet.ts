@@ -15,8 +15,14 @@ export interface UserWalletInfo {
   email: string
   walletConnected: boolean
   currentWalletAddress?: string
+  depositWalletAddress?: string
   createdAt: string
   lastLogin?: string
+}
+
+export interface UserBalanceEntry {
+  currency: string
+  balance: number
 }
 
 export const walletApi = {
@@ -31,6 +37,12 @@ export const walletApi = {
   // Get current user wallet info
   getWalletInfo: async (): Promise<UserWalletInfo> => {
     const response = await api.get<UserWalletInfo>('/auth/wallet-info')
+    return response.data
+  },
+
+  // Get simple balances for current user from UserWallet
+  getBalances: async (): Promise<UserBalanceEntry[]> => {
+    const response = await api.get<UserBalanceEntry[]>('/wallet/balances')
     return response.data
   },
 }
