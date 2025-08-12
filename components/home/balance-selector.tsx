@@ -50,9 +50,14 @@ export function ChainBalanceSelector() {
       .getBalances()
       .then((data) => {
         if (!mounted) return
-        setBalances(data)
-        if (data.length && !selectedCurrency) {
-          setSelectedCurrency(data[0].currency)
+        const defaultBalances: UserBalanceEntry[] = [
+          { currency: 'ETH', balance: 0 },
+        ]
+        const dataToUse =
+          Array.isArray(data) && data.length > 0 ? data : defaultBalances
+        setBalances(dataToUse)
+        if (dataToUse.length && !selectedCurrency) {
+          setSelectedCurrency(dataToUse[0].currency)
         }
       })
       .finally(() => mounted && setLoading(false))
