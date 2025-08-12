@@ -9,7 +9,6 @@ interface User {
   email: string
   createdAt: Date
   lastLogin?: Date
-  walletConnected: boolean
   currentWalletAddress?: string
   depositWalletAddress?: string
 }

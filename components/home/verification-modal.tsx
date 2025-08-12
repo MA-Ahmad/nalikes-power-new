@@ -12,7 +12,6 @@ import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { useWallet } from '@/hooks/use-wallet'
 
 import { authApi, VerifyCodeData } from '@/lib/auth-api'
 import { useAuthStore } from '@/store/auth'
@@ -44,7 +43,6 @@ export function VerificationModal({
   const [timeLeft, setTimeLeft] = useState(300) // 5 minutes in seconds
   const timerRef = useRef<NodeJS.Timeout | null>(null)
   const { setUser, setIsAuthenticated } = useAuthStore()
-  const { isConnected } = useWallet()
 
   const form = useForm<VerificationFormData>({
     resolver: zodResolver(verificationSchema),
@@ -89,7 +87,6 @@ export function VerificationModal({
     onSuccess: (data) => {
       setUser({
         ...data.user,
-        walletConnected: isConnected,
       })
       setIsAuthenticated(true)
       toast.success(
