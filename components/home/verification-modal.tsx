@@ -87,6 +87,7 @@ export function VerificationModal({
     onSuccess: (data) => {
       setUser({
         ...data.user,
+        depositWalletAddresses: data.user.depositWalletAddresses,
       })
       setIsAuthenticated(true)
       toast.success(

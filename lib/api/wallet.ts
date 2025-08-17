@@ -13,9 +13,11 @@ export interface UserWalletInfo {
   id: string
   username: string
   email: string
-  walletConnected: boolean
-  currentWalletAddress?: string
-  depositWalletAddress?: string
+  depositWalletAddresses?: {
+    evm?: { address: string; totalAmount: number; availableAmount: number }
+    solana?: { address: string; totalAmount: number; availableAmount: number }
+    tron?: { address: string; totalAmount: number; availableAmount: number }
+  }
   createdAt: string
   lastLogin?: string
 }
@@ -35,8 +37,8 @@ export const walletApi = {
   },
 
   // Get current user wallet info
-  getWalletInfo: async (): Promise<UserWalletInfo> => {
-    const response = await api.get<UserWalletInfo>('/auth/wallet-info')
+  getWalletsInfo: async (): Promise<UserWalletInfo> => {
+    const response = await api.get<UserWalletInfo>('/auth/wallets-info')
     return response.data
   },
 

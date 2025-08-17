@@ -21,6 +21,11 @@ export interface AuthResponse {
     email: string
     createdAt: Date
     lastLogin?: Date
+    depositWalletAddresses?: {
+      evm?: { address: string; totalAmount: number; availableAmount: number }
+      solana?: { address: string; totalAmount: number; availableAmount: number }
+      tron?: { address: string; totalAmount: number; availableAmount: number }
+    }
   }
 }
 

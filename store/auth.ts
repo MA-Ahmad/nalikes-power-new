@@ -9,8 +9,11 @@ interface User {
   email: string
   createdAt: Date
   lastLogin?: Date
-  currentWalletAddress?: string
-  depositWalletAddress?: string
+  depositWalletAddresses?: {
+    evm?: { address: string; totalAmount: number; availableAmount: number }
+    solana?: { address: string; totalAmount: number; availableAmount: number }
+    tron?: { address: string; totalAmount: number; availableAmount: number }
+  }
 }
 
 interface AuthState {
@@ -92,8 +95,7 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
         user: state.user
           ? {
               ...state.user,
-              walletConnected: updatedUser.walletConnected,
-              currentWalletAddress: updatedUser.currentWalletAddress,
+              depositWalletAddresses: updatedUser.depositWalletAddresses,
             }
           : state.user,
       }))
@@ -127,14 +129,12 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
         return
       }
 
-      const walletInfo = await walletApi.getWalletInfo()
+      const walletInfo = await walletApi.getWalletsInfo()
       set((state) => ({
         user: state.user
           ? {
               ...state.user,
-              walletConnected: walletInfo.walletConnected,
-              currentWalletAddress: walletInfo.currentWalletAddress,
-              depositWalletAddress: walletInfo.depositWalletAddress,
+              depositWalletAddresses: walletInfo.depositWalletAddresses,
             }
           : state.user,
       }))

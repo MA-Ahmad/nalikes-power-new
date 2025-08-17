@@ -30,7 +30,7 @@ import { AuthModal } from './auth-modal'
 import { GiftBoxIcon } from '../ions'
 import { useAuthStore } from '@/store/auth'
 import { useAuthLogout } from '@/hooks/use-auth-logout'
-// import { DepositWithdrawModal } from '../wallet/deposit-withdraw-modal'
+import { DepositWithdrawModal } from '../wallet/deposit-withdraw-modal'
 import { ChainBalanceSelector } from './balance-selector'
 
 export default function Navbar() {
@@ -52,9 +52,11 @@ export default function Navbar() {
   }
 
   const handleCopyDepositAddress = async () => {
-    if (!user?.depositWalletAddress) return
+    if (!user?.depositWalletAddresses) return
     try {
-      await navigator.clipboard.writeText(user.depositWalletAddress)
+      await navigator.clipboard.writeText(
+        user.depositWalletAddresses.evm?.address || ''
+      )
       setCopiedDeposit(true)
       if (copyTimeoutRef.current) window.clearTimeout(copyTimeoutRef.current)
       copyTimeoutRef.current = window.setTimeout(() => {
@@ -252,7 +254,11 @@ export default function Navbar() {
 
         {/* Right Section - Auth */}
         <div className="flex items-center gap-5">
-          {isAuthenticated && user ? <ChainBalanceSelector /> : null}
+          {isAuthenticated && user ? (
+            <ChainBalanceSelector
+              setDepositWithdrawModalOpen={setDepositWithdrawModalOpen}
+            />
+          ) : null}
           <div className="h-6 w-px bg-gray-600"></div>
 
           <div className="flex items-center gap-3">
@@ -279,7 +285,7 @@ export default function Navbar() {
                         <DropdownMenuItem disabled className="text-gray-400">
                           {user.email}
                         </DropdownMenuItem>
-                        {user.depositWalletAddress ? (
+                        {/* {user.depositWalletAddresses.evm?.address ? (
                           <DropdownMenuItem
                             className="hover:bg-neutral-800 focus:bg-neutral-800 cursor-pointer flex items-center justify-between"
                             onSelect={(e) => {
@@ -289,10 +295,16 @@ export default function Navbar() {
                           >
                             <span
                               className="truncate max-w-[240px]"
-                              title={user.depositWalletAddress}
+                              title={user.depositWalletAddresses.evm?.address}
                             >
-                              {user.depositWalletAddress.slice(0, 6)}...
-                              {user.depositWalletAddress.slice(-4)}
+                              {user.depositWalletAddresses.evm?.address.slice(
+                                0,
+                                6
+                              )}
+                              ...
+                              {user.depositWalletAddresses.evm?.address.slice(
+                                -4
+                              )}
                             </span>
                             {copiedDeposit ? (
                               <Check className="h-4 w-4 ml-2 text-green-500" />
@@ -300,7 +312,7 @@ export default function Navbar() {
                               <Copy className="h-4 w-4 ml-2" />
                             )}
                           </DropdownMenuItem>
-                        ) : null}
+                        ) : null} */}
                         <DropdownMenuSeparator />
                         <DropdownMenuItem
                           className="hover:bg-neutral-800 focus:bg-neutral-800 cursor-pointer"
@@ -329,10 +341,10 @@ export default function Navbar() {
       </header>
 
       <AuthModal open={authModalOpen} onOpenChange={setAuthModalOpen} />
-      {/* <DepositWithdrawModal
+      <DepositWithdrawModal
         open={depositWithdrawModalOpen}
         onOpenChange={setDepositWithdrawModalOpen}
-      /> */}
+      />
     </>
   )
 }
