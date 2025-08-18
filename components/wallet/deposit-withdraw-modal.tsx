@@ -154,15 +154,9 @@ export function DepositWithdrawModal({
     }
   }, [open])
 
-  const copyAddress = async (addr?: string) => {
-    if (!addr) return
-    try {
-      await navigator.clipboard.writeText(addr)
-      toast.success('Address copied to clipboard')
-    } catch {
-      toast.error('Failed to copy address')
-    }
-  }
+  useEffect(() => {
+    setCurrency('evm')
+  }, [activeTab])
 
   return (
     <>
@@ -192,13 +186,6 @@ export function DepositWithdrawModal({
                   Estimated Balance
                 </span>
                 <span className="text-white font-bold text-xl">
-                  {/* {isLoadingBalance
-                    ? '...'
-                    : `$ ${(balanceData?.availableBalance ?? 0).toFixed(4)}`} */}
-                  {/* {`$ ${user?.depositWalletAddresses?.[
-                    currency as keyof typeof user.depositWalletAddresses
-                  ]?.availableAmount?.toFixed(4)}`} */}
-
                   {`$ ${Number(
                     user?.depositWalletAddresses?.[
                       currency as keyof typeof user.depositWalletAddresses
@@ -221,7 +208,10 @@ export function DepositWithdrawModal({
                         ? 'border-[#EE4FFB] bg-gradient-to-r from-[#EE4FFB]/30 to-[#8D2F95]/30 shadow-[0_0_11.68px_2.34px_rgba(104,100,246,0.25)]'
                         : 'bg-neutral-800 border-neutral-700 hover:border-[#EE4FFB] hover:bg-gradient-to-r from-[#EE4FFB]/30 to-[#8D2F95]/30'
                     )}
-                    onClick={() => setActiveAction(action)}
+                    onClick={() => {
+                      setActiveAction(action)
+                      setActiveTab(action.label.toLowerCase())
+                    }}
                   >
                     {action.icon}
                     {action.label}

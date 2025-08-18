@@ -194,6 +194,10 @@ export default function WithdrawForm() {
                           handleChainChange(value)
                         }}
                         value={field.value}
+                        disabled={
+                          !form.watch('currency') ||
+                          form.watch('currency') !== 'evm'
+                        }
                       >
                         <SelectTrigger className="w-full dark:bg-neutral-900 hover:dark:bg-neutral-900">
                           <SelectValue placeholder="Select a network" />
@@ -233,6 +237,10 @@ export default function WithdrawForm() {
                         onValueChange={field.onChange}
                         value={field.value}
                         disabled={!watchedChainId}
+                        disabled={
+                          !form.watch('currency') ||
+                          form.watch('currency') !== 'evm'
+                        }
                       >
                         <SelectTrigger className="w-full dark:bg-neutral-900 hover:dark:bg-neutral-900">
                           <SelectValue placeholder="Select a token" />
