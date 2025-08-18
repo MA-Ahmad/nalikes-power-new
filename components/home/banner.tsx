@@ -46,7 +46,7 @@ export default function Banner() {
             </div>
             <Link
               href="#"
-              className="items-center justify-center hidden sm:inline-flex lg:px-5 lg:py-2.5 px-3 py-1.5 rounded-lg text-white font-semibold text-base brand-pink-bg-gradient shadow-lg hover:opacity-90 transition-opacity"
+              className="items-center justify-center hidden sm:inline-flex lg:px-5 lg:py-2.5 px-3 py-1.5 rounded-lg text-white font-semibold text-base bg-gradient-brand-pink shadow-lg hover:opacity-90 transition-opacity"
             >
               View Event <ArrowRight className="ml-2 h-4 w-4" />
             </Link>

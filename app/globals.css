@@ -463,6 +463,6 @@ body {
   box-shadow: none !important;
 }
 
-.brand-pink-bg-gradient {
+.bg-gradient-brand-pink {
   background-image: linear-gradient(to right, #ee4ffb, #8d2f95);
 }

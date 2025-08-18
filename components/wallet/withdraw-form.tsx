@@ -250,7 +250,7 @@ export default function WithdrawForm() {
                                       {token.symbol}
                                     </span>
                                     {token.isNative && (
-                                      <span className="text-xs bg-blue-600 text-white px-1 py-0.5 rounded">
+                                      <span className="text-xs bg-brand-pink text-white px-1 py-0.5 rounded">
                                         Native
                                       </span>
                                     )}
@@ -342,7 +342,7 @@ export default function WithdrawForm() {
                     form.formState.isSubmitting ||
                     withdrawMutation.isPending
                   }
-                  className="w-full flex items-center justify-center gap-2 bg-[linear-gradient(to_right,_#6A2A97_0%,_#C753FD_53%,_#FA96FF_100%)] text-white font-semibold py-3 cursor-pointer"
+                  className="w-full flex items-center justify-center gap-2 bg-gradient-brand-pink text-white font-semibold py-3 cursor-pointer"
                 >
                   {withdrawMutation.isPending && (
                     <Loader2 className="w-4 h-4 animate-spin" />

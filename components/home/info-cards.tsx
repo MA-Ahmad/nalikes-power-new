@@ -72,7 +72,7 @@ const InfoCards = () => {
               </div>
             </div>
 
-            <button className="w-full brand-pink-bg-gradient text-white font-medium py-3 px-4 rounded-lg transition-colors flex items-center justify-center gap-2">
+            <button className="w-full bg-gradient-brand-pink text-white font-medium py-3 px-4 rounded-lg transition-colors flex items-center justify-center gap-2">
               Go to rewards
               <svg
                 className="w-4 h-4"
@@ -119,7 +119,7 @@ const InfoCards = () => {
             </div>
 
             <div className="flex gap-3">
-              <button className="brand-pink-bg-gradient text-white font-medium py-2 px-4 rounded-lg transition-colors">
+              <button className="bg-gradient-brand-pink text-white font-medium py-2 px-4 rounded-lg transition-colors">
                 View next mission
               </button>
               <span className="text-brand-pink bg-brand-pink/30 font-medium py-2 px-4 rounded-lg transition-colors">
