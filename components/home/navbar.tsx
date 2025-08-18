@@ -32,6 +32,7 @@ import { useAuthStore } from '@/store/auth'
 import { useAuthLogout } from '@/hooks/use-auth-logout'
 import { DepositWithdrawModal } from '../wallet/deposit-withdraw-modal'
 import { ChainBalanceSelector } from './balance-selector'
+import { UserDropdown } from './user-dropdown'
 
 export default function Navbar() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
@@ -40,9 +41,6 @@ export default function Navbar() {
   const [depositWithdrawModalOpen, setDepositWithdrawModalOpen] =
     useState(false)
 
-  const [copiedDeposit, setCopiedDeposit] = useState(false)
-  const copyTimeoutRef = useRef<number | null>(null)
-
   const { isAuthenticated, user, loading } = useAuthStore()
   const handleLogout = useAuthLogout()
 
@@ -50,28 +48,6 @@ export default function Navbar() {
     await handleLogout()
     setIsUserDropdownOpen(false)
   }
-
-  const handleCopyDepositAddress = async () => {
-    if (!user?.depositWalletAddresses) return
-    try {
-      await navigator.clipboard.writeText(
-        user.depositWalletAddresses.evm?.address || ''
-      )
-      setCopiedDeposit(true)
-      if (copyTimeoutRef.current) window.clearTimeout(copyTimeoutRef.current)
-      copyTimeoutRef.current = window.setTimeout(() => {
-        setCopiedDeposit(false)
-      }, 1500)
-    } catch (e) {
-      // no-op
-    }
-  }
-
-  useEffect(() => {
-    return () => {
-      if (copyTimeoutRef.current) window.clearTimeout(copyTimeoutRef.current)
-    }
-  }, [])
 
   return (
     <>
@@ -266,7 +242,8 @@ export default function Navbar() {
               <>
                 {isAuthenticated && user ? (
                   <div className="flex items-center gap-3">
-                    <DropdownMenu onOpenChange={setIsUserDropdownOpen}>
+                    <UserDropdown user={user} onLogout={onLogout} />
+                    {/* <DropdownMenu onOpenChange={setIsUserDropdownOpen}>
                       <DropdownMenuTrigger asChild>
                         <Button
                           variant="ghost"
@@ -285,34 +262,7 @@ export default function Navbar() {
                         <DropdownMenuItem disabled className="text-gray-400">
                           {user.email}
                         </DropdownMenuItem>
-                        {/* {user.depositWalletAddresses.evm?.address ? (
-                          <DropdownMenuItem
-                            className="hover:bg-neutral-800 focus:bg-neutral-800 cursor-pointer flex items-center justify-between"
-                            onSelect={(e) => {
-                              e.preventDefault()
-                              handleCopyDepositAddress()
-                            }}
-                          >
-                            <span
-                              className="truncate max-w-[240px]"
-                              title={user.depositWalletAddresses.evm?.address}
-                            >
-                              {user.depositWalletAddresses.evm?.address.slice(
-                                0,
-                                6
-                              )}
-                              ...
-                              {user.depositWalletAddresses.evm?.address.slice(
-                                -4
-                              )}
-                            </span>
-                            {copiedDeposit ? (
-                              <Check className="h-4 w-4 ml-2 text-green-500" />
-                            ) : (
-                              <Copy className="h-4 w-4 ml-2" />
-                            )}
-                          </DropdownMenuItem>
-                        ) : null} */}
+
                         <DropdownMenuSeparator />
                         <DropdownMenuItem
                           className="hover:bg-neutral-800 focus:bg-neutral-800 cursor-pointer"
@@ -322,7 +272,7 @@ export default function Navbar() {
                           Logout
                         </DropdownMenuItem>
                       </DropdownMenuContent>
-                    </DropdownMenu>
+                    </DropdownMenu> */}
                   </div>
                 ) : (
                   <div className="flex items-center gap-3">

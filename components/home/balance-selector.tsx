@@ -203,7 +203,7 @@ export function ChainBalanceSelector({
       {/* Plus Button */}
       <Button
         size="icon"
-        className="bg-[linear-gradient(to_right,_#6A2A97_0%,_#C753FD_53%,_#FA96FF_100%)] text-white rounded-md h-8 w-8 flex-shrink-0 cursor-pointer"
+        className="brand-pink-bg-gradient text-white rounded-md h-8 w-8 flex-shrink-0 cursor-pointer"
         onClick={() => setDepositWithdrawModalOpen(true)}
       >
         <Plus className="h-6 w-6" />

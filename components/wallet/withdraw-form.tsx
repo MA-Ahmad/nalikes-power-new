@@ -20,6 +20,7 @@ import { Button } from '@/components/ui/button'
 import { useWithdrawMutation } from '@/hooks/use-transactions'
 import toast from 'react-hot-toast'
 import { WithdrawRequest } from '@/lib/api/transactions'
+import { Loader2 } from 'lucide-react'
 
 // Dummy token data - will be replaced with CoinGecko API later
 const tokensByChain: Record<
@@ -337,11 +338,16 @@ export default function WithdrawForm() {
                 <Button
                   type="submit"
                   disabled={
-                    !form.formState.isValid || form.formState.isSubmitting
+                    !form.formState.isValid ||
+                    form.formState.isSubmitting ||
+                    withdrawMutation.isPending
                   }
-                  className="w-full bg-[linear-gradient(to_right,_#6A2A97_0%,_#C753FD_53%,_#FA96FF_100%)] text-white font-semibold py-3"
+                  className="w-full flex items-center justify-center gap-2 bg-[linear-gradient(to_right,_#6A2A97_0%,_#C753FD_53%,_#FA96FF_100%)] text-white font-semibold py-3 cursor-pointer"
                 >
-                  Withdraw
+                  {withdrawMutation.isPending && (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  )}
+                  <span>Withdraw</span>
                 </Button>
               </div>
               <p className="text-gray-400 text-xs">
@@ -352,23 +358,6 @@ export default function WithdrawForm() {
               </p>
             </div>
           </div>
-
-          {/* Debug info - remove in production */}
-          {/* <div className="bg-neutral-800 rounded-lg p-4">
-            <h3 className="text-sm font-medium text-gray-300 mb-2">
-              Form Data (Debug):
-            </h3>
-            <pre className="text-xs text-gray-400 bg-neutral-900 p-2 rounded overflow-auto">
-              {JSON.stringify(
-                {
-                  ...form.watch(),
-                  isValid: form.formState.isValid,
-                },
-                null,
-                2
-              )}
-            </pre>
-          </div> */}
         </form>
       </Form>
     </div>

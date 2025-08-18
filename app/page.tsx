@@ -8,6 +8,7 @@ import { useState } from 'react'
 import { ChatSidebar } from '@/components/home/chat/chat-sidebar'
 import newBanner from '@/public/images/new-banner.png'
 import Banner from '@/components/home/banner'
+import InfoCards from '@/components/home/info-cards'
 
 export default function Home() {
   const [isChatOpen, setIsChatOpen] = useState(false)
@@ -27,6 +28,8 @@ export default function Home() {
         >
           <div className="max-w-[1500px] mx-auto">
             <Banner />
+
+            <InfoCards />
 
             {/* Banner Image */}
             <div className="mb-8 mt-8">

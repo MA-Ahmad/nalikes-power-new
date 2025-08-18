@@ -365,6 +365,7 @@
   --sidebar-border: oklch(0.32 0 0);
   --sidebar-ring: oklch(0.72 0 0);
   --brand-purple: #6f6bff;
+  --brand-pink: #ee4ffb;
   --font-sans: Geist, sans-serif;
   --font-serif: Georgia, serif;
   --font-mono: Geist Mono, monospace;
@@ -418,6 +419,7 @@
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-brand-purple: var(--brand-purple);
+  --color-brand-pink: var(--brand-pink);
 
   --font-sans: var(--font-sans);
   --font-mono: var(--font-mono);
@@ -459,4 +461,8 @@ body {
 .rc-anchor {
   border-radius: 0.5rem !important;
   box-shadow: none !important;
+}
+
+.brand-pink-bg-gradient {
+  background-image: linear-gradient(to right, #ee4ffb, #8d2f95);
 }
