@@ -49,7 +49,7 @@ const InfoCards = () => {
           {/* Rewards Card */}
           <div className="bg-neutral-800 rounded-md p-6">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-12 h-12 bg-brand-pink/30 rounded-xl flex items-center justify-center">
+              <div className="w-12 h-12 bg-brand-pink/30 rounded-md flex items-center justify-center">
                 <svg
                   width="44"
                   height="41"
@@ -72,7 +72,7 @@ const InfoCards = () => {
               </div>
             </div>
 
-            <button className="w-full bg-gradient-brand-pink text-white font-medium py-3 px-4 rounded-lg transition-colors flex items-center justify-center gap-2">
+            <button className="w-full bg-gradient-brand-pink text-white font-medium py-3 px-4 rounded-md transition-colors flex items-center justify-center gap-2">
               Go to rewards
               <svg
                 className="w-4 h-4"
@@ -93,7 +93,7 @@ const InfoCards = () => {
           {/* Mission Card */}
           <div className="bg-neutral-800 rounded-md p-6">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-12 h-12 bg-brand-pink/30 rounded-xl flex items-center justify-center">
+              <div className="w-12 h-12 bg-brand-pink/30 rounded-md flex items-center justify-center">
                 <svg
                   width="43"
                   height="43"
@@ -119,10 +119,10 @@ const InfoCards = () => {
             </div>
 
             <div className="flex gap-3">
-              <button className="bg-gradient-brand-pink text-white font-medium py-2 px-4 rounded-lg transition-colors">
+              <button className="bg-gradient-brand-pink text-white font-medium py-2 px-4 rounded-md transition-colors">
                 View next mission
               </button>
-              <span className="text-brand-pink bg-brand-pink/30 font-medium py-2 px-4 rounded-lg transition-colors">
+              <span className="text-brand-pink bg-brand-pink/30 font-medium py-2 px-4 rounded-md transition-colors">
                 35 more mission lefts
               </span>
             </div>
