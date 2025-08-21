@@ -243,7 +243,7 @@ export default function WithdrawForm({
                       <Select
                         onValueChange={field.onChange}
                         value={field.value}
-                        disabled={!watchedChainId}
+                        // disabled={!watchedChainId}
                         disabled={
                           !form.watch('currency') ||
                           form.watch('currency') !== 'evm'
