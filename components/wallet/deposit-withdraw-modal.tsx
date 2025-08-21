@@ -322,7 +322,9 @@ export function DepositWithdrawModal({
               </div>
             )}
 
-            {activeAction.label === 'Withdraw' && <WithdrawForm />}
+            {activeAction.label === 'Withdraw' && (
+              <WithdrawForm setCurrency={setCurrency} />
+            )}
 
             {/* {activeAction.label === 'Withdraw' && (
               <div className="flex flex-col gap-4">

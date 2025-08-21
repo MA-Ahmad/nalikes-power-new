@@ -84,7 +84,11 @@ const chains = [
   { id: 11155111, name: 'Ethereum Sepolia', currency: 'evm' },
 ]
 
-export default function WithdrawForm() {
+export default function WithdrawForm({
+  setCurrency,
+}: {
+  setCurrency: (currency: string) => void
+}) {
   const form = useForm({
     mode: 'onChange',
     defaultValues: {
@@ -156,7 +160,10 @@ export default function WithdrawForm() {
                   <FormItem className="w-full">
                     <FormControl>
                       <Select
-                        onValueChange={field.onChange}
+                        onValueChange={(value) => {
+                          field.onChange(value)
+                          setCurrency(value)
+                        }}
                         value={field.value}
                       >
                         <SelectTrigger className="w-full dark:bg-neutral-900 hover:dark:bg-neutral-900">
