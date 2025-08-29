@@ -9,9 +9,11 @@ import { ChatSidebar } from '@/components/home/chat/chat-sidebar'
 import newBanner from '@/public/images/new-banner.png'
 import Banner from '@/components/home/banner'
 import InfoCards from '@/components/home/info-cards'
+import { useRouter } from 'next/navigation'
 
 export default function Home() {
   const [isChatOpen, setIsChatOpen] = useState(false)
+  const router = useRouter()
 
   const toggleChat = () => {
     setIsChatOpen(!isChatOpen)
@@ -47,8 +49,11 @@ export default function Home() {
                 alt="Banner"
                 width={1920}
                 height={600}
-                className="rounded-lg object-cover w-full h-full"
+                className="rounded-lg object-cover w-full h-full cursor-pointer"
                 placeholder="blur"
+                onClick={() => {
+                  router.push('/post-launch')
+                }}
               />
             </div>
 
