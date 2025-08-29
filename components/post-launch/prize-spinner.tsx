@@ -326,7 +326,10 @@ export default function ControlPanel({
           </div>
 
           {/* Demo Button */}
-          <div className="bg-slate-600/40 rounded-xl border border-slate-500/30 min-w-[9rem] px-4 py-2 h-[50px] flex justify-center items-center cursor-pointer">
+          <div
+            className="bg-slate-600/40 rounded-xl border border-slate-500/30 min-w-[9rem] px-4 py-2 h-[50px] flex justify-center items-center cursor-pointer"
+            onClick={isSpinning ? () => {} : () => handleSpin()}
+          >
             <div className="text-slate-300 font-semibold text-lg">Demo</div>
           </div>
         </div>
