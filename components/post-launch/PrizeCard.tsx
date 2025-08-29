@@ -36,7 +36,7 @@ export const PrizeCard = ({
         'shadow-card backdrop-blur-sm relative overflow-hidden',
         className,
         (isSelected || initialState) &&
-          'outline-solid outline-10 outline-black',
+          'outline-solid outline-10 outline-black z-20',
         allowAnimation && 'hover:-translate-y-1.5 transition-all duration-300'
       )}
       animate={

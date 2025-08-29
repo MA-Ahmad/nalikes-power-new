@@ -7,10 +7,12 @@ import PostLaunch from '@/components/post-launch'
 import { Button } from '@/components/ui/button'
 import { Volume2, VolumeOff } from 'lucide-react'
 import useSound from 'use-sound'
+import { useRouter } from 'next/navigation'
 
 export default function Home() {
   const [isChatOpen, setIsChatOpen] = useState(false)
   const [isSoundOn, setIsSoundOn] = useState(true)
+  const router = useRouter()
 
   const [play, { stop }] = useSound('/sounds/post-launch.mp3', {
     loop: true, // Set to true if you want the sound to loop
@@ -45,7 +47,10 @@ export default function Home() {
         >
           <div className="max-w-[1500px] mx-auto">
             <div className="flex items-center justify-between px-48">
-              <Button className="bg-neutral-600 text-white hover:bg-neutral-700 transition-all duration-300 ease-in-out cursor-pointer">
+              <Button
+                className="bg-neutral-600 text-white hover:bg-neutral-700 transition-all duration-300 ease-in-out cursor-pointer"
+                onClick={() => router.push('/')}
+              >
                 Back
               </Button>
 
