@@ -12,6 +12,7 @@ import {
   LogOut,
   Copy,
   Check,
+  Book,
 } from 'lucide-react'
 import Link from 'next/link'
 import { useEffect, useRef, useState } from 'react'
@@ -33,6 +34,8 @@ import { useAuthLogout } from '@/hooks/use-auth-logout'
 import { DepositWithdrawModal } from '../wallet/deposit-withdraw-modal'
 import { ChainBalanceSelector } from './balance-selector'
 import { UserDropdown } from './user-dropdown'
+import { cn } from '@/lib/utils'
+import { usePathname } from 'next/navigation'
 
 export default function Navbar() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
@@ -43,6 +46,7 @@ export default function Navbar() {
 
   const { isAuthenticated, user, loading } = useAuthStore()
   const handleLogout = useAuthLogout()
+  const pathname = usePathname()
 
   const onLogout = async () => {
     await handleLogout()
@@ -115,6 +119,17 @@ export default function Navbar() {
                 >
                   <GiftBoxIcon className="h-5 w-5 text-white" />
                   <span>Rewards</span>
+                </Link>
+
+                <Link
+                  href="/blog"
+                  className={cn(
+                    'flex items-center gap-3 px-2 py-2 text-white hover:bg-neutral-800 rounded-md transition-colors',
+                    pathname === '/blog' && 'bg-neutral-800'
+                  )}
+                >
+                  <Book className="h-5 w-5 text-white" />
+                  <span>Blog</span>
                 </Link>
 
                 {/* Mobile Auth Section */}
@@ -225,6 +240,17 @@ export default function Navbar() {
           >
             <GiftBoxIcon className="h-4 w-4" />
             Rewards
+          </Link>
+
+          <Link
+            href="/blog"
+            className={cn(
+              'flex items-center gap-2 text-white hover:bg-neutral-800 px-3 py-1.5 rounded-md transition-colors',
+              pathname === '/blog' && 'bg-neutral-800'
+            )}
+          >
+            <Book className="h-4 w-4 text-white" />
+            <span>Blog</span>
           </Link>
         </div>
 
