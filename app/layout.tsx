@@ -5,6 +5,7 @@ import { ThemeProvider } from '@/components/theme-provider'
 import { QueryProvider } from '@/context/query-provider'
 import { AuthProvider } from '@/context/auth-provider'
 import { Toaster } from 'react-hot-toast'
+import { SafariCookieFix } from '@/components/safari-cookie-fix'
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -32,6 +33,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        <SafariCookieFix />
         <QueryProvider>
           <AuthProvider>
             <ThemeProvider
