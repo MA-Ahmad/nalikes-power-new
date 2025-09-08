@@ -2,19 +2,22 @@ import axios from 'axios'
 import { toast } from 'react-hot-toast'
 
 // Better API URL handling
-const getApiUrl = () => {
-  const envUrl = process.env.NEXT_PUBLIC_API_URL
+// const getApiUrl = () => {
+//   const envUrl = process.env.NEXT_PUBLIC_API_URL
 
-  // If environment variable is set, use it as-is (should be full URL with protocol)
-  if (envUrl) {
-    return envUrl
-  }
+//   // If environment variable is set, use it as-is (should be full URL with protocol)
+//   if (envUrl) {
+//     return envUrl
+//   }
 
-  // Development fallback
-  return 'http://localhost:3000'
-}
+//   // Development fallback
+//   return 'http://localhost:3000'
+// }
 
-const baseUrl = getApiUrl()
+// const baseUrl = getApiUrl()
+
+// Use relative path for API calls since Next.js rewrites will handle the proxying
+const baseUrl = '/api'
 
 export const api = axios.create({
   baseURL: baseUrl,
