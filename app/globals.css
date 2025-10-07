@@ -384,6 +384,15 @@
   --shadow-xl:
     0px 1px 2px 0px hsl(0 0% 0% / 0.18), 0px 8px 10px -1px hsl(0 0% 0% / 0.18);
   --shadow-2xl: 0px 1px 2px 0px hsl(0 0% 0% / 0.45);
+
+  /* Custom colors */
+  --color-green-base: #88ce4d;
+  --color-green-light: #bbf788;
+  --color-yellow-base: #fec61c;
+  --color-yellow-light: #fedf81;
+  --color-brand-neutral: #a5a9c1;
+  --color-purple-base: #96a3f6;
+  --color-pink-light: #f375fc;
 }
 
 @theme inline {
@@ -439,6 +448,15 @@
   --shadow-lg: var(--shadow-lg);
   --shadow-xl: var(--shadow-xl);
   --shadow-2xl: var(--shadow-2xl);
+
+  /* Custom colors */
+  --color-green-base: var(--color-green-base);
+  --color-green-light: var(--color-green-light);
+  --color-yellow-base: var(--color-yellow-base);
+  --color-yellow-light: var(--color-yellow-light);
+  --color-brand-neutral: var(--color-brand-neutral);
+  --color-purple-base: var(--color-purple-base);
+  --color-pink-light: var(--color-pink-light);
 }
 
 body {
@@ -504,12 +522,38 @@ body {
   background: linear-gradient(
     90deg,
     #ed1d4900 2%,
-    #f892ff 54.57%,
+    #f375fc 54.57%,
     #ed1d4900 99.99%
   );
   bottom: 0;
   content: '';
   height: 1px;
+  left: 0;
+  opacity: 1;
+  position: absolute;
+  transition: opacity 0.1s ease-in-out;
+  width: 100%;
+}
+
+.active-tab.active-tab-fast:after {
+  background: linear-gradient(
+    90deg,
+    #ed1d4900 2%,
+    #f375fc 54.57%,
+    #ed1d4900 88.99%
+  );
+}
+
+.control-boxes:after {
+  background: linear-gradient(
+    90deg,
+    #ed1d4900 8%,
+    #f375fc 54.57%,
+    #ed1d4900 88.99%
+  );
+  bottom: 0;
+  content: '';
+  height: 0.02rem;
   left: 0;
   opacity: 1;
   position: absolute;
@@ -655,7 +699,7 @@ body {
 
 /* Glow Lamp */
 
-.prize-spinner-container:before {
+/* .prize-spinner-container:before {
   background: linear-gradient(90deg, #43536d00, #43536d, #43536d00);
   content: '';
   height: 1px;
@@ -677,7 +721,7 @@ body {
   transform: translate(-50%);
   width: 100%;
   top: 0;
-}
+} */
 
 .glow-lamp {
   background: linear-gradient(270deg, #0056bc, #4a9dff 49.91%, #0056bc);
@@ -741,4 +785,19 @@ body {
     linear-gradient(#fff 0 0);
   mask-composite: exclude; /* 'xor' equivalent */
   padding: 10px;
+}
+
+/* globals.css */
+.cut-corners {
+  clip-path: path(
+    'M 20 0 
+     H calc(100% - 0) 
+     Q 100% 0 100% 20 
+     V calc(100% - 20) 
+     Q 100% 100% calc(100% - 20) 100% 
+     H 20 
+     Q 0 100% 0 calc(100% - 20) 
+     V 20 
+     Q 0 0 20 0 Z'
+  );
 }

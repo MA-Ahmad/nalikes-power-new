@@ -53,9 +53,57 @@ export default function Navbar() {
     setIsUserDropdownOpen(false)
   }
 
+  const valuePageYOffset = 2
+  const [isScrolledDown, setIsScrolledDown] = useState(false)
+  const [isOpen, setIsOpen] = useState(false)
+  // const { isMobile } = useScreenSize()
+
+  const toggleMenu = () => {
+    setIsOpen(!isOpen)
+  }
+
+  useEffect(() => {
+    // Function to toggle body scroll
+    const toggleBodyScroll = (disable: boolean) => {
+      if (disable) {
+        document.body.style.overflow = 'hidden'
+      } else {
+        document.body.style.overflow = ''
+      }
+    }
+
+    // Apply the effect when isOpen changes
+    toggleBodyScroll(isOpen)
+
+    // Cleanup function to re-enable scrolling when component unmounts
+    return () => {
+      document.body.style.overflow = ''
+    }
+  }, [isOpen])
+
+  const handleScroll = () => {
+    const position = window.pageYOffset
+    setIsScrolledDown(position > valuePageYOffset ? true : false)
+  }
+
+  useEffect(() => {
+    window.addEventListener('scroll', handleScroll)
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll)
+    }
+  }, [])
+
   return (
     <>
-      <header className="fixed top-0 left-0 right-0 z-50 flex h-16 w-full shrink-0 items-center justify-between bg-sidebar px-4 md:px-6">
+      <header
+        className={cn(
+          'fixed top-0 left-0 right-0 z-50 flex h-16 w-full shrink-0 items-center justify-between px-4 md:px-6 z-[5555]',
+          isScrolledDown &&
+            'border-b backdrop-blur-md backdrop-brightness-75 top-0 border-white/[0.1]'
+        )}
+      >
+        {/* bg-sidebar */}
         {/* Mobile Menu */}
         <div className="flex lg:hidden items-center gap-3">
           <Sheet>
@@ -115,13 +163,13 @@ export default function Navbar() {
 
                 <Link
                   href="#"
-                  className="flex items-center gap-3 px-2 py-2 text-white hover:bg-neutral-800 rounded-md transition-colors"
+                  className="flex items-center gap-3 px-2 py-2 text-white hover:bg-white/20 rounded-md transition-colors"
                 >
-                  <GiftBoxIcon className="h-5 w-5 text-white" />
+                  {/* <GiftBoxIcon className="h-5 w-5 text-white" /> */}
                   <span>Rewards</span>
                 </Link>
 
-                <Link
+                {/* <Link
                   href="/blog"
                   className={cn(
                     'flex items-center gap-3 px-2 py-2 text-white hover:bg-neutral-800 rounded-md transition-colors',
@@ -130,7 +178,7 @@ export default function Navbar() {
                 >
                   <Book className="h-5 w-5 text-white" />
                   <span>Blog</span>
-                </Link>
+                </Link> */}
 
                 {/* Mobile Auth Section */}
                 <div className="flex flex-col gap-2 mt-4">
@@ -206,9 +254,9 @@ export default function Navbar() {
             <DropdownMenuTrigger asChild>
               <Button
                 variant="ghost"
-                className="text-white flex hover:bg-neutral-700 items-center gap-2"
+                className="text-white flex hover:!bg-white/10 items-center gap-2"
               >
-                <Gamepad2 className="w-4 h-4" />
+                {/* <Gamepad2 className="w-4 h-4" /> */}
                 Games
                 <ChevronDown
                   className={`h-4 w-4 transition-transform duration-200 ${
@@ -236,13 +284,13 @@ export default function Navbar() {
           {/* Rewards Link */}
           <Link
             href="#"
-            className="flex items-center gap-2 text-white hover:bg-neutral-800 px-3 py-1.5 rounded-md transition-colors"
+            className="flex items-center gap-2 text-white hover:bg-white/10 px-3 py-1.5 rounded-md transition-colors"
           >
-            <GiftBoxIcon className="h-4 w-4" />
+            {/* <GiftBoxIcon className="h-4 w-4" /> */}
             Rewards
           </Link>
 
-          <Link
+          {/* <Link
             href="/blog"
             className={cn(
               'flex items-center gap-2 text-white hover:bg-neutral-800 px-3 py-1.5 rounded-md transition-colors',
@@ -251,7 +299,7 @@ export default function Navbar() {
           >
             <Book className="h-4 w-4 text-white" />
             <span>Blog</span>
-          </Link>
+          </Link> */}
         </div>
 
         {/* Right Section - Auth */}
@@ -302,12 +350,77 @@ export default function Navbar() {
                   </div>
                 ) : (
                   <div className="flex items-center gap-3">
-                    <Button
+                    {/* <Button
                       className="hidden sm:flex border-gray-700 text-white bg-neutral-800 hover:bg-neutral-700 hover:text-white"
                       onClick={() => setAuthModalOpen(true)}
                     >
                       Sign In
-                    </Button>
+                    </Button> */}
+
+                    <div
+                      className="relative inline-block w-full min-w-[105px] px-3 py-2 cursor-pointer"
+                      onClick={() => setAuthModalOpen(true)}
+                    >
+                      <svg
+                        // width="125"
+                        // height="48"
+                        viewBox="0 0 125 48"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="absolute inset-0 w-full h-full"
+                        preserveAspectRatio="none"
+                      >
+                        <foreignObject x="-60" y="-60" width="245" height="168">
+                          <div
+                            // @ts-ignore
+                            xmlns="http://www.w3.org/1999/xhtml"
+                            style={{
+                              backdropFilter: 'blur(30px)',
+                              clipPath: 'url(#bgblur_0_5013_5420_clip_path)',
+                              height: '100%',
+                              width: '100%',
+                            }}
+                          ></div>
+                        </foreignObject>
+                        <g data-figma-bg-blur-radius="60">
+                          <path
+                            d="M7.13595 1.5491L1.97639 6.21335C0.718034 7.3509 0 8.96794 0 10.6642V42C0 45.3137 2.68629 48 6 48H113.84C115.327 48 116.761 47.448 117.864 46.4509L123.024 41.7867C124.282 40.6491 125 39.0321 125 37.3358V6C125 2.68629 122.314 0 119 0H11.1596C9.67275 0 8.2389 0.552038 7.13595 1.5491Z"
+                            fill="url(#paint0_linear_5013_5420)"
+                          />
+                          <path
+                            d="M11.1592 0.5H119C122.038 0.5 124.5 2.96243 124.5 6V37.3359C124.5 38.8908 123.842 40.3733 122.688 41.416L117.528 46.0801C116.517 46.9938 115.203 47.4999 113.841 47.5H6C2.96243 47.5 0.5 45.0376 0.5 42V10.6641C0.500053 9.10918 1.15808 7.6267 2.31152 6.58398L7.47168 1.91992C8.48258 1.00619 9.79653 0.500096 11.1592 0.5Z"
+                            stroke="#6F6BFF"
+                            stroke-opacity="0.6"
+                          />
+                        </g>
+                        <defs>
+                          <clipPath
+                            id="bgblur_0_5013_5420_clip_path"
+                            transform="translate(60 60)"
+                          >
+                            <path d="M7.13595 1.5491L1.97639 6.21335C0.718034 7.3509 0 8.96794 0 10.6642V42C0 45.3137 2.68629 48 6 48H113.84C115.327 48 116.761 47.448 117.864 46.4509L123.024 41.7867C124.282 40.6491 125 39.0321 125 37.3358V6C125 2.68629 122.314 0 119 0H11.1596C9.67275 0 8.2389 0.552038 7.13595 1.5491Z" />
+                          </clipPath>
+                          <linearGradient
+                            id="paint0_linear_5013_5420"
+                            x1="-20.5357"
+                            y1="0.461856"
+                            x2="-20.5357"
+                            y2="48.4948"
+                            gradientUnits="userSpaceOnUse"
+                          >
+                            <stop stop-color="#6F6BFF" stop-opacity="0.2" />
+                            <stop
+                              offset="1"
+                              stop-color="#6F6BFF"
+                              stop-opacity="0"
+                            />
+                          </linearGradient>
+                        </defs>
+                      </svg>
+                      <span className="relative text-purple-base font-semibold whitespace-nowrap flex items-center justify-center">
+                        Sign in
+                      </span>
+                    </div>
                   </div>
                 )}
               </>

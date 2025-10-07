@@ -1,4 +1,9 @@
+'use client'
+
 import { cn } from '@/lib/utils'
+import { motion, AnimatePresence } from 'framer-motion'
+import CountUp from 'react-countup'
+import { useEffect, useState } from 'react'
 
 interface PrizeCardProps {
   image: string
@@ -9,6 +14,7 @@ interface PrizeCardProps {
   isSelected?: boolean
   scaleImage?: boolean
   allowAnimation?: boolean
+  initialState?: boolean
 }
 
 export const PrizeCard = ({
@@ -16,21 +22,44 @@ export const PrizeCard = ({
   amount,
   text,
   off,
+  initialState,
   className,
   isSelected,
   scaleImage,
   allowAnimation,
 }: PrizeCardProps) => {
   return (
-    <div
+    <motion.div
       className={cn(
         'prize-card flex-shrink-0 w-32 h-40 sm:w-36 sm:h-44 md:w-40 md:h-48 group',
         'bg-gradient-card rounded-[15px]',
         'shadow-card backdrop-blur-sm relative overflow-hidden',
         className,
-        isSelected && 'outline-solid outline-10 outline-black',
+        (isSelected || initialState) &&
+          'outline-solid outline-10 outline-black z-20',
         allowAnimation && 'hover:-translate-y-1.5 transition-all duration-300'
       )}
+      animate={
+        isSelected
+          ? {
+              scale: [1, 1.15, 0.95, 1.1, 0.97, 1],
+            }
+          : {
+              scale: 1, // smoothly return to normal
+            }
+      }
+      transition={
+        isSelected
+          ? {
+              duration: 1.8,
+              times: [0, 0.25, 0.45, 0.65, 0.85, 1],
+              ease: 'easeInOut',
+            }
+          : {
+              duration: 0.4, // smoother shrink back
+              ease: 'easeOut',
+            }
+      }
     >
       {off && (
         <div className="absolute top-2 right-2">
@@ -41,7 +70,6 @@ export const PrizeCard = ({
       {/* Content */}
       <div className="relative z-10 flex flex-col items-center justify-evenly h-full p-4 space-y-3">
         {/* Prize Image */}
-
         <div className="w-24 h-24 flex items-center justify-center">
           <img
             src={image}
@@ -65,12 +93,47 @@ export const PrizeCard = ({
 
         {/* Amount Text */}
         <div className="text-center">
-          <div className="text-lg font-bold text-foreground">$ {amount}</div>
+          <div className="text-lg font-bold text-foreground">
+            $ <AmountCounter isSelected={isSelected} amount={Number(amount)} />
+          </div>
         </div>
       </div>
 
       {/* Subtle border glow */}
       <div className="absolute inset-0 rounded-lg ring-1 ring-gaming-glow/20" />
-    </div>
+    </motion.div>
+  )
+}
+
+export default function AmountCounter({
+  isSelected,
+  amount,
+}: {
+  isSelected?: boolean
+  amount: number
+}) {
+  const [showCount, setShowCount] = useState(false)
+
+  useEffect(() => {
+    if (isSelected) {
+      setShowCount(true)
+
+      // hide again after 2s (so it can reset next time)
+      const timer = setTimeout(() => {
+        setShowCount(false)
+      }, 1000)
+
+      return () => clearTimeout(timer)
+    }
+  }, [isSelected])
+
+  return (
+    <>
+      {showCount ? (
+        <CountUp key={amount + Date.now()} end={Number(amount)} duration={1} />
+      ) : (
+        amount
+      )}
+    </>
   )
 }
