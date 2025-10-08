@@ -169,6 +169,13 @@ export default function Navbar() {
                   <span>Rewards</span>
                 </Link>
 
+                <Link
+                  href="/mystery-box"
+                  className="flex items-center gap-3 px-2 py-2 text-white hover:bg-white/20 rounded-md transition-colors"
+                >
+                  <span>Mystery Box</span>
+                </Link>
+
                 {/* <Link
                   href="/blog"
                   className={cn(
@@ -288,6 +295,13 @@ export default function Navbar() {
           >
             {/* <GiftBoxIcon className="h-4 w-4" /> */}
             Rewards
+          </Link>
+
+          <Link
+            href="/mystery-box"
+            className="flex items-center gap-2 text-white hover:bg-white/10 px-3 py-1.5 rounded-md transition-colors"
+          >
+            Mystery Box
           </Link>
 
           {/* <Link
