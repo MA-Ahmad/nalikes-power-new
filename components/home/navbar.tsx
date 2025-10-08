@@ -241,7 +241,6 @@ export default function Navbar() {
 
         {/* Desktop Left Section */}
         <div className="hidden lg:flex items-center gap-6">
-          {/* Logo */}
           <Link href="/" className="flex items-center justify-center gap-2">
             <Image
               src="/logo.svg"
