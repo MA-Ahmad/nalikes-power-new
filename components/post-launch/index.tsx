@@ -17,14 +17,14 @@ interface Prize {
 
 const prizes: Prize[] = [
   {
-    id: '2',
+    id: '1',
     image: bitcoinImage.src,
     text: 'Lamborghini Cuntach',
     amount: '1000',
     off: '10%',
   },
   {
-    id: '1',
+    id: '2',
     image: bitcoinImage.src,
     text: 'Lamborghini Cuntach',
     amount: '10,000',
@@ -48,8 +48,8 @@ const prizes: Prize[] = [
     id: '5',
     image: jacketImage.src,
     text: 'Lamborghini Cuntach',
-    amount: '500',
-    off: '10%',
+    amount: '2,700',
+    off: '40%',
   },
   {
     id: '6',

@@ -20,17 +20,17 @@ interface Prize {
 
 const prizes: Prize[] = [
   { id: '1', image: bitcoinImage.src, amount: '10000' },
-  { id: '2', image: carImage.src, amount: '2000' },
+  { id: '2', image: carImage.src, amount: '3000' },
   { id: '3', image: jacketImage.src, amount: '5000' },
-  { id: '4', image: stoneImage.src, amount: '250' },
+  { id: '4', image: carImage.src, amount: '250' },
   { id: '5', image: shoesImage.src, amount: '500' },
   { id: '6', image: bitcoinImage.src, amount: '750' },
-  { id: '7', image: carImage.src, amount: '1000' },
+  { id: '7', image: carImage.src, amount: '2000' },
   { id: '8', image: jacketImage.src, amount: '2500' },
   { id: '9', image: stoneImage.src, amount: '500' },
   { id: '10', image: stoneImage.src, amount: '750' },
-  { id: '11', image: shoesImage.src, amount: '1000' },
-  { id: '12', image: bitcoinImage.src, amount: '2500' },
+  { id: '11', image: carImage.src, amount: '1500' },
+  { id: '12', image: carImage.src, amount: '3500' },
 ]
 
 const PrizeSpinner = () => {
