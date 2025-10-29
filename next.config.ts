@@ -1,4 +1,4 @@
-import type { NextConfig } from 'next'
+import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   /* config options here */
@@ -8,37 +8,40 @@ const nextConfig: NextConfig = {
   async rewrites() {
     return [
       {
-        source: '/api/:path*',
+        source: "/api/:path*",
         destination:
-          'https://powerblock-backend-production.up.railway.app/api/:path*',
+          "https://powerblock-backend-production.up.railway.app/api/:path*",
+        // destination:
+        //   'http://localhost:3300/api/:path*',
       },
-    ]
+    ];
   },
   async headers() {
     return [
       {
-        source: '/api/(.*)',
+        source: "/api/(.*)",
         headers: [
           {
-            key: 'Access-Control-Allow-Credentials',
-            value: 'true',
+            key: "Access-Control-Allow-Credentials",
+            value: "true",
           },
           {
-            key: 'Access-Control-Allow-Origin',
-            value: 'https://nalikes-powerblock-frontend.vercel.app',
+            key: "Access-Control-Allow-Origin",
+            // value: 'http://localhost:3000',
+            value: "https://nalikes-powerblock-frontend.vercel.app",
           },
           {
-            key: 'Access-Control-Allow-Methods',
-            value: 'GET, POST, PUT, DELETE, OPTIONS',
+            key: "Access-Control-Allow-Methods",
+            value: "GET, POST, PUT, DELETE, OPTIONS",
           },
           {
-            key: 'Access-Control-Allow-Headers',
-            value: 'Content-Type, Authorization, Cookie',
+            key: "Access-Control-Allow-Headers",
+            value: "Content-Type, Authorization, Cookie",
           },
         ],
       },
-    ]
+    ];
   },
-}
+};
 
-export default nextConfig
+export default nextConfig;
