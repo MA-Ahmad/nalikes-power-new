@@ -100,7 +100,6 @@ export default function Draws({
           </svg>
 
           <div className="relative h-full">
-            {/* <LeftBoxContent /> */}
             <LeftBoxCreateTicket />
           </div>
         </div>
