@@ -10,7 +10,7 @@ import useSound from 'use-sound'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 
-export default function Home() {
+export default function MysteryBoxPage() {
   const [isChatOpen, setIsChatOpen] = useState(false)
   const [isSoundOn, setIsSoundOn] = useState(true)
   const router = useRouter()

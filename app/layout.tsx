@@ -5,6 +5,14 @@ import { ThemeProvider } from '@/components/theme-provider'
 import { QueryProvider } from '@/context/query-provider'
 import { AuthProvider } from '@/context/auth-provider'
 import { Toaster } from 'react-hot-toast'
+import {
+  aeonikBold,
+  aeonikLight,
+  aeonikMedium,
+  aeonikMonoBlack,
+  aeonikMonoRegular,
+  aeonikRegular,
+} from './fonts'
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -30,7 +38,8 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        // className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${aeonikRegular.variable} ${aeonikBold.variable} ${aeonikLight.variable} ${aeonikMedium.variable} ${aeonikMonoRegular.variable} ${aeonikMonoBlack.variable}`}
       >
         <QueryProvider>
           <AuthProvider>
