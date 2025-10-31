@@ -373,10 +373,19 @@ export const ButtonGreenOld = ({
   )
 }
 
-export const ButtonGreen = ({ children }: { children: React.ReactNode }) => {
+export const ButtonGreen = ({
+  children,
+  onClick,
+}: {
+  children: React.ReactNode
+  onClick?: () => void
+}) => {
   return (
     <div className="flex items-center gap-3">
-      <div className="relative inline-block w-full min-w-[80px] px-3 py-2 cursor-pointer cut-corner-button">
+      <div
+        className="relative inline-block w-full min-w-[80px] px-3 py-2 cursor-pointer cut-corner-button"
+        onClick={onClick}
+      >
         <svg
           // width="125"
           // height="48"

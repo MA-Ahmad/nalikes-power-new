@@ -128,6 +128,36 @@ const ShowTickets = ({
     setTickets(tickets.filter((t) => t.id !== ticket.id))
   }
 
+  const generateRandomTicket = () => {
+    const allCharacters = [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      'A',
+      'B',
+      'C',
+      'D',
+      'E',
+      'F',
+    ]
+    const shuffled = [...allCharacters].sort(() => Math.random() - 0.5)
+    return shuffled.slice(0, 7)
+  }
+
+  const handleLuckyDip = (ticket: { id: string }) => {
+    const randomData = generateRandomTicket()
+    setTickets(
+      tickets.map((t) => (t.id === ticket.id ? { ...t, data: randomData } : t))
+    )
+  }
+
   return (
     <div className="absolute inset-0 flex flex-col text-white justify-between z-10 p-[0.975rem] px-3">
       <div className="w-full">
@@ -231,7 +261,7 @@ const ShowTickets = ({
                     Edit
                   </span>
                 </ButtonDarkPurple>
-                <ButtonGreen>
+                <ButtonGreen onClick={() => handleLuckyDip(ticket)}>
                   <span className="relative text-[#9CF350] font-semibold whitespace-nowrap flex items-center justify-center">
                     Lucky Dip
                   </span>
@@ -358,6 +388,38 @@ const CreateTicket = ({
     setTicket({ id: '', data: [] })
   }
 
+  const generateRandomTicket = () => {
+    const allCharacters = [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      'A',
+      'B',
+      'C',
+      'D',
+      'E',
+      'F',
+    ]
+    const shuffled = [...allCharacters].sort(() => Math.random() - 0.5)
+    return shuffled.slice(0, 7)
+  }
+
+  const handleLuckyDip = () => {
+    const randomData = generateRandomTicket()
+    const newId = selectedTicket ? ticket.id : ticket.id || crypto.randomUUID()
+    setTicket({
+      id: newId,
+      data: randomData,
+    })
+  }
+
   console.log('ticket ===>', ticket)
 
   const isSelected0 = ticket.data.includes(0)
@@ -467,7 +529,7 @@ const CreateTicket = ({
       </div>
 
       <div className="flex items-center justify-between w-full">
-        <ButtonGreen>
+        <ButtonGreen onClick={() => handleLuckyDip()}>
           <span className="relative text-[#9CF350] font-semibold whitespace-nowrap flex items-center justify-center">
             Lucky Dip
           </span>

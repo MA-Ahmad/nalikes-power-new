@@ -3,13 +3,7 @@
 import Image from 'next/image'
 import { cn } from '@/lib/utils'
 import JackpotRightBox from './jackpot/jackpot-screen'
-import {
-  ButtonDarkPurple,
-  ButtonGreen,
-  ButtonLightPink,
-  ButtonLightPurple,
-  ButtonPink,
-} from './buttons'
+import { ButtonDarkPurple, ButtonLightPurple, ButtonPink } from './buttons'
 import { ArrowLeft, ArrowRight, ArrowUp } from 'lucide-react'
 import { FireGlowBox, GlowBox, GrayGlowBox } from '../ui/glow-box'
 import { OutlinedText } from '../ui/outlined-text'
@@ -18,8 +12,8 @@ import { TicketContent, TicketSvg } from './tickets'
 import { useState } from 'react'
 import { HowToPlay } from './how-to-play'
 import { GlowCheckbox } from '../ui/glow-checkbox'
-import JackpotDtawsBox from '../draws/jackpot-screen'
 import TicketBoughtScreen from './ticket-bough-screen'
+import JackpotDrawBox from './jackpot/jackpot-draw-box'
 
 export default function BitcoinGame() {
   const [screen, setScreen] = useState('jackpot')
@@ -148,7 +142,7 @@ export default function BitcoinGame() {
 
           {screen === 'jackpot' && <JackpotRightBox setScreen={setScreen} />}
           {screen === 'how-to-play' && <HowToPlay setScreen={setScreen} />}
-          {screen === 'draws' && <JackpotDtawsBox />}
+          {screen === 'draws' && <JackpotDrawBox />}
           {screen === 'ticket-bought' && (
             <TicketBoughtScreen setScreen={setScreen} />
           )}
