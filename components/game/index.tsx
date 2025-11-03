@@ -17,12 +17,17 @@ import JackpotDrawBox from './jackpot/jackpot-draw-box'
 
 export default function BitcoinGame() {
   const [screen, setScreen] = useState('jackpot')
+  const [tickets, setTickets] = useState<any[]>([])
 
   return (
     <div className="relative w-full h-full max-w-[1450px] mx-auto">
       <div
         className="flex items-center gap-2 mb-10 w-full cursor-pointer absolute -top-[1.8rem]"
-        onClick={() => setScreen('jackpot')}
+        onClick={() => {
+          if (screen === 'reveal') setScreen('reveal-screen')
+          else if (screen === 'ticket-bought') setScreen('draws')
+          else setScreen('jackpot')
+        }}
       >
         <ArrowLeft className="w-6 h-6" />
         <h2 className="text-xl font-bold text-white uppercase">Go Back</h2>
@@ -36,7 +41,11 @@ export default function BitcoinGame() {
             <TicketSvg />
 
             <div className="relative h-full">
-              <TicketContent setScreen={setScreen} />
+              <TicketContent
+                setScreen={setScreen}
+                tickets={tickets}
+                setTickets={setTickets}
+              />
             </div>
           </div>
         )}
@@ -146,7 +155,9 @@ export default function BitcoinGame() {
           {screen === 'ticket-bought' && (
             <TicketBoughtScreen setScreen={setScreen} />
           )}
-          {screen === 'tickets' && <MyTickets />}
+          {screen === 'tickets' && (
+            <MyTickets tickets={tickets} setTickets={setTickets} />
+          )}
 
           {screen === 'reveal-screen' && (
             <RevealResults setScreen={setScreen} />
@@ -158,7 +169,13 @@ export default function BitcoinGame() {
   )
 }
 
-const MyTickets = () => {
+const MyTickets = ({
+  tickets,
+  setTickets,
+}: {
+  tickets: any[]
+  setTickets: (tickets: any[]) => void
+}) => {
   return (
     <div className="absolute inset-0 flex flex-col justify-between text-white z-10 p-[0.975rem] px-6">
       <div className="mt-2 flex flex-col gap-4 mx-10 mb-1 overflow-hidden">
@@ -211,11 +228,11 @@ const MyTickets = () => {
         >
           <div className="flex flex-col gap-4 w-full">
             <div className="flex items-center w-full p-4">
-              <div className="text-[#B19CCE] flex items-center gap-2 basis-1/5">
+              <div className="text-[#B19CCE] flex items-center gap-2 basis-[15%]">
                 Date
                 <ArrowUp className="w-4 h-4 text-[#B19CCE]" />
               </div>
-              <div className="text-[#B19CCE] flex items-center gap-2 basis-2/5">
+              <div className="text-[#B19CCE] flex items-center gap-2 basis-[50%]">
                 Ticket
                 <ArrowUp className="w-4 h-4 text-[#B19CCE]" />
               </div>
@@ -223,7 +240,7 @@ const MyTickets = () => {
                 Event
                 <ArrowUp className="w-4 h-4 text-[#B19CCE]" />
               </div>
-              <div className="text-[#B19CCE] flex items-center gap-2 basis-1/5">
+              <div className="text-[#B19CCE] flex items-center gap-2 basis-[15%]">
                 Result
                 <ArrowUp className="w-4 h-4 text-[#B19CCE]" />
               </div>
@@ -234,18 +251,18 @@ const MyTickets = () => {
             </div>
             {/* Want to scroll this part only */}
             <div className="flex flex-col gap-2 max-h-[370px] overflow-y-auto">
-              {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map((item, index) => (
+              {tickets.map((ticket, index) => (
                 <div
                   className={cn(
                     'flex items-center p-4 rounded-xl',
                     index % 2 === 0 ? 'bg-[#261d45]' : ''
                   )}
                 >
-                  <div className="flex items-center gap-2 basis-1/5">
+                  <div className="flex items-center gap-2 basis-[15%]">
                     29 April
                   </div>
-                  <div className="flex items-center gap-1 basis-2/5">
-                    {[1, 2, 3, 4, 5].map((item) => (
+                  <div className="flex items-center gap-1 basis-[50%]">
+                    {ticket.data.map((item: any) => (
                       <div className="w-8 h-8 rounded-lg bg-white/10 border border-[#6C7793] flex items-center justify-center">
                         {item}
                       </div>
@@ -274,7 +291,7 @@ const MyTickets = () => {
                   <div className="flex items-center gap-2 basis-1/5">
                     0x234..234
                   </div>
-                  <div className="flex items-center gap-2 basis-1/5">WIN</div>
+                  <div className="flex items-center gap-2 basis-[15%]">WIN</div>
                   <div className="flex items-center gap-2 basis-1/5">
                     $1465
                     <Image
@@ -589,7 +606,7 @@ const GameWrapper = () => {
         </div>
       </div>
 
-      <div className="flex flex-col gap-4 mb-6 z-10 p-[0.975rem] px-6 mt-12 w-full">
+      <div className="flex flex-col gap-4 mb-6 z-10 p-[0.975rem] px-6 mt-6 w-full">
         <div className="w-full h-[1px] bg-white/10 px-20" />
         <div className="flex items-center w-full justify-between gap-2">
           <span className="text-sm font-aeonik-bold text-neutral-400">

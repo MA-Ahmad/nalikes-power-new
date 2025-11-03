@@ -14,7 +14,7 @@ const TicketBoughtScreen = ({
 }) => {
   return (
     <div className="absolute inset-0 flex flex-col text-white z-10 p-[0.975rem] px-6">
-      <div className="mt-16 flex flex-col gap-4 mb-1 overflow-hidden justify-center w-full items-center mb-16">
+      <div className="mt-16 flex flex-col gap-4 mb-1 overflow-hidden justify-center w-full items-center">
         <div className="flex flex-col items-center justify-center gap-6">
           <h2 className="text-5xl font-bold text-[#EE4FFB] uppercase">
             Tickets Bought

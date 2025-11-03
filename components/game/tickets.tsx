@@ -81,11 +81,14 @@ export const TicketSvg = () => {
 
 export const TicketContent = ({
   setScreen,
+  tickets,
+  setTickets,
 }: {
   setScreen: (screen: string) => void
+  tickets: any[]
+  setTickets: (tickets: any[]) => void
 }) => {
   const [showTickets, setShowTickets] = useState(true)
-  const [tickets, setTickets] = useState<any[]>([])
   const [selectedTicket, setSelectedTicket] = useState<any>(null)
 
   return (
@@ -151,11 +154,14 @@ const ShowTickets = ({
     return shuffled.slice(0, 7)
   }
 
-  const handleLuckyDip = (ticket: { id: string }) => {
+  const handleRandomTicketGeneration = () => {
     const randomData = generateRandomTicket()
-    setTickets(
-      tickets.map((t) => (t.id === ticket.id ? { ...t, data: randomData } : t))
-    )
+    const newId = crypto.randomUUID()
+    const newTicket = {
+      id: newId,
+      data: randomData,
+    }
+    setTickets([...tickets, newTicket])
   }
 
   return (
@@ -168,74 +174,76 @@ const ShowTickets = ({
           <div className="w-full h-[1px] bg-white/10 px-20 z-[55] mx-10" />
         </div>
 
-        <div className="flex flex-col gap-2 relative mt-6 h-[30rem] overflow-y-scroll">
-          {tickets.length > 0 ? (
-            <>
-              <CurveSvg />
+        <div className="relative mt-6 h-[26rem]">
+          <CurveSvg />
 
-              <div className="flex items-center justify-between pt-6 px-6 z-[55] w-full">
-                <div className="flex items-center gap-2 z-[55]">
-                  <p className="text-xl font-bold">$2.5</p>
-                  <p className="text-[#B9B5D6] text-sm">/line</p>
+          <div className="flex flex-col gap-2 relative mt-6 h-[26rem] overflow-y-scroll">
+            {tickets.length > 0 ? (
+              <>
+                <div className="flex items-center justify-between pt-6 px-6 z-[55] w-full">
+                  <div className="flex items-center gap-2 z-[55]">
+                    <p className="text-xl font-bold">$2.5</p>
+                    <p className="text-[#B9B5D6] text-sm">/line</p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <ButtonPink onClick={() => setScreen('tickets')}>
+                      <span className="relative text-pink-light font-semibold whitespace-nowrap flex items-center justify-center">
+                        My Tickets
+                      </span>
+                    </ButtonPink>
+                  </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <ButtonPink onClick={() => setScreen('tickets')}>
-                    <span className="relative text-pink-light font-semibold whitespace-nowrap flex items-center justify-center">
-                      My Tickets
-                    </span>
-                  </ButtonPink>
-                </div>
-              </div>
-            </>
-          ) : (
-            ''
-          )}
+              </>
+            ) : (
+              ''
+            )}
 
-          {tickets.map((ticket: { id: string; data: any }, index: number) => (
-            <section
-              key={ticket.id + 'ticket'}
-              className="rounded-2xl p-4 flex flex-col items-center gap-2 backdrop-blur-sm my-4 relative mx-4"
-              style={{
-                background: 'linear-gradient(180deg, #11042F 0%, #140831 100%)',
-                borderImage:
-                  'linear-gradient(135deg, rgba(129, 83, 234, 0.2) 0%, rgba(248, 219, 206, 0.05) 100%) 1',
-                boxShadow: `
+            {tickets.map((ticket: { id: string; data: any }, index: number) => (
+              <section
+                key={ticket.id + 'ticket'}
+                className="rounded-2xl p-4 flex flex-col items-center gap-2 backdrop-blur-sm my-4 relative mx-4"
+                style={{
+                  background:
+                    'linear-gradient(180deg, #11042F 0%, #140831 100%)',
+                  borderImage:
+                    'linear-gradient(135deg, rgba(129, 83, 234, 0.2) 0%, rgba(248, 219, 206, 0.05) 100%) 1',
+                  boxShadow: `
          inset 0 12.33px 24.67px rgba(61, 46, 153, 0.48)
        `,
-              }}
-            >
-              <div className="absolute -top-6 -right-6 -top-[1rem] transform -translate-x-1/2">
-                <div
-                  className="w-[1.75rem] h-[1.75rem] rounded-full border-[#535979] flex items-center justify-center border bg-[#30244f] hover:bg-gray-800 transition-all duration-300 cursor-pointer"
-                  onClick={() => handleTicketDelete(ticket)}
-                >
-                  <XIcon className="size-5 text-[#535979]" />
-                </div>
-              </div>
-
-              <div className="absolute -top-6 left-1/2 transform -translate-x-1/2">
-                <div
-                  className="w-10 h-10 rounded-full flex items-center justify-center border bg-[#30244f] shadow-[0_0_20px_6px_rgba(118,80,255,0.6)]"
-                  style={{
-                    borderColor: '#535979',
-                    borderWidth: '1.54px',
-                  }}
-                >
-                  {index + 1}
-                </div>
-              </div>
-              <div className="flex items-center justify-center gap-1 mt-2">
-                {ticket.data.slice(0, 5).map((item: any, index: number) => (
+                }}
+              >
+                <div className="absolute -top-6 -right-6 -top-[1rem] transform -translate-x-1/2">
                   <div
-                    key={index + 'ticket-item'}
-                    className="w-10 h-10 rounded-lg bg-white/10 border border-[#6C7793]/80 flex items-center justify-center"
+                    className="w-[1.75rem] h-[1.75rem] rounded-full border-[#535979] flex items-center justify-center border bg-[#30244f] hover:bg-gray-800 transition-all duration-300 cursor-pointer"
+                    onClick={() => handleTicketDelete(ticket)}
                   >
-                    {item}
+                    <XIcon className="size-5 text-[#535979]" />
                   </div>
-                ))}
-                +
-                <div
-                  className={`
+                </div>
+
+                <div className="absolute -top-6 left-1/2 transform -translate-x-1/2">
+                  <div
+                    className="w-10 h-10 rounded-full flex items-center justify-center border bg-[#30244f] shadow-[0_0_20px_6px_rgba(118,80,255,0.6)]"
+                    style={{
+                      borderColor: '#535979',
+                      borderWidth: '1.54px',
+                    }}
+                  >
+                    {index + 1}
+                  </div>
+                </div>
+                <div className="flex items-center justify-center gap-1 mt-2">
+                  {ticket.data.slice(0, 7).map((item: any, index: number) => (
+                    <div
+                      key={index + 'ticket-item'}
+                      className="w-10 h-10 rounded-lg bg-white/10 border border-[#6C7793]/80 flex items-center justify-center"
+                    >
+                      {item}
+                    </div>
+                  ))}
+                  +
+                  <div
+                    className={`
      w-10 h-10
      rounded-lg
      bg-[#300333]
@@ -243,32 +251,33 @@ const ShowTickets = ({
      flex items-center justify-center
      backdrop-blur-[17.62px]
    `}
-                  style={{
-                    boxShadow: `
+                    style={{
+                      boxShadow: `
        inset 0 12.33px 24.67px rgba(238, 79, 251, 0.25),
        inset 0 12.33px 12.33px rgba(238, 79, 251, 0.24),
        inset 0 0.8px 0.4px rgba(238, 79, 251, 1)
      `,
-                  }}
-                >
-                  <FireIcon className="size-5 text-[#EE4FFB]" />
+                    }}
+                  >
+                    <FireIcon className="size-5 text-[#EE4FFB]" />
+                  </div>
                 </div>
-              </div>
 
-              <div className="flex items-center justify-between w-full mt-4">
-                <ButtonDarkPurple onClick={() => setSelectedTicket(ticket)}>
-                  <span className="relative text-purple-base font-semibold whitespace-nowrap flex items-center justify-center">
-                    Edit
-                  </span>
-                </ButtonDarkPurple>
-                <ButtonGreen onClick={() => handleLuckyDip(ticket)}>
-                  <span className="relative text-[#9CF350] font-semibold whitespace-nowrap flex items-center justify-center">
-                    Lucky Dip
-                  </span>
-                </ButtonGreen>
-              </div>
-            </section>
-          ))}
+                <div className="flex items-center justify-between w-full mt-4">
+                  <ButtonDarkPurple onClick={() => setSelectedTicket(ticket)}>
+                    <span className="relative text-purple-base font-semibold whitespace-nowrap flex items-center justify-center">
+                      Edit
+                    </span>
+                  </ButtonDarkPurple>
+                  <ButtonGreen onClick={() => handleRandomTicketGeneration()}>
+                    <span className="relative text-[#9CF350] font-semibold whitespace-nowrap flex items-center justify-center">
+                      Lucky Dip
+                    </span>
+                  </ButtonGreen>
+                </div>
+              </section>
+            ))}
+          </div>
         </div>
       </div>
       <div className="flex flex-col justify-center items-center gap-1">
@@ -385,7 +394,11 @@ const CreateTicket = ({
   }
 
   const handleClear = () => {
-    setTicket({ id: '', data: [] })
+    if (selectedTicket || ticket.data.length > 0) {
+      setTicket({ id: selectedTicket ? selectedTicket.id : '', data: [] })
+    } else {
+      setShowTickets(true)
+    }
   }
 
   const generateRandomTicket = () => {
@@ -419,8 +432,6 @@ const CreateTicket = ({
       data: randomData,
     })
   }
-
-  console.log('ticket ===>', ticket)
 
   const isSelected0 = ticket.data.includes(0)
 
@@ -537,7 +548,7 @@ const CreateTicket = ({
         <div className="flex items-center gap-4">
           <ButtonRed onClick={() => handleClear()}>
             <span className="relative text-[#F35050] font-semibold whitespace-nowrap flex items-center justify-center">
-              Clear
+              {selectedTicket || ticket.data.length > 0 ? 'Clear' : 'Cancel'}
             </span>
           </ButtonRed>
           <ButtonDarkPurple onClick={() => handleTicketSubmit()}>
