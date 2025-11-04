@@ -9,9 +9,9 @@ const nextConfig: NextConfig = {
     return [
       {
         source: '/api/:path*',
-        destination: 'http://localhost:3300/api/:path*',
-        // destination:
-        //   'https://powerblock-backend-production.up.railway.app/api/:path*',
+        // destination: 'http://localhost:3300/api/:path*',
+        destination:
+          'https://powerblock-backend-production.up.railway.app/api/:path*',
       },
     ]
   },
@@ -26,6 +26,7 @@ const nextConfig: NextConfig = {
           },
           {
             key: 'Access-Control-Allow-Origin',
+            // value: 'http://localhost:3000',
             value: 'https://nalikes-powerblock-frontend.vercel.app',
           },
           {
