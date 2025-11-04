@@ -214,7 +214,6 @@ const MyTickets = ({
           <div className="w-full h-[1px] bg-white/10 px-20" />
         </section>
 
-        {/* Results Section */}
         <section
           className="rounded-2xl p-2 flex items-center gap-2 backdrop-blur-sm h-full pb-5"
           style={{
