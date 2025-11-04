@@ -169,12 +169,12 @@ export default function Navbar() {
                   <span>Rewards</span>
                 </Link>
 
-                <Link
+                {/* <Link
                   href="/mystery-box"
                   className="flex items-center gap-3 px-2 py-2 text-white hover:bg-white/20 rounded-md transition-colors"
                 >
                   <span>Mystery Box</span>
-                </Link>
+                </Link> */}
 
                 {/* <Link
                   href="/blog"
