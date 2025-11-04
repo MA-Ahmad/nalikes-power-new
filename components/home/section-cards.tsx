@@ -1,5 +1,5 @@
-import { Badge } from "@/components/ui/badge";
-import { TrendingUp, TrendingDown, Gamepad2, ArrowRight } from "lucide-react";
+import { Badge } from '@/components/ui/badge'
+import { TrendingUp, TrendingDown, Gamepad2, ArrowRight } from 'lucide-react'
 import {
   Card,
   CardAction,
@@ -7,8 +7,9 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { GameCard } from "./single-card";
+} from '@/components/ui/card'
+import { GameCard } from './single-card'
+import Link from 'next/link'
 
 export function SectionCards() {
   return (
@@ -20,9 +21,12 @@ export function SectionCards() {
           <div className="flex items-center gap-2">
             <h5 className="text-2xl font-semibold">Mystery Boxes</h5>
           </div>
-          <div className="flex items-center gap-2 bg-neutral-800 hover:bg-neutral-700 p-2 px-3 text-xs rounded-md cursor-pointer">
+          <Link
+            href="/mystery-box"
+            className="flex items-center gap-2 bg-neutral-800 hover:bg-neutral-700 p-2 px-3 text-xs rounded-md cursor-pointer"
+          >
             View all <ArrowRight className="w-4 h-4" />
-          </div>
+          </Link>
         </div>
         <div className="grid  md:grid-cols-3 gap-4 my-8">
           <GameCard
@@ -46,7 +50,7 @@ export function SectionCards() {
             amount="$12.5"
             isHot={true}
             image="/images/cards/doge.png"
-          />{" "}
+          />{' '}
           <GameCard
             title="ETH Madness"
             progress={45}
@@ -71,5 +75,5 @@ export function SectionCards() {
         </div>
       </div>
     </div>
-  );
+  )
 }
