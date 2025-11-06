@@ -296,12 +296,14 @@ export default function Navbar() {
             Rewards
           </Link>
 
-          <Link
-            href="/mystery-box"
-            className="flex items-center gap-2 text-white hover:bg-white/10 px-3 py-1.5 rounded-md transition-colors"
-          >
-            Mystery Box
-          </Link>
+          {isAuthenticated && (
+            <Link
+              href="/mystery-box"
+              className="flex items-center gap-2 text-white hover:bg-white/10 px-3 py-1.5 rounded-md transition-colors"
+            >
+              Mystery Box
+            </Link>
+          )}
 
           {/* <Link
             href="/blog"

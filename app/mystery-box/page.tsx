@@ -9,16 +9,33 @@ import { ArrowLeft, Volume2, VolumeOff } from 'lucide-react'
 import useSound from 'use-sound'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
+import { useAuthStore } from '@/store/auth'
 
 export default function MysteryBoxPage() {
   const [isChatOpen, setIsChatOpen] = useState(false)
   const [isSoundOn, setIsSoundOn] = useState(true)
+  const [mounted, setMounted] = useState(false)
   const router = useRouter()
+  const { isAuthenticated, user, loading } = useAuthStore()
 
   const [play, { stop }] = useSound('/sounds/post-launch.mp3', {
     loop: true, // Set to true if you want the sound to loop
     volume: 0.8, // Adjust volume (0 to 1)
   })
+
+  // Check if component is mounted
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  // Check authentication after mount and redirect if not authenticated
+  useEffect(() => {
+    if (mounted && !loading) {
+      if (!isAuthenticated) {
+        router.push('/')
+      }
+    }
+  }, [mounted, loading, isAuthenticated, router])
 
   useEffect(() => {
     if (isSoundOn) {
@@ -35,6 +52,11 @@ export default function MysteryBoxPage() {
 
   const toggleChat = () => {
     setIsChatOpen(!isChatOpen)
+  }
+
+  // Don't render content until mounted and authenticated check is complete
+  if (!mounted || loading || !isAuthenticated) {
+    return null
   }
 
   return (
