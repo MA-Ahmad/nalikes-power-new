@@ -56,7 +56,7 @@ export function UserDropdown({ user, onLogout }: UserDropdownProps) {
           />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-48">
+      <DropdownMenuContent className="w-48 z-[5555]">
         {/* <DropdownMenuItem disabled className="text-gray-400">
           {user.email}
         </DropdownMenuItem>

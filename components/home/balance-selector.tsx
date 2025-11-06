@@ -142,7 +142,7 @@ export function ChainBalanceSelector({
             </div>
           </div>
         </SelectTrigger>
-        <SelectContent className="bg-gray-800 border-gray-700">
+        <SelectContent className="bg-gray-800 border-gray-700 z-[5555]">
           {/* Total Balance Option */}
           {/* <SelectItem
             value="total"

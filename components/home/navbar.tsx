@@ -271,7 +271,7 @@ export default function Navbar() {
                 />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent>
+            <DropdownMenuContent className="z-[5555]">
               <DropdownMenuItem className="hover:bg-neutral-800 focus:bg-neutral-800">
                 <Gamepad2 className="w-4 h-4 mr-3 text-white" />
                 All Games

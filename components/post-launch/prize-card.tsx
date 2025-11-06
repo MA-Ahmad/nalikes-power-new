@@ -6,6 +6,7 @@ import CountUp from 'react-countup'
 import { useEffect, useState } from 'react'
 
 interface PrizeCardProps {
+  title: string
   image: string
   amount: string
   text?: string
@@ -18,6 +19,7 @@ interface PrizeCardProps {
 }
 
 const PrizeCard = ({
+  title,
   image,
   amount,
   text,
@@ -135,7 +137,7 @@ const PrizeCard = ({
         </div>
 
         <div className="flex flex-col gap-1">
-          <p className="text-sm font-semibold text-gray-400">DropForge</p>
+          <p className="text-sm font-semibold text-gray-400">{title}</p>
           <div className="flex items-center gap-2">
             {/* <p>${amount}</p> */}
             $<AmountCounter isSelected={isSelected} amount={Number(amount)} />
@@ -145,7 +147,7 @@ const PrizeCard = ({
                 background: 'rgba(156, 243, 80, 0.3)',
               }}
             >
-              -18%
+              -{off || 0}%
             </div>
           </div>
         </div>

@@ -1,9 +1,4 @@
 import { useEffect, useRef, useState } from 'react'
-import bitcoinImage from '@/public/images/spin-card-images/bitcoin.png'
-import carImage from '@/public/images/spin-card-images/car.png'
-import jacketImage from '@/public/images/spin-card-images/jacket.png'
-import stoneImage from '@/public/images/spin-card-images/stone.png'
-import shoesImage from '@/public/images/spin-card-images/shoes.png'
 import { Shield, Info } from 'lucide-react'
 import { motion } from 'framer-motion'
 import Image from 'next/image'
@@ -11,36 +6,32 @@ import { cn } from '@/lib/utils'
 import confetti from 'canvas-confetti'
 import useSound from 'use-sound'
 import PrizeCard from './prize-card'
+import { useMysteryBoxes } from '@/hooks/use-mystery-boxes'
+import { useAuthStore } from '@/store/auth'
+import { mysteryBoxesApi } from '@/lib/api/mystery-boxes'
+import { toast } from 'react-hot-toast'
 
 interface Prize {
   id: string
+  title: string
+  off: string
   image: string
   amount: string
 }
 
-const prizes: Prize[] = [
-  { id: '1', image: bitcoinImage.src, amount: '10000' },
-  { id: '2', image: carImage.src, amount: '3000' },
-  { id: '3', image: jacketImage.src, amount: '5000' },
-  { id: '4', image: carImage.src, amount: '250' },
-  { id: '5', image: shoesImage.src, amount: '500' },
-  { id: '6', image: bitcoinImage.src, amount: '750' },
-  { id: '7', image: carImage.src, amount: '2000' },
-  { id: '8', image: jacketImage.src, amount: '2500' },
-  { id: '9', image: stoneImage.src, amount: '500' },
-  { id: '10', image: stoneImage.src, amount: '750' },
-  { id: '11', image: carImage.src, amount: '1500' },
-  { id: '12', image: carImage.src, amount: '3500' },
-]
+const ENTRY_FEE = 1 // Hardcoded spin amount in USD
 
 const PrizeSpinner = () => {
   const overflowRef = useRef<HTMLDivElement>(null)
   const carouselRef = useRef<HTMLDivElement>(null)
 
+  const { data: mysteryBoxes = [], isLoading } = useMysteryBoxes()
+  const { user, syncWalletStatus } = useAuthStore()
   const [extendedPrizes, setExtendedPrizes] = useState<Prize[]>([])
   const [isSpinning, setIsSpinning] = useState(false)
   const [selectedIndex, setSelectedIndex] = useState(0)
-  const [showWinAnimation, setShowWinAnimation] = useState(false) // New state for win animation
+  const [showWinAnimation, setShowWinAnimation] = useState(false)
+  const [claimedPrizeId, setClaimedPrizeId] = useState<string | null>(null)
   const [cardDims, setCardDims] = useState({
     width: 0,
     height: 0,
@@ -48,14 +39,35 @@ const PrizeSpinner = () => {
     containerWidth: 0,
   })
 
+  // Check EVM wallet balance
+  const evmBalance = user?.depositWalletAddresses?.evm?.availableAmount || 0
+  const hasSufficientBalance = evmBalance >= ENTRY_FEE
+
   // Prepare long list for seamless scrolling
   useEffect(() => {
+    if (mysteryBoxes.length === 0) return
+    const prizes: Prize[] = mysteryBoxes.map((box: any) => ({
+      id: box.id,
+      title: box.title,
+      off: box.off,
+      image: box.image,
+      amount: box.amount,
+    }))
     const repeat = 6
     const extended = Array.from({ length: repeat }).flatMap(() =>
       prizes.map((p) => ({ ...p }))
     )
     setExtendedPrizes(extended)
-  }, [])
+  }, [mysteryBoxes])
+
+  // Convert mystery boxes to prizes format (for use in other places)
+  const prizes: Prize[] = mysteryBoxes.map((box: any) => ({
+    id: box.id,
+    title: box.title,
+    off: box.off,
+    image: box.image,
+    amount: box.amount,
+  }))
 
   // Measure sizes responsively
   const measure = () => {
@@ -126,10 +138,21 @@ const PrizeSpinner = () => {
 
     if (isSpinning || !cardDims.width) return
 
+    // Check balance before allowing spin
+    if (!hasSufficientBalance) {
+      toast.error(
+        `Insufficient balance. Required: $${ENTRY_FEE}. Current balance: $${evmBalance.toFixed(
+          2
+        )}`
+      )
+      return
+    }
+
     console.log('handleSpin called!!! 2')
 
     setIsSpinning(true)
     setShowWinAnimation(false) // Reset win animation
+    setClaimedPrizeId(null) // Reset claimed prize
 
     const duration = 3000 + Math.random() * 3000 // 3–6s
     const minSteps = 12
@@ -147,12 +170,37 @@ const PrizeSpinner = () => {
       // ✅ keep the winning card where it stopped
       setSelectedIndex(targetIndex)
 
+      // Get the winning prize ID using modulo to handle extended array
+      // Since extendedPrizes is just repeated prizes, we can use modulo to get the actual prize
+      let winningPrize: Prize | undefined
+      let winningPrizeId: string | undefined
+
+      if (prizes.length > 0) {
+        const winningPrizeIndex = targetIndex % prizes.length
+        winningPrize = prizes[winningPrizeIndex]
+      } else if (
+        extendedPrizes.length > 0 &&
+        targetIndex < extendedPrizes.length
+      ) {
+        // Fallback to extendedPrizes if prizes array is not ready
+        winningPrize = extendedPrizes[targetIndex]
+      }
+
+      winningPrizeId = winningPrize?.id
+
+      console.log('targetIndex ===>', targetIndex)
+      console.log('extendedPrizes.length ===>', extendedPrizes.length)
+      console.log('prizes.length ===>', prizes.length)
+      console.log('winningPrize ===>', winningPrize)
+      console.log('winningPrizeId ===>', winningPrizeId)
+
       // ❌ don't recenter immediately (this caused reset)
       // ✅ instead, check if it's drifting too far, recenter quietly before next spin
       const safeDistance = extendedPrizes.length * 0.3 // 30% away from edges
       if (
-        targetIndex < safeDistance ||
-        targetIndex > extendedPrizes.length - safeDistance
+        prizes.length > 0 &&
+        (targetIndex < safeDistance ||
+          targetIndex > extendedPrizes.length - safeDistance)
       ) {
         // wrap winner into middle block (seamless reset BEFORE next spin)
         const wrappedIndex = targetIndex % prizes.length
@@ -166,11 +214,42 @@ const PrizeSpinner = () => {
 
       setIsSpinning(false)
 
+      // Claim reward after spin completes
+      if (winningPrizeId) {
+        claimReward(winningPrizeId)
+      } else {
+        console.error('Failed to get winning prize ID', {
+          targetIndex,
+          prizesLength: prizes.length,
+          extendedPrizesLength: extendedPrizes.length,
+        })
+        toast.error('Failed to determine winning prize. Please try again.')
+      }
+
       // Trigger win animation after spin completes
       setTimeout(() => {
         setShowWinAnimation(true)
       }, 100) // Small delay to ensure spinning state is updated
     }, duration + 50)
+  }
+
+  const claimReward = async (itemId: string) => {
+    try {
+      const response = await mysteryBoxesApi.claimReward(itemId)
+      setClaimedPrizeId(itemId)
+      toast.success(
+        `Reward claimed! Entry fee: $${response.entryFee}, Reward: $${response.reward}`
+      )
+      // Refresh wallet balance after claiming
+      await syncWalletStatus()
+    } catch (error: any) {
+      console.error('Failed to claim reward:', error)
+      toast.error(
+        error?.response?.data?.message ||
+          error?.message ||
+          'Failed to claim reward'
+      )
+    }
   }
 
   // Reset win animation when it completes
@@ -436,9 +515,11 @@ const PrizeSpinner = () => {
                   key={`${prize.id}-${index}`}
                   image={prize.image}
                   amount={prize.amount}
+                  title={prize.title}
                   isSelected={
                     selectedIndex === index && !isSpinning && showWinAnimation
                   }
+                  off={prize.off}
                   initialState={selectedIndex === index && !isSpinning}
                 />
               ))}
@@ -446,7 +527,13 @@ const PrizeSpinner = () => {
           </div>
         </div>
 
-        <ControlPanel isSpinning={isSpinning} handleSpin={handleSpin} />
+        <ControlPanel
+          isSpinning={isSpinning}
+          handleSpin={handleSpin}
+          hasSufficientBalance={hasSufficientBalance}
+          entryFee={ENTRY_FEE}
+          evmBalance={evmBalance}
+        />
       </div>
     </div>
   )
@@ -455,9 +542,15 @@ const PrizeSpinner = () => {
 const ControlPanel = ({
   isSpinning,
   handleSpin,
+  hasSufficientBalance,
+  entryFee,
+  evmBalance,
 }: {
   isSpinning: boolean
   handleSpin: () => void
+  hasSufficientBalance: boolean
+  entryFee: number
+  evmBalance: number
 }) => {
   const [activeMode, setActiveMode] = useState<'manual' | 'auto'>('manual')
 
@@ -603,8 +696,17 @@ const ControlPanel = ({
             </div>
           </div>
           <div
-            className="relative inline-block w-full max-w-[180px] px-3 py-2.5 cursor-pointer"
-            onClick={isSpinning ? () => {} : () => handleSpin()}
+            className={cn(
+              'relative inline-block w-full max-w-[180px] px-3 py-2.5',
+              !hasSufficientBalance || isSpinning
+                ? 'cursor-not-allowed opacity-50'
+                : 'cursor-pointer'
+            )}
+            onClick={
+              isSpinning || !hasSufficientBalance
+                ? () => {}
+                : () => handleSpin()
+            }
           >
             <svg
               // width="180"
@@ -655,8 +757,22 @@ const ControlPanel = ({
             </svg>
 
             <div className="relative text-pink-light font-semibold text-center whitespace-nowrap flex flex-col gap-1 items-center justify-center !leading-none">
-              <span className="block">{isSpinning ? 'SPINNING' : 'SPIN'}</span>
-              <span className="block font-medium">1000,00$</span>
+              <span
+                className={cn('block', !hasSufficientBalance && 'text-[10px]')}
+              >
+                {isSpinning
+                  ? 'SPINNING'
+                  : !hasSufficientBalance
+                  ? 'INSUFFICIENT BALANCE'
+                  : 'SPIN'}
+              </span>
+              <span className="block font-medium">
+                $
+                {entryFee.toLocaleString(undefined, {
+                  minimumFractionDigits: 4,
+                  maximumFractionDigits: 4,
+                })}
+              </span>
             </div>
           </div>
           <div className="relative inline-block w-full max-w-[125px] px-3 py-2.5">
