@@ -237,9 +237,7 @@ const PrizeSpinner = () => {
     try {
       const response = await mysteryBoxesApi.claimReward(itemId)
       setClaimedPrizeId(itemId)
-      toast.success(
-        `Reward claimed! Entry fee: $${response.entryFee}, Reward: $${response.reward}`
-      )
+      toast.success(`Reward claimed! $${response.reward}`)
       // Refresh wallet balance after claiming
       await syncWalletStatus()
     } catch (error: any) {
@@ -769,8 +767,8 @@ const ControlPanel = ({
               <span className="block font-medium">
                 $
                 {entryFee.toLocaleString(undefined, {
-                  minimumFractionDigits: 4,
-                  maximumFractionDigits: 4,
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
                 })}
               </span>
             </div>
