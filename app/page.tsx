@@ -1,59 +1,123 @@
-"use client";
+'use client'
 
-import Navbar from "@/components/home/navbar";
-import Image from "next/image";
-import banner from "@/public/images/banner.png";
-import { SectionCards } from "@/components/home/section-cards";
-import { useState } from "react";
-import { ChatSidebar } from "@/components/home/chat/chat-sidebar";
-import newBanner from "@/public/images/new-banner.png";
-import Banner from "@/components/home/banner";
-import InfoCards from "@/components/home/info-cards";
-import { useRouter } from "next/navigation";
+import Navbar from '@/components/home/navbar'
+import Image from 'next/image'
+import banner from '@/public/images/banner.png'
+import { SectionCards } from '@/components/home/section-cards'
+import { useState } from 'react'
+import { ChatSidebar } from '@/components/home/chat/chat-sidebar'
+import newBanner from '@/public/images/new-banner.png'
+import Banner from '@/components/home/banner'
+import InfoCards from '@/components/home/info-cards'
+import { useRouter } from 'next/navigation'
+import { x1Testnet } from 'viem/chains'
+import { useIsMobile } from '@/hooks/use-mobile'
+import { motion } from 'framer-motion'
 
 export default function Home() {
-  const [isChatOpen, setIsChatOpen] = useState(false);
-  const router = useRouter();
+  const [isChatOpen, setIsChatOpen] = useState(false)
+  const router = useRouter()
+  const isMobile = useIsMobile()
 
   const toggleChat = () => {
-    setIsChatOpen(!isChatOpen);
-  };
+    setIsChatOpen(!isChatOpen)
+  }
   return (
     <div className="min-h-screen bg-black relative">
       <Navbar />
-      <div className="relative pt-10">
+      <div className="relative sm:pt-10">
         <Image
-          src={"/images/home/hero.png"}
+          src={'/images/home/hero.png'}
           alt="Banner"
           width={1920}
           height={600}
-          className="w-full h-full object-cover "
+          className="w-full h-full object-cover hidden sm:block"
         />
-        <div className="absolute top-16 sm:top-20 lg:top-[15%] left-1/2 -translate-x-1/2  flex items-center justify-center flex-col text-center gap-2">
+
+        <Image
+          src={'/images/home/mobile-hero.svg'}
+          alt="Banner"
+          width={1920}
+          height={600}
+          className="w-full h-full object-cover block sm:hidden"
+        />
+        {/* <div className="absolute top-16 sm:top-20 lg:top-[15%] left-1/2 -translate-x-1/2  flex items-center justify-center flex-col text-center gap-2">
           <h1 className="text-xl sm:text-3xl lg:text-5xl font-bold ">
             Enter The PWR City
           </h1>
           <p className="md:text-xl">Gamble Like a Degen. Win Like a Degen</p>
+        </div> */}
+
+        <div className="absolute w-full top-32 sm:top-20 lg:top-[15%] left-1/2 -translate-x-1/2 flex items-center justify-center flex-col text-center gap-2">
+          <h1 className="text-2xl sm:text-3xl lg:text-5xl font-bold">
+            <TypingText text="Enter The PWR City" delay={0.2} />
+          </h1>
+          <p className="md:text-xl">
+            <TypingText
+              text="Gamble Like a Degen. Win Like a Degen"
+              delay={1.5}
+            />
+          </p>
         </div>
       </div>
       <div className="flex ">
         <main
-          className={`flex-1 px-4 py-4 transition-all duration-300 ease-in-out ${
-            isChatOpen ? "lg:mr-80" : "lg:mr-0"
+          className={`flex-1 px-4 py-4 bg-[#040315] sm:bg-transparent transition-all duration-300 ease-in-out ${
+            isChatOpen ? 'lg:mr-80' : 'lg:mr-0'
           }`}
         >
           <div className="max-w-[1500px] mx-auto space-y-8 sm:space-y-20">
-            <div className="">
+            <div className="pb-[3rem] sm:pb-[2rem] relative -top-[10rem] sm:top-0">
               <h1 className="text-lg sm:text-2xl font-bold text-center mb-8">
                 PWR Originals
               </h1>
-              <Image
-                src={"/images/home/cards.png"}
+              {/* <Image
+                src={'/images/home/cards.png'}
                 alt="Banner"
                 width={1920}
                 height={600}
                 className="w-full h-full object-cover "
-              />
+              /> */}
+
+              {/* <div className="flex justify-center gap-4">
+                {[1, 2, 3, 4, 5, 6].map((item, index) => {
+                  // Define custom rotation & offset similar to your HTML example
+                  const offsets = [
+                    { left: '45px', top: '65px', rotate: '-10deg', z: 8 },
+                    { left: '19px', top: '30px', rotate: '-6deg', z: 9 },
+                    { left: '-5px', top: '10px', rotate: '-2deg', z: 10 },
+                    { left: '-29px', top: '10px', rotate: '2deg', z: 10 },
+                    { left: '-54px', top: '30px', rotate: '6deg', z: 10 },
+                    { left: '-82px', top: '65px', rotate: '10deg', z: 10 },
+                  ]
+
+                  const { left, top, rotate, z } = offsets[index]
+
+                  return (
+                    <div
+                      key={item}
+                      className="relative transition-transform duration-300 hover:brightness-110"
+                      style={{
+                        position: 'relative',
+                        left,
+                        top,
+                        transform: `rotate(${rotate})`,
+                        zIndex: z,
+                      }}
+                    >
+                      <Image
+                        src={`/images/games/${item}.svg`}
+                        alt={`Game ${item}`}
+                        width={200}
+                        height={260}
+                        className="rounded-xl object-cover shadow-lg"
+                      />
+                    </div>
+                  )
+                })}
+              </div> */}
+
+              {isMobile ? <GameCardsMobile /> : <GameCardsDesktop />}
             </div>
             <div className="">
               <Banner />
@@ -65,9 +129,128 @@ export default function Home() {
         {/* Chat Sidebar - Part of layout on desktop, overlay on mobile */}
         <ChatSidebar isOpen={isChatOpen} onToggle={toggleChat} />
       </div>
-      <div className="flex items-center justify-center mt-52 pb-20">
+      {/* <div className="flex items-center justify-center mt-52 pb-20">
         <div className="h-32 w-[400px] bg-brand-pink/30 rounded-full  blur-3xl "></div>
-      </div>
+      </div> */}
     </div>
-  );
+  )
+}
+
+const TypingText = ({ text, delay = 0 }: { text: string; delay?: number }) => {
+  const words = text.split('')
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ delay }}
+    >
+      {words.map((char, i) => (
+        <motion.span
+          key={i}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: delay + i * 0.05 }}
+        >
+          {char}
+        </motion.span>
+      ))}
+    </motion.div>
+  )
+}
+
+function GameCardsDesktop() {
+  const [hovered, setHovered] = useState<number | null>(null)
+
+  const offsets = [
+    { left: '45px', top: '65px', rotate: '-10deg', z: 8 },
+    { left: '19px', top: '30px', rotate: '-6deg', z: 9 },
+    { left: '-5px', top: '10px', rotate: '-2deg', z: 10 },
+    { left: '-29px', top: '10px', rotate: '2deg', z: 10 },
+    { left: '-54px', top: '30px', rotate: '6deg', z: 10 },
+    { left: '-82px', top: '65px', rotate: '10deg', z: 10 },
+  ]
+
+  return (
+    <>
+      <div className="flex justify-center gap-4 py-10">
+        {[1, 2, 3, 4, 5, 6].map((item, index) => {
+          const { left, top, rotate, z } = offsets[index]
+          const isHovered = hovered === index
+
+          return (
+            <div
+              key={item}
+              onMouseEnter={() => setHovered(index)}
+              onMouseLeave={() => setHovered(null)}
+              className={`relative transition-all duration-300 ease-out cursor-pointer ${
+                isHovered ? 'brightness-110 -translate-y-4' : ''
+              }`}
+              style={{
+                left,
+                top,
+                transform: `rotate(${rotate})`,
+                zIndex: isHovered ? 50 : z, // Bring to front on hover
+              }}
+            >
+              <Image
+                src={`/images/games/${item}.svg`}
+                alt={`Game ${item}`}
+                width={200}
+                height={260}
+                className="rounded-xl object-cover shadow-lg select-none"
+              />
+            </div>
+          )
+        })}
+      </div>
+    </>
+  )
+}
+
+const GameCardsMobile = () => {
+  const firstRow = [1, 2, 3]
+  const secondRow = [4, 5, 6]
+
+  const getCardStyle = (position: number) => {
+    // 0 = left, 1 = center, 2 = right
+    const styles = [
+      { transform: 'rotate(-6deg)', zIndex: 9, top: '15px', left: '30px' },
+      { transform: 'rotate(0deg)', zIndex: 10, top: '0px', left: '10px' },
+      { transform: 'rotate(6deg)', zIndex: 9, top: '15px', left: '-13px' },
+    ]
+    return styles[position]
+  }
+
+  const renderRow = (items: number[]) => (
+    <div className="flex justify-center items-end gap-4 mt-6 relative">
+      {items.map((item, i) => {
+        const style = getCardStyle(i)
+        return (
+          <div
+            key={item}
+            className="relative transition-all duration-300 hover:-translate-y-2 hover:z-50"
+            style={{
+              ...style,
+            }}
+          >
+            <Image
+              src={`/images/games/${item}.svg`}
+              alt={`Game ${item}`}
+              width={150}
+              height={200}
+              className="object-cover rounded-xl shadow-md transition-transform duration-300 hover:scale-105"
+            />
+          </div>
+        )
+      })}
+    </div>
+  )
+
+  return (
+    <div className="flex flex-col items-center">
+      {renderRow(firstRow)}
+      {renderRow(secondRow)}
+    </div>
+  )
 }

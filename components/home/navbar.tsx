@@ -117,7 +117,10 @@ export default function Navbar() {
                 <span className="sr-only">Toggle navigation menu</span>
               </Button>
             </SheetTrigger>
-            <SheetContent side="left" className="bg-sidebar border-neutral-800">
+            <SheetContent
+              side="left"
+              className="bg-sidebar border-neutral-800 z-[5555]"
+            >
               <div className="flex flex-col gap-4 py-6 px-6">
                 <Link
                   href="/"

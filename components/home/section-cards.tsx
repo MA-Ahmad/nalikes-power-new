@@ -13,7 +13,7 @@ import Link from 'next/link'
 
 export function SectionCards() {
   return (
-    <div className="relative">
+    <div className="relative -top-[9rem] sm:top-0">
       <div className="size-32 bg-pink-light/50 rounded-full absolute -left-10 top-[50%] -translate-y-1/2 blur-3xl "></div>
 
       <div className="z-10 bg-gradient-dark rounded-md p-6 border border-pink-light/10 relative">
