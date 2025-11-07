@@ -67,7 +67,7 @@ export default function Home() {
           }`}
         >
           <div className="max-w-[1500px] mx-auto space-y-8 sm:space-y-20">
-            <div className="pb-[3rem] sm:pb-[2rem] relative -top-[10rem] sm:top-0">
+            <div className="pb-[3rem] sm:pb-[2rem] relative">
               <h1 className="text-lg sm:text-2xl font-bold text-center mb-8">
                 PWR Originals
               </h1>

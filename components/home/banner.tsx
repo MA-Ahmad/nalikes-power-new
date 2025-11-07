@@ -5,7 +5,7 @@ import Image from 'next/image'
 export default function Banner() {
   return (
     <section
-      className="relative -top-[10rem] sm:top-0 w-full bg-cover bg-center flex items-start sm:items-center justify-center overflow-hidden rounded-2xl h-[16rem] sm:h-auto"
+      className="relative w-full bg-cover bg-center flex items-start sm:items-center justify-center overflow-hidden rounded-2xl h-[16rem] sm:h-auto"
       // style={{ backgroundImage: "url('/images/home/banner.png')" }}
     >
       <Image
