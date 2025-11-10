@@ -17,11 +17,13 @@ import { Input } from '@/components/ui/input'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
+import { Skeleton } from '@/components/ui/skeleton'
 import { cn } from '@/lib/utils'
 import { ChatIcon, DiscordIcon, WinsIcon, XIcon } from '@/components/icons'
-import { chatApi, ChatMessage } from '@/lib/api/chat'
 import { useAuthStore } from '@/store/auth'
-
+import { useChatMessages, useSendChatMessage } from '@/hooks/use-chat'
+import { useWinningItems } from '@/hooks/use-winning-items'
+import Image from 'next/image'
 interface ChatSidebarProps {
   isOpen: boolean
   onToggle: () => void
@@ -70,61 +72,46 @@ function formatTimestamp(date?: string | Date): string {
 
 export function ChatSidebar({ isOpen, onToggle }: ChatSidebarProps) {
   const [activeTab, setActiveTab] = useState('chat')
-  const [messages, setMessages] = useState<ChatMessage[]>([])
   const [inputValue, setInputValue] = useState('')
-  const [isLoading, setIsLoading] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const scrollAreaRef = useRef<HTMLDivElement>(null)
   const [isInitialMount, setIsInitialMount] = useState(true)
 
   const { isAuthenticated, user } = useAuthStore()
 
-  // Fetch messages helper
-  const fetchMessages = async () => {
-    try {
-      const messages = await chatApi.getMessages()
-      // Messages are already formatted by the API function
-      setMessages(messages)
-    } catch (error) {
-      console.error('Error fetching messages:', error)
-    }
-  }
+  // React Query hooks
+  const {
+    data: messages = [],
+    isLoading: isLoadingMessages,
+    isFetching: isFetchingMessages,
+  } = useChatMessages(isOpen && activeTab === 'chat')
 
-  // Fetch messages on component mount
+  const { data: winningItems = [], isLoading: isLoadingWinningItems } =
+    useWinningItems(isOpen && activeTab === 'wins')
+
+  const sendMessageMutation = useSendChatMessage({
+    onSuccess: () => {
+      setInputValue('')
+      setTimeout(() => scrollToBottom('smooth'), 100)
+    },
+  })
+
+  // Set initial mount to false after first render
   useEffect(() => {
     if (isOpen) {
-      fetchMessages()
       setIsInitialMount(false)
-    }
-  }, [])
-
-  // Update polling when chat open/close state changes
-  useEffect(() => {
-    if (!isOpen) return
-
-    // Initial fetch when chat opens
-    fetchMessages()
-
-    // Set up polling every 30 seconds
-    const interval = setInterval(() => {
-      fetchMessages()
-    }, 30000) // 30 seconds
-
-    // Clean up interval on component unmount or when effect re-runs
-    return () => {
-      clearInterval(interval)
     }
   }, [isOpen])
 
   // Scroll to bottom when messages change
   useEffect(() => {
-    if (!isInitialMount && isOpen) {
+    if (!isInitialMount && isOpen && activeTab === 'chat') {
       const timeoutId = setTimeout(() => {
         scrollToBottom()
       }, 100)
       return () => clearTimeout(timeoutId)
     }
-  }, [messages, isInitialMount, isOpen])
+  }, [messages, isInitialMount, isOpen, activeTab])
 
   const scrollToBottom = (behavior: ScrollBehavior = 'auto') => {
     if (scrollAreaRef.current) {
@@ -140,36 +127,12 @@ export function ChatSidebar({ isOpen, onToggle }: ChatSidebarProps) {
     }
   }
 
-  const handleSendMessage = async () => {
-    if (!inputValue.trim() || !isAuthenticated || isLoading) return
+  const handleSendMessage = () => {
+    if (!inputValue.trim() || !isAuthenticated || sendMessageMutation.isPending)
+      return
 
     const messageText = inputValue.trim()
-    setInputValue('')
-    setIsLoading(true)
-
-    // Optimistically add message
-    const tempMessage: ChatMessage = {
-      id: `temp_${Date.now()}`,
-      content: messageText,
-      senderName: user?.username || 'You',
-      senderImage: undefined,
-      formattedDate: formatTimestamp(new Date()),
-    }
-
-    setMessages((prev) => [...prev, tempMessage])
-    setTimeout(() => scrollToBottom('smooth'), 100)
-
-    try {
-      await chatApi.sendMessage(messageText)
-      // Refetch messages to get the actual message from server
-      await fetchMessages()
-    } catch (error) {
-      console.error('Error sending message:', error)
-      // Remove optimistic message on error
-      setMessages((prev) => prev.filter((msg) => msg.id !== tempMessage.id))
-    } finally {
-      setIsLoading(false)
-    }
+    sendMessageMutation.mutate(messageText)
   }
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -244,56 +207,136 @@ export function ChatSidebar({ isOpen, onToggle }: ChatSidebarProps) {
               </div>
             </div>
 
-            {/* Messages - Scrollable */}
+            {/* Messages/Wins - Scrollable */}
             <div className="flex-1 overflow-hidden">
               <ScrollArea ref={scrollAreaRef} className="h-full bg-sidebar">
-                <div className="p-4 space-y-4">
-                  {messages.length > 0 ? (
-                    messages.map((message) => (
-                      <div
-                        key={message.id}
-                        className="flex items-start space-x-2"
-                      >
-                        <Avatar className="h-10 w-10 border-2 border-neutral-800">
-                          <AvatarImage
-                            src={message.senderImage || '/placeholder.svg'}
-                          />
-                          <AvatarFallback className="bg-neutral-700 text-white text-sm">
-                            {message.senderName.slice(0, 2).toUpperCase()}
-                          </AvatarFallback>
-                        </Avatar>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center space-x-2">
-                            <span className="font-semibold text-gray-300 text-sm">
-                              {message.senderName}
-                            </span>
-                            {message.formattedDate && (
-                              <span className="text-gray-500 text-xs">
-                                {message.formattedDate}
-                              </span>
-                            )}
+                <div
+                  className={cn(
+                    'p-4',
+                    activeTab === 'chat' ? 'space-y-4' : 'space-y-2'
+                  )}
+                >
+                  {activeTab === 'chat' ? (
+                    <>
+                      {isLoadingMessages ? (
+                        // Loading skeleton for messages
+                        Array.from({ length: 3 }).map((_, index) => (
+                          <div
+                            key={`skeleton-${index}`}
+                            className="flex items-start space-x-2"
+                          >
+                            <Skeleton className="h-10 w-10 rounded-full" />
+                            <div className="flex-1 min-w-0 space-y-2">
+                              <div className="flex items-center space-x-2">
+                                <Skeleton className="h-4 w-24" />
+                                <Skeleton className="h-3 w-16" />
+                              </div>
+                              <Skeleton className="h-4 w-full max-w-[200px]" />
+                            </div>
                           </div>
-                          <p className="text-gray-400 text-sm leading-[1.3] break-words font-semibold">
-                            {message.content}
+                        ))
+                      ) : messages.length > 0 ? (
+                        messages.map((message) => (
+                          <div
+                            key={message.id}
+                            className="flex items-start space-x-2"
+                          >
+                            <Avatar className="h-10 w-10 border-2 border-neutral-800">
+                              <AvatarImage
+                                src={message.senderImage || '/placeholder.svg'}
+                              />
+                              <AvatarFallback className="bg-neutral-700 text-white text-sm">
+                                {message.senderName.slice(0, 2).toUpperCase()}
+                              </AvatarFallback>
+                            </Avatar>
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center space-x-2">
+                                <span className="font-semibold text-gray-300 text-sm">
+                                  {message.senderName}
+                                </span>
+                                {message.formattedDate && (
+                                  <span className="text-gray-500 text-xs">
+                                    {message.formattedDate}
+                                  </span>
+                                )}
+                              </div>
+                              <p className="text-gray-400 text-sm leading-[1.3] break-words font-semibold">
+                                {message.content}
+                              </p>
+                            </div>
+                          </div>
+                        ))
+                      ) : (
+                        <div className="flex flex-col gap-2">
+                          <p className="text-gray-400 text-center text-sm">
+                            No messages yet
                           </p>
                         </div>
-                      </div>
-                    ))
+                      )}
+                      <div ref={messagesEndRef} />
+                    </>
                   ) : (
-                    <div className="flex flex-col gap-2">
-                      <p className="text-gray-400 text-center text-sm">
-                        No messages yet
-                      </p>
-                    </div>
+                    <>
+                      {isLoadingWinningItems ? (
+                        // Loading skeleton for winning items
+                        Array.from({ length: 3 }).map((_, index) => (
+                          <div
+                            key={`skeleton-win-${index}`}
+                            className="flex items-start space-x-2 py-2"
+                          >
+                            <Skeleton className="h-14 w-14 rounded-full" />
+                            <div className="flex-1 min-w-0 space-y-2">
+                              <Skeleton className="h-4 w-20" />
+                              <Skeleton className="h-4 w-16" />
+                            </div>
+                          </div>
+                        ))
+                      ) : winningItems.length > 0 ? (
+                        winningItems.map((item, index) => (
+                          <div
+                            key={`${item.title}-${index}`}
+                            className="flex items-start space-x-2"
+                          >
+                            <div className="p-1 w-14 h-14 rounded-full bg-neutral-800 flex items-center justify-center">
+                              <Image
+                                src={item.image || '/placeholder.svg'}
+                                alt={item.title}
+                                width={1000}
+                                height={1000}
+                                className="w-12 h-12 object-cover rounded-full"
+                              />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center space-x-2">
+                                <span className="font-semibold text-gray-300 text-sm">
+                                  {item.title}
+                                </span>
+                              </div>
+                              <div className="flex flex-col gap-1 mt-1">
+                                <span className="text-gray-400 text-sm font-semibold">
+                                  $ {item.amount}
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        ))
+                      ) : (
+                        <div className="flex flex-col gap-2">
+                          <p className="text-gray-400 text-center text-sm">
+                            No winning items yet
+                          </p>
+                        </div>
+                      )}
+                    </>
                   )}
-                  <div ref={messagesEndRef} />
                 </div>
               </ScrollArea>
             </div>
 
-            {/* Input - Fixed at bottom */}
-            <div className="flex-shrink-0 p-4 bg-sidebar">
-              {/* <div className="flex space-x-2">
+            {/* Input - Fixed at bottom (only show for chat tab) */}
+            {activeTab === 'chat' && (
+              <div className="flex-shrink-0 p-4 bg-sidebar">
+                {/* <div className="flex space-x-2">
                 <Input
                   value={inputValue}
                   onChange={(e) => setInputValue(e.target.value)}
@@ -310,63 +353,68 @@ export function ChatSidebar({ isOpen, onToggle }: ChatSidebarProps) {
                 </Button>
               </div> */}
 
-              <div className="relative flex items-center w-full rounded-md bg-neutral-800 overflow-hidden">
-                <Input
-                  type="text"
-                  placeholder={
-                    isAuthenticated
-                      ? 'Send a message...'
-                      : 'Please log in to send messages'
-                  }
-                  value={inputValue}
-                  onChange={(e) => setInputValue(e.target.value)}
-                  onKeyDown={handleKeyPress}
-                  disabled={!isAuthenticated || isLoading}
-                  className="flex-grow h-10 pl-4 pr-24 bg-transparent border-none text-gray-200 placeholder:text-gray-400 focus-visible:ring-0 focus-visible:ring-offset-0 disabled:opacity-50 disabled:cursor-not-allowed"
-                />
-                <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-2">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-8 w-8 text-gray-400 hover:bg-transparent hover:text-gray-300"
-                    disabled={!isAuthenticated}
-                  >
-                    <Smile className="h-5 w-5" />
-                    <span className="sr-only">Add emoji</span>
-                  </Button>
-                  <Button
-                    type="submit"
-                    size="icon"
-                    onClick={handleSendMessage}
-                    disabled={
-                      !inputValue.trim() || !isAuthenticated || isLoading
+                <div className="relative flex items-center w-full rounded-md bg-neutral-800 overflow-hidden">
+                  <Input
+                    type="text"
+                    placeholder={
+                      isAuthenticated
+                        ? 'Send a message...'
+                        : 'Please log in to send messages'
                     }
-                    className={cn(
-                      'h-8 w-8 rounded-md bg-brand-purple text-white hover:bg-brand-purple/90',
-                      !inputValue.trim() || !isAuthenticated || isLoading
-                        ? 'opacity-50 cursor-not-allowed'
-                        : 'cursor-pointer'
-                    )}
-                  >
-                    <Send className="h-5 w-5" />
-                    <span className="sr-only">Send message</span>
-                  </Button>
+                    value={inputValue}
+                    onChange={(e) => setInputValue(e.target.value)}
+                    onKeyDown={handleKeyPress}
+                    disabled={!isAuthenticated || sendMessageMutation.isPending}
+                    className="flex-grow h-10 pl-4 pr-24 bg-transparent border-none text-gray-200 placeholder:text-gray-400 focus-visible:ring-0 focus-visible:ring-offset-0 disabled:opacity-50 disabled:cursor-not-allowed"
+                  />
+                  <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-2">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8 text-gray-400 hover:bg-transparent hover:text-gray-300"
+                      disabled={!isAuthenticated}
+                    >
+                      <Smile className="h-5 w-5" />
+                      <span className="sr-only">Add emoji</span>
+                    </Button>
+                    <Button
+                      type="submit"
+                      size="icon"
+                      onClick={handleSendMessage}
+                      disabled={
+                        !inputValue.trim() ||
+                        !isAuthenticated ||
+                        sendMessageMutation.isPending
+                      }
+                      className={cn(
+                        'h-8 w-8 rounded-md bg-brand-purple text-white hover:bg-brand-purple/90',
+                        !inputValue.trim() ||
+                          !isAuthenticated ||
+                          sendMessageMutation.isPending
+                          ? 'opacity-50 cursor-not-allowed'
+                          : 'cursor-pointer'
+                      )}
+                    >
+                      <Send className="h-5 w-5" />
+                      <span className="sr-only">Send message</span>
+                    </Button>
+                  </div>
+                </div>
+                <div className="flex items-center justify-between w-full mt-2">
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-2 bg-neutral-800 hover:bg-neutral-700 text-[#BABABA] hover:text-[#6f6bff] p-1.5 rounded-md">
+                      <DiscordIcon className="h-3 w-3" />
+                    </div>
+                    <div className="flex items-center gap-2 bg-neutral-800 hover:bg-neutral-700 text-[#BCBCBC] hover:text-[#6f6bff] p-1.5 rounded-md">
+                      <XIcon className="h-3 w-3" />
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2 bg-neutral-800 hover:bg-neutral-700 p-1 px-1.5 text-xs rounded-md">
+                    Chat Rules
+                  </div>
                 </div>
               </div>
-              <div className="flex items-center justify-between w-full mt-2">
-                <div className="flex items-center justify-between gap-2">
-                  <div className="flex items-center gap-2 bg-neutral-800 hover:bg-neutral-700 text-[#BABABA] hover:text-[#6f6bff] p-1.5 rounded-md">
-                    <DiscordIcon className="h-3 w-3" />
-                  </div>
-                  <div className="flex items-center gap-2 bg-neutral-800 hover:bg-neutral-700 text-[#BCBCBC] hover:text-[#6f6bff] p-1.5 rounded-md">
-                    <XIcon className="h-3 w-3" />
-                  </div>
-                </div>
-                <div className="flex items-center gap-2 bg-neutral-800 hover:bg-neutral-700 p-1 px-1.5 text-xs rounded-md">
-                  Chat Rules
-                </div>
-              </div>
-            </div>
+            )}
           </div>
         </div>
       </div>
@@ -412,110 +460,197 @@ export function ChatSidebar({ isOpen, onToggle }: ChatSidebarProps) {
             </div>
           </div>
 
-          {/* Messages */}
+          {/* Messages/Wins */}
           <div className="flex-1 overflow-hidden">
             <ScrollArea className="h-full bg-sidebar">
-              <div className="p-4 space-y-4">
-                {messages.length > 0 ? (
-                  messages.map((message) => (
-                    <div
-                      key={message.id}
-                      className="flex items-start space-x-2"
-                    >
-                      <Avatar className="h-10 w-10 border-2 border-neutral-800">
-                        <AvatarImage
-                          src={message.senderImage || '/placeholder.svg'}
-                        />
-                        <AvatarFallback className="bg-neutral-700 text-white text-sm">
-                          {message.senderName.slice(0, 2).toUpperCase()}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center space-x-2">
-                          <span className="font-semibold text-gray-300 text-sm">
-                            {message.senderName}
-                          </span>
-                          {message.formattedDate && (
-                            <span className="text-gray-500 text-xs">
-                              {message.formattedDate}
-                            </span>
-                          )}
+              <div
+                className={cn(
+                  'p-4',
+                  activeTab === 'chat' ? 'space-y-4' : 'space-y-2'
+                )}
+              >
+                {activeTab === 'chat' ? (
+                  <>
+                    {isLoadingMessages ? (
+                      // Loading skeleton for messages
+                      Array.from({ length: 3 }).map((_, index) => (
+                        <div
+                          key={`skeleton-mobile-${index}`}
+                          className="flex items-start space-x-2"
+                        >
+                          <Skeleton className="h-10 w-10 rounded-full" />
+                          <div className="flex-1 min-w-0 space-y-2">
+                            <div className="flex items-center space-x-2">
+                              <Skeleton className="h-4 w-24" />
+                              <Skeleton className="h-3 w-16" />
+                            </div>
+                            <Skeleton className="h-4 w-full max-w-[200px]" />
+                          </div>
                         </div>
-                        <p className="text-gray-400 text-sm leading-[1.3] break-words font-semibold">
-                          {message.content}
+                      ))
+                    ) : messages.length > 0 ? (
+                      messages.map((message) => (
+                        <div
+                          key={message.id}
+                          className="flex items-start space-x-2"
+                        >
+                          <Avatar className="h-10 w-10 border-2 border-neutral-800">
+                            <AvatarImage
+                              src={message.senderImage || '/placeholder.svg'}
+                            />
+                            <AvatarFallback className="bg-neutral-700 text-white text-sm">
+                              {message.senderName.slice(0, 2).toUpperCase()}
+                            </AvatarFallback>
+                          </Avatar>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center space-x-2">
+                              <span className="font-semibold text-gray-300 text-sm">
+                                {message.senderName}
+                              </span>
+                              {message.formattedDate && (
+                                <span className="text-gray-500 text-xs">
+                                  {message.formattedDate}
+                                </span>
+                              )}
+                            </div>
+                            <p className="text-gray-400 text-sm leading-[1.3] break-words font-semibold">
+                              {message.content}
+                            </p>
+                          </div>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="flex flex-col gap-2">
+                        <p className="text-gray-400 text-center text-sm">
+                          No messages yet
                         </p>
                       </div>
-                    </div>
-                  ))
+                    )}
+                    <div ref={messagesEndRef} />
+                  </>
                 ) : (
-                  <div className="flex flex-col gap-2">
-                    <p className="text-gray-400 text-center text-sm">
-                      No messages yet
-                    </p>
-                  </div>
+                  <>
+                    {isLoadingWinningItems ? (
+                      // Loading skeleton for winning items
+                      Array.from({ length: 3 }).map((_, index) => (
+                        <div
+                          key={`skeleton-win-mobile-${index}`}
+                          className="flex items-start space-x-2 py-2"
+                        >
+                          <Skeleton className="h-14 w-14 rounded-full" />
+                          <div className="flex-1 min-w-0 space-y-2">
+                            <Skeleton className="h-4 w-20" />
+                            <Skeleton className="h-4 w-16" />
+                          </div>
+                        </div>
+                      ))
+                    ) : winningItems.length > 0 ? (
+                      winningItems.map((item, index) => (
+                        <div
+                          key={`${item.title}-${index}`}
+                          className="flex items-start space-x-2"
+                        >
+                          <div className="p-1 w-14 h-14 rounded-full bg-neutral-800 flex items-center justify-center">
+                            <Image
+                              src={item.image || '/placeholder.svg'}
+                              alt={item.title}
+                              width={1000}
+                              height={1000}
+                              className="w-12 h-12 object-cover rounded-full"
+                            />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center space-x-2">
+                              <span className="font-semibold text-gray-300 text-sm">
+                                {item.title}
+                              </span>
+                            </div>
+                            <div className="flex flex-col gap-1 mt-1">
+                              <span className="text-gray-400 text-sm font-semibold">
+                                $ {item.amount}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="flex flex-col gap-2">
+                        <p className="text-gray-400 text-center text-sm">
+                          No winning items yet
+                        </p>
+                      </div>
+                    )}
+                  </>
                 )}
-                <div ref={messagesEndRef} />
               </div>
             </ScrollArea>
           </div>
 
-          {/* Input */}
-          <div className="flex-shrink-0 p-4 bg-sidebar">
-            <div className="relative flex items-center w-full rounded-md bg-neutral-800 overflow-hidden">
-              <Input
-                type="text"
-                placeholder={
-                  isAuthenticated
-                    ? 'Send a message...'
-                    : 'Please log in to send messages'
-                }
-                value={inputValue}
-                onChange={(e) => setInputValue(e.target.value)}
-                onKeyDown={handleKeyPress}
-                disabled={!isAuthenticated || isLoading}
-                className="flex-grow h-10 pl-4 pr-24 bg-transparent border-none text-gray-200 placeholder:text-gray-400 focus-visible:ring-0 focus-visible:ring-offset-0 disabled:opacity-50 disabled:cursor-not-allowed"
-              />
-              <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-2">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8 text-gray-400 hover:bg-transparent hover:text-gray-300"
-                  disabled={!isAuthenticated}
-                >
-                  <Smile className="h-5 w-5" />
-                  <span className="sr-only">Add emoji</span>
-                </Button>
-                <Button
-                  type="submit"
-                  size="icon"
-                  onClick={handleSendMessage}
-                  disabled={!inputValue.trim() || !isAuthenticated || isLoading}
-                  className={cn(
-                    'h-8 w-8 rounded-md bg-brand-purple text-white hover:bg-brand-purple/90',
-                    !inputValue.trim() || !isAuthenticated || isLoading
-                      ? 'opacity-50 cursor-not-allowed'
-                      : 'cursor-pointer'
-                  )}
-                >
-                  <Send className="h-5 w-5" />
-                  <span className="sr-only">Send message</span>
-                </Button>
-              </div>
-            </div>
-            <div className="flex items-center justify-between w-full mt-2">
-              <div className="flex items-center justify-between gap-2">
-                <div className="flex items-center gap-2 bg-neutral-800 hover:bg-neutral-700 text-[#BABABA] hover:text-[#6f6bff] p-1.5 rounded-md">
-                  <DiscordIcon className="h-3 w-3" />
-                </div>
-                <div className="flex items-center gap-2 bg-neutral-800 hover:bg-neutral-700 text-[#BCBCBC] hover:text-[#6f6bff] p-1.5 rounded-md">
-                  <XIcon className="h-3 w-3" />
+          {/* Input (only show for chat tab) */}
+          {activeTab === 'chat' && (
+            <div className="flex-shrink-0 p-4 bg-sidebar">
+              <div className="relative flex items-center w-full rounded-md bg-neutral-800 overflow-hidden">
+                <Input
+                  type="text"
+                  placeholder={
+                    isAuthenticated
+                      ? 'Send a message...'
+                      : 'Please log in to send messages'
+                  }
+                  value={inputValue}
+                  onChange={(e) => setInputValue(e.target.value)}
+                  onKeyDown={handleKeyPress}
+                  disabled={!isAuthenticated || sendMessageMutation.isPending}
+                  className="flex-grow h-10 pl-4 pr-24 bg-transparent border-none text-gray-200 placeholder:text-gray-400 focus-visible:ring-0 focus-visible:ring-offset-0 disabled:opacity-50 disabled:cursor-not-allowed"
+                />
+                <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-2">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 text-gray-400 hover:bg-transparent hover:text-gray-300"
+                    disabled={!isAuthenticated}
+                  >
+                    <Smile className="h-5 w-5" />
+                    <span className="sr-only">Add emoji</span>
+                  </Button>
+                  <Button
+                    type="submit"
+                    size="icon"
+                    onClick={handleSendMessage}
+                    disabled={
+                      !inputValue.trim() ||
+                      !isAuthenticated ||
+                      sendMessageMutation.isPending
+                    }
+                    className={cn(
+                      'h-8 w-8 rounded-md bg-brand-purple text-white hover:bg-brand-purple/90',
+                      !inputValue.trim() ||
+                        !isAuthenticated ||
+                        sendMessageMutation.isPending
+                        ? 'opacity-50 cursor-not-allowed'
+                        : 'cursor-pointer'
+                    )}
+                  >
+                    <Send className="h-5 w-5" />
+                    <span className="sr-only">Send message</span>
+                  </Button>
                 </div>
               </div>
-              <div className="flex items-center gap-2 bg-neutral-800 hover:bg-neutral-700 p-1 px-1.5 text-xs rounded-md">
-                Chat Rules
+              <div className="flex items-center justify-between w-full mt-2">
+                <div className="flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-2 bg-neutral-800 hover:bg-neutral-700 text-[#BABABA] hover:text-[#6f6bff] p-1.5 rounded-md">
+                    <DiscordIcon className="h-3 w-3" />
+                  </div>
+                  <div className="flex items-center gap-2 bg-neutral-800 hover:bg-neutral-700 text-[#BCBCBC] hover:text-[#6f6bff] p-1.5 rounded-md">
+                    <XIcon className="h-3 w-3" />
+                  </div>
+                </div>
+                <div className="flex items-center gap-2 bg-neutral-800 hover:bg-neutral-700 p-1 px-1.5 text-xs rounded-md">
+                  Chat Rules
+                </div>
               </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
 
