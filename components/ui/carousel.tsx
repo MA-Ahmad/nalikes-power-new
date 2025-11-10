@@ -57,9 +57,7 @@ function Carousel({
       ...opts,
       axis: orientation === 'horizontal' ? 'x' : 'y',
     },
-    // plugins,
-    // @ts-expect-error 'opts' is not defined
-    opts?.autoPlay && [Autoplay({ playOnInit: true, delay: 5000 })]
+    plugins
   )
   const [canScrollPrev, setCanScrollPrev] = React.useState(false)
   const [canScrollNext, setCanScrollNext] = React.useState(false)
@@ -239,6 +237,75 @@ function CarouselNext({
   )
 }
 
+function CarouselDots({ className, ...props }: React.ComponentProps<'div'>) {
+  const { api } = useCarousel()
+  const [selectedIndex, setSelectedIndex] = React.useState(0)
+  const [scrollSnaps, setScrollSnaps] = React.useState<number[]>([])
+
+  const onDotButtonClick = React.useCallback(
+    (index: number) => {
+      if (!api) return
+      api.scrollTo(index)
+      // Reset autoplay after manual navigation
+      const autoplay = api.plugins()?.autoplay
+      if (autoplay) {
+        autoplay.reset()
+      }
+    },
+    [api]
+  )
+
+  const onInit = React.useCallback((api: CarouselApi) => {
+    if (!api) return
+    setScrollSnaps(api.scrollSnapList())
+  }, [])
+
+  const onSelect = React.useCallback((api: CarouselApi) => {
+    if (!api) return
+    setSelectedIndex(api.selectedScrollSnap())
+  }, [])
+
+  React.useEffect(() => {
+    if (!api) return
+
+    onInit(api)
+    onSelect(api)
+    api.on('reInit', onInit).on('reInit', onSelect).on('select', onSelect)
+
+    return () => {
+      api.off('reInit', onInit).off('reInit', onSelect).off('select', onSelect)
+    }
+  }, [api, onInit, onSelect])
+
+  if (scrollSnaps.length <= 1) return null
+
+  return (
+    <div
+      className={cn(
+        'flex justify-center gap-2 absolute bottom-3 left-1/2 -translate-x-1/2',
+        className
+      )}
+      data-slot="carousel-dots"
+      {...props}
+    >
+      {scrollSnaps.map((_, index) => (
+        <button
+          key={index}
+          type="button"
+          onClick={() => onDotButtonClick(index)}
+          className={cn(
+            'h-2 w-2 rounded-full transition-all',
+            selectedIndex === index
+              ? 'bg-white w-6'
+              : 'bg-white/50 hover:bg-white/75'
+          )}
+          aria-label={`Go to slide ${index + 1}`}
+        />
+      ))}
+    </div>
+  )
+}
+
 export {
   type CarouselApi,
   Carousel,
@@ -246,4 +313,5 @@ export {
   CarouselItem,
   CarouselPrevious,
   CarouselNext,
+  CarouselDots,
 }

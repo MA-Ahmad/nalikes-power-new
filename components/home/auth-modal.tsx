@@ -3,12 +3,13 @@
 import { X } from 'lucide-react'
 import Image from 'next/image'
 import { useState, useRef, useEffect } from 'react'
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQuery } from '@tanstack/react-query'
 // import ReCAPTCHA from 'react-google-recaptcha'
 import { toast } from 'react-hot-toast'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
+import Autoplay from 'embla-carousel-autoplay'
 
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog'
@@ -16,9 +17,109 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Checkbox } from '@/components/ui/checkbox'
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselDots,
+} from '@/components/ui/carousel'
 
 import { authApi, SendCodeData } from '@/lib/auth-api'
 import { VerificationModal } from './verification-modal'
+
+function CarouselWithAutoplay() {
+  const plugin = useRef(
+    Autoplay({ delay: 4000, stopOnInteraction: false, playOnInit: true })
+  )
+
+  // Fetch images from backend
+  const {
+    data: images = [],
+    isLoading,
+    isError,
+  } = useQuery({
+    queryKey: ['auth-modal-images'],
+    queryFn: authApi.getAuthModalImages,
+    staleTime: 5 * 60 * 1000, // Cache for 5 minutes
+  })
+
+  // Fallback images if API fails or returns empty
+  const fallbackImages: Array<{
+    id: string
+    image: string
+    title: string
+    description: string
+    orderIndex: number
+    isActive: boolean
+  }> = [
+    {
+      id: '1',
+      image: '/images/modal-hero.png',
+      title: 'Powerblocks Hero 1',
+      description: '',
+      orderIndex: 0,
+      isActive: true,
+    },
+    {
+      id: '2',
+      image: '/images/hero2.png',
+      title: 'Powerblocks Hero 2',
+      description: '',
+      orderIndex: 1,
+      isActive: true,
+    },
+  ]
+
+  const displayImages = images.length > 0 ? images : fallbackImages
+
+  // Sort by orderIndex
+  const sortedImages = [...displayImages].sort((a, b) => {
+    return a.orderIndex - b.orderIndex
+  })
+
+  if (isLoading) {
+    return (
+      <div className="w-full max-w-sm flex items-center justify-center h-[400px]">
+        <div className="text-white">Loading images...</div>
+      </div>
+    )
+  }
+
+  if (sortedImages.length === 0) {
+    return null
+  }
+
+  return (
+    <Carousel
+      plugins={[plugin.current]}
+      className="w-full max-w-sm"
+      onMouseEnter={plugin.current.stop}
+      onMouseLeave={plugin.current.reset}
+      opts={{
+        loop: true,
+        align: 'start',
+      }}
+    >
+      <CarouselContent>
+        {sortedImages.map((image, index) => (
+          <CarouselItem key={image.id || index}>
+            <div className="flex items-center justify-center">
+              <Image
+                src={image.image}
+                alt={image.title || image.description || 'Powerblocks Hero'}
+                width={300}
+                height={400}
+                className="object-cover rounded-md"
+                priority={index === 0}
+              />
+            </div>
+          </CarouselItem>
+        ))}
+      </CarouselContent>
+      <CarouselDots />
+    </Carousel>
+  )
+}
 
 // Validation schemas
 const signupSchema = z.object({
@@ -366,28 +467,21 @@ export function AuthModal({ open, onOpenChange }: AuthModalProps) {
               </div>
             </div>
 
-            {/* Right side - Image */}
-            <div className="flex-1 relative min-w-0 hidden lg:flex border-l border-neutral-800 flex-col items-center justify-center">
+            {/* Right side - Image Carousel */}
+            <div className="flex-1 relative min-w-0 hidden lg:flex border-l border-neutral-800 flex-col items-center justify-center p-8">
               <button
                 onClick={() => onOpenChange(false)}
                 className="absolute top-4 right-4 z-10 text-white hover:text-gray-300"
               >
                 <X className="h-6 w-6" />
               </button>
-              <Image
-                src="/images/modal-hero2.png"
-                alt="Powerblocks Hero"
-                width={300}
-                height={400}
-                className="object-contain rounded-md"
-                priority
-              />
-              <div className="text-white mt-4 text-center">
+              <CarouselWithAutoplay />
+              {/* <div className="text-white mt-4 text-center">
                 <div className="text-lg font-semibold">
                   From the Streets to the Jet.
                 </div>
                 <div className="text-lg font-semibold">Let&apos;s go dawg</div>
-              </div>
+              </div> */}
             </div>
           </div>
         </DialogContent>
