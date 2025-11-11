@@ -2,9 +2,6 @@ import type { NextConfig } from 'next'
 
 const nextConfig: NextConfig = {
   /* config options here */
-  images: {
-    remotePatterns: [],
-  },
   async rewrites() {
     return [
       {
@@ -14,6 +11,19 @@ const nextConfig: NextConfig = {
           'https://powerblock-backend-production.up.railway.app/api/:path*',
       },
     ]
+  },
+  images: {
+    domains: [
+      'localhost',
+      'hiway-dev.s3.eu-north-1.amazonaws.com',
+      'powerblock.s3.us-west-1.amazonaws.com',
+    ],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'powerblock.s3.us-west-1.amazonaws.com',
+      },
+    ],
   },
   async headers() {
     return [
