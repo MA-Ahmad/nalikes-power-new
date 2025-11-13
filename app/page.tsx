@@ -13,6 +13,7 @@ import { useRouter } from 'next/navigation'
 import { x1Testnet } from 'viem/chains'
 import { useIsMobile } from '@/hooks/use-mobile'
 import { motion } from 'framer-motion'
+import { useMiniGames } from '@/hooks/use-mini-games'
 
 export default function Home() {
   const [isChatOpen, setIsChatOpen] = useState(false)
@@ -161,7 +162,7 @@ const TypingText = ({ text, delay = 0 }: { text: string; delay?: number }) => {
 
 function GameCardsDesktop() {
   const [hovered, setHovered] = useState<number | null>(null)
-
+  const { data: games = [], isLoading } = useMiniGames()
   const offsets = [
     { left: '45px', top: '65px', rotate: '-10deg', z: 8 },
     { left: '19px', top: '30px', rotate: '-6deg', z: 9 },
@@ -171,16 +172,24 @@ function GameCardsDesktop() {
     { left: '-82px', top: '65px', rotate: '10deg', z: 10 },
   ]
 
+  if (isLoading) {
+    return (
+      <div className="flex justify-center gap-4 py-10">
+        <div className="text-white">Loading games...</div>
+      </div>
+    )
+  }
+
   return (
     <>
       <div className="flex justify-center gap-4 py-10">
-        {[1, 2, 3, 4, 5, 6].map((item, index) => {
-          const { left, top, rotate, z } = offsets[index]
+        {games.map((game, index) => {
+          const { left, top, rotate, z } = offsets[index] || {}
           const isHovered = hovered === index
 
           return (
             <div
-              key={item}
+              key={game.gameid}
               onMouseEnter={() => setHovered(index)}
               onMouseLeave={() => setHovered(null)}
               className={`relative transition-all duration-300 ease-out cursor-pointer ${
@@ -194,8 +203,8 @@ function GameCardsDesktop() {
               }}
             >
               <Image
-                src={`/images/games/${item}.svg`}
-                alt={`Game ${item}`}
+                src={`/images/games/${game.slug}.svg`}
+                alt={`Game ${game.name}`}
                 width={200}
                 height={260}
                 className="rounded-xl object-cover shadow-lg select-none"
@@ -209,8 +218,11 @@ function GameCardsDesktop() {
 }
 
 const GameCardsMobile = () => {
-  const firstRow = [1, 2, 3]
-  const secondRow = [4, 5, 6]
+  const { data: games = [], isLoading } = useMiniGames()
+
+  // Split games into two rows
+  const firstRow = games.slice(0, 3)
+  const secondRow = games.slice(3, 6)
 
   const getCardStyle = (position: number) => {
     // 0 = left, 1 = center, 2 = right
@@ -222,21 +234,29 @@ const GameCardsMobile = () => {
     return styles[position]
   }
 
-  const renderRow = (items: number[]) => (
+  if (isLoading) {
+    return (
+      <div className="flex flex-col items-center">
+        <div className="text-white">Loading games...</div>
+      </div>
+    )
+  }
+
+  const renderRow = (items: typeof games) => (
     <div className="flex justify-center items-end gap-4 mt-6 relative">
-      {items.map((item, i) => {
+      {items.map((game, i) => {
         const style = getCardStyle(i)
         return (
           <div
-            key={item}
+            key={game.gameid}
             className="relative transition-all duration-300 hover:-translate-y-2 hover:z-50"
             style={{
               ...style,
             }}
           >
             <Image
-              src={`/images/games/${item}.svg`}
-              alt={`Game ${item}`}
+              src={`/images/games/${game.slug}.svg`}
+              alt={`Game ${game.name}`}
               width={150}
               height={200}
               className="object-cover rounded-xl shadow-md transition-transform duration-300 hover:scale-105"
