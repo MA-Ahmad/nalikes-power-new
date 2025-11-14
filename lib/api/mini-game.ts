@@ -27,6 +27,22 @@ export interface Game {
   status: number
 }
 
+// Enter game request
+export interface EnterGameRequest {
+  gameid: string
+  currency: string
+  screen_mode: number
+}
+
+// Enter game response format
+export interface EnterGameResponse {
+  code: number
+  msg: string
+  data: {
+    gameurl: string
+  }
+}
+
 // Map backend game names to SVG slugs
 const GAME_NAME_TO_SLUG: Record<string, string> = {
   BlackJack: 'blackjack',
@@ -53,5 +69,11 @@ export const miniGameApi = {
         gametype: game.gametype,
         status: game.status,
       }))
+  },
+
+  // Enter game
+  enterGame: async (data: EnterGameRequest): Promise<string> => {
+    const response = await api.post<EnterGameResponse>('/mini-game/enter', data)
+    return response.data.data.gameurl
   },
 }

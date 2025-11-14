@@ -13,12 +13,35 @@ import { useRouter } from 'next/navigation'
 import { x1Testnet } from 'viem/chains'
 import { useIsMobile } from '@/hooks/use-mobile'
 import { motion } from 'framer-motion'
-import { useMiniGames } from '@/hooks/use-mini-games'
+import { useMiniGames, useEnterGame } from '@/hooks/use-mini-games'
+import { Game } from '@/lib/api/mini-game'
 
 export default function Home() {
   const [isChatOpen, setIsChatOpen] = useState(false)
+  const [gameUrl, setGameUrl] = useState<string | null>(null)
   const router = useRouter()
   const isMobile = useIsMobile()
+
+  const enterGameMutation = useEnterGame({
+    onSuccess: (url) => {
+      setGameUrl(url)
+    },
+    onError: (error) => {
+      console.error('Failed to enter game:', error)
+    },
+  })
+
+  const handleGameClick = (game: Game) => {
+    enterGameMutation.mutate({
+      gameid: game.gameid,
+      currency: 'usd',
+      screen_mode: 1,
+    })
+  }
+
+  const handleCloseGame = () => {
+    setGameUrl(null)
+  }
 
   const toggleChat = () => {
     setIsChatOpen(!isChatOpen)
@@ -72,54 +95,21 @@ export default function Home() {
               <h1 className="text-lg sm:text-2xl font-bold text-center mb-8">
                 PWR Originals
               </h1>
-              {/* <Image
-                src={'/images/home/cards.png'}
-                alt="Banner"
-                width={1920}
-                height={600}
-                className="w-full h-full object-cover "
-              /> */}
+              {isMobile ? (
+                <GameCardsMobile onGameClick={handleGameClick} />
+              ) : (
+                <GameCardsDesktop onGameClick={handleGameClick} />
+              )}
 
-              {/* <div className="flex justify-center gap-4">
-                {[1, 2, 3, 4, 5, 6].map((item, index) => {
-                  // Define custom rotation & offset similar to your HTML example
-                  const offsets = [
-                    { left: '45px', top: '65px', rotate: '-10deg', z: 8 },
-                    { left: '19px', top: '30px', rotate: '-6deg', z: 9 },
-                    { left: '-5px', top: '10px', rotate: '-2deg', z: 10 },
-                    { left: '-29px', top: '10px', rotate: '2deg', z: 10 },
-                    { left: '-54px', top: '30px', rotate: '6deg', z: 10 },
-                    { left: '-82px', top: '65px', rotate: '10deg', z: 10 },
-                  ]
-
-                  const { left, top, rotate, z } = offsets[index]
-
-                  return (
-                    <div
-                      key={item}
-                      className="relative transition-transform duration-300 hover:brightness-110"
-                      style={{
-                        position: 'relative',
-                        left,
-                        top,
-                        transform: `rotate(${rotate})`,
-                        zIndex: z,
-                      }}
-                    >
-                      <Image
-                        src={`/images/games/${item}.svg`}
-                        alt={`Game ${item}`}
-                        width={200}
-                        height={260}
-                        className="rounded-xl object-cover shadow-lg"
-                      />
-                    </div>
-                  )
-                })}
-              </div> */}
-
-              {isMobile ? <GameCardsMobile /> : <GameCardsDesktop />}
+              {/* Game iframe displayed under games list */}
+              {gameUrl && (
+                <div className="mt-8">
+                  <GameIframe url={gameUrl} onClose={handleCloseGame} />
+                </div>
+              )}
             </div>
+
+            {/* Iframe here */}
             <div className="">
               <Banner />
             </div>
@@ -160,7 +150,11 @@ const TypingText = ({ text, delay = 0 }: { text: string; delay?: number }) => {
   )
 }
 
-function GameCardsDesktop() {
+function GameCardsDesktop({
+  onGameClick,
+}: {
+  onGameClick: (game: Game) => void
+}) {
   const [hovered, setHovered] = useState<number | null>(null)
   const { data: games = [], isLoading } = useMiniGames()
   const offsets = [
@@ -190,6 +184,7 @@ function GameCardsDesktop() {
           return (
             <div
               key={game.gameid}
+              onClick={() => onGameClick(game)}
               onMouseEnter={() => setHovered(index)}
               onMouseLeave={() => setHovered(null)}
               className={`relative transition-all duration-300 ease-out cursor-pointer ${
@@ -217,7 +212,11 @@ function GameCardsDesktop() {
   )
 }
 
-const GameCardsMobile = () => {
+const GameCardsMobile = ({
+  onGameClick,
+}: {
+  onGameClick: (game: Game) => void
+}) => {
   const { data: games = [], isLoading } = useMiniGames()
 
   // Split games into two rows
@@ -249,7 +248,8 @@ const GameCardsMobile = () => {
         return (
           <div
             key={game.gameid}
-            className="relative transition-all duration-300 hover:-translate-y-2 hover:z-50"
+            onClick={() => onGameClick(game)}
+            className="relative transition-all duration-300 hover:-translate-y-2 hover:z-50 cursor-pointer"
             style={{
               ...style,
             }}
@@ -271,6 +271,36 @@ const GameCardsMobile = () => {
     <div className="flex flex-col items-center">
       {renderRow(firstRow)}
       {renderRow(secondRow)}
+    </div>
+  )
+}
+
+// Game iframe component
+function GameIframe({ url, onClose }: { url: string; onClose: () => void }) {
+  return (
+    <div className="relative w-full bg-black rounded-lg overflow-hidden shadow-lg">
+      {/* Close button */}
+      <div className="flex justify-end p-4">
+        <button
+          onClick={onClose}
+          className="bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-lg transition-colors flex items-center gap-2"
+        >
+          <span>✕</span>
+          <span>Close</span>
+        </button>
+      </div>
+      {/* Game iframe */}
+      <div
+        className="w-full"
+        style={{ aspectRatio: '16/9', minHeight: '600px' }}
+      >
+        <iframe
+          src={url}
+          className="w-full h-full border-0"
+          allow="fullscreen"
+          allowFullScreen
+        />
+      </div>
     </div>
   )
 }
