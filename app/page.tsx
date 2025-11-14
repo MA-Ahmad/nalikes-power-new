@@ -15,6 +15,7 @@ import { useIsMobile } from '@/hooks/use-mobile'
 import { motion } from 'framer-motion'
 import { useMiniGames, useEnterGame } from '@/hooks/use-mini-games'
 import { Game } from '@/lib/api/mini-game'
+import { ArrowLeft } from 'lucide-react'
 
 export default function Home() {
   const [isChatOpen, setIsChatOpen] = useState(false)
@@ -49,72 +50,74 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-black relative">
       <Navbar />
-      <div className="relative sm:pt-10">
-        <Image
-          src={'/images/home/hero.png'}
-          alt="Banner"
-          width={1920}
-          height={600}
-          className="w-full h-full object-cover hidden sm:block"
-        />
+      {!gameUrl && (
+        <div className="relative sm:pt-10">
+          <Image
+            src={'/images/home/hero.png'}
+            alt="Banner"
+            width={1920}
+            height={600}
+            className="w-full h-full object-cover hidden sm:block"
+          />
 
-        <Image
-          src={'/images/home/mobile-hero.svg'}
-          alt="Banner"
-          width={1920}
-          height={600}
-          className="w-full h-full object-cover block sm:hidden"
-        />
-        {/* <div className="absolute top-16 sm:top-20 lg:top-[15%] left-1/2 -translate-x-1/2  flex items-center justify-center flex-col text-center gap-2">
+          <Image
+            src={'/images/home/mobile-hero.svg'}
+            alt="Banner"
+            width={1920}
+            height={600}
+            className="w-full h-full object-cover block sm:hidden"
+          />
+          {/* <div className="absolute top-16 sm:top-20 lg:top-[15%] left-1/2 -translate-x-1/2  flex items-center justify-center flex-col text-center gap-2">
           <h1 className="text-xl sm:text-3xl lg:text-5xl font-bold ">
             Enter The PWR City
           </h1>
           <p className="md:text-xl">Gamble Like a Degen. Win Like a Degen</p>
         </div> */}
 
-        <div className="absolute w-full top-32 sm:top-20 lg:top-[15%] left-1/2 -translate-x-1/2 flex items-center justify-center flex-col text-center gap-2">
-          <h1 className="text-2xl sm:text-3xl lg:text-5xl font-bold">
-            <TypingText text="Enter The PWR City" delay={0.2} />
-          </h1>
-          <p className="md:text-xl">
-            <TypingText
-              text="Gamble Like a Degen. Win Like a Degen"
-              delay={1.5}
-            />
-          </p>
+          <div className="absolute w-full top-32 sm:top-20 lg:top-[15%] left-1/2 -translate-x-1/2 flex items-center justify-center flex-col text-center gap-2">
+            <h1 className="text-2xl sm:text-3xl lg:text-5xl font-bold">
+              <TypingText text="Enter The PWR City" delay={0.2} />
+            </h1>
+            <p className="md:text-xl">
+              <TypingText
+                text="Gamble Like a Degen. Win Like a Degen"
+                delay={1.5}
+              />
+            </p>
+          </div>
         </div>
-      </div>
-      <div className="flex ">
+      )}
+      <div className="flex">
         <main
           className={`flex-1 px-4 py-4 bg-[#040315] sm:bg-transparent transition-all duration-300 ease-in-out ${
             isChatOpen ? 'lg:mr-80' : 'lg:mr-0'
-          }`}
+          }
+          `}
         >
-          <div className="max-w-[1500px] mx-auto space-y-8 sm:space-y-20">
-            <div className="pb-[3rem] sm:pb-[2rem] relative">
-              <h1 className="text-lg sm:text-2xl font-bold text-center mb-8">
-                PWR Originals
-              </h1>
-              {isMobile ? (
-                <GameCardsMobile onGameClick={handleGameClick} />
-              ) : (
-                <GameCardsDesktop onGameClick={handleGameClick} />
-              )}
-
-              {/* Game iframe displayed under games list */}
-              {gameUrl && (
-                <div className="mt-8">
-                  <GameIframe url={gameUrl} onClose={handleCloseGame} />
-                </div>
-              )}
+          {gameUrl ? (
+            <div className="mt-8">
+              <GameIframe url={gameUrl} onClose={handleCloseGame} />
             </div>
+          ) : (
+            <div className="max-w-[1500px] mx-auto space-y-8 sm:space-y-20">
+              <div className="pb-[3rem] sm:pb-[2rem] relative">
+                <h1 className="text-lg sm:text-2xl font-bold text-center mb-8">
+                  PWR Originals
+                </h1>
+                {isMobile ? (
+                  <GameCardsMobile onGameClick={handleGameClick} />
+                ) : (
+                  <GameCardsDesktop onGameClick={handleGameClick} />
+                )}
+              </div>
 
-            {/* Iframe here */}
-            <div className="">
-              <Banner />
+              {/* Iframe here */}
+              <div className="">
+                <Banner />
+              </div>
+              <SectionCards />
             </div>
-            <SectionCards />
-          </div>
+          )}
         </main>
 
         {/* Chat Sidebar - Part of layout on desktop, overlay on mobile */}
@@ -280,7 +283,13 @@ function GameIframe({ url, onClose }: { url: string; onClose: () => void }) {
   return (
     <div className="relative w-full bg-black rounded-lg overflow-hidden shadow-lg">
       {/* Close button */}
-      <div className="flex justify-end p-4">
+      <div className="flex justify-end w-full p-4">
+        {/* <div
+          className="text-white hover:-translate-x-1 transition-all duration-300 ease-in-out cursor-pointer z-[5] flex items-center gap-2"
+          onClick={() => router.push('/')}
+        >
+          <ArrowLeft className="w-4 h-4" /> <span>Back</span>
+        </div> */}
         <button
           onClick={onClose}
           className="bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-lg transition-colors flex items-center gap-2"
