@@ -15,13 +15,17 @@ import { useIsMobile } from '@/hooks/use-mobile'
 import { motion } from 'framer-motion'
 import { useMiniGames, useEnterGame } from '@/hooks/use-mini-games'
 import { Game } from '@/lib/api/mini-game'
-import { ArrowLeft } from 'lucide-react'
+import { ArrowLeft, RefreshCcw } from 'lucide-react'
+import { useAuthStore } from '@/store/auth'
+import { toast } from 'react-hot-toast'
 
 export default function Home() {
   const [isChatOpen, setIsChatOpen] = useState(false)
   const [gameUrl, setGameUrl] = useState<string | null>(null)
+  const [isRefetchingBalance, setIsRefetchingBalance] = useState(false)
   const router = useRouter()
   const isMobile = useIsMobile()
+  const { syncWalletStatus } = useAuthStore()
 
   const enterGameMutation = useEnterGame({
     onSuccess: (url) => {
@@ -42,6 +46,19 @@ export default function Home() {
 
   const handleCloseGame = () => {
     setGameUrl(null)
+  }
+
+  const handleRefetchBalance = async () => {
+    setIsRefetchingBalance(true)
+    try {
+      await syncWalletStatus()
+      // toast.success('Balance updated successfully')
+    } catch (error) {
+      toast.error('Failed to refetch balance')
+      console.error('Failed to refetch balance:', error)
+    } finally {
+      setIsRefetchingBalance(false)
+    }
   }
 
   const toggleChat = () => {
@@ -96,7 +113,12 @@ export default function Home() {
         >
           {gameUrl ? (
             <div className="mt-8">
-              <GameIframe url={gameUrl} onClose={handleCloseGame} />
+              <GameIframe
+                url={gameUrl}
+                onClose={handleCloseGame}
+                onRefetchBalance={handleRefetchBalance}
+                isRefetching={isRefetchingBalance}
+              />
             </div>
           ) : (
             <div className="max-w-[1500px] mx-auto space-y-8 sm:space-y-20">
@@ -279,17 +301,31 @@ const GameCardsMobile = ({
 }
 
 // Game iframe component
-function GameIframe({ url, onClose }: { url: string; onClose: () => void }) {
+function GameIframe({
+  url,
+  onClose,
+  onRefetchBalance,
+  isRefetching,
+}: {
+  url: string
+  onClose: () => void
+  onRefetchBalance: () => void
+  isRefetching: boolean
+}) {
   return (
     <div className="relative w-full bg-black rounded-lg overflow-hidden shadow-lg">
       {/* Close button */}
-      <div className="flex justify-end w-full p-4">
-        {/* <div
-          className="text-white hover:-translate-x-1 transition-all duration-300 ease-in-out cursor-pointer z-[5] flex items-center gap-2"
-          onClick={() => router.push('/')}
+      <div className="flex justify-end gap-2 w-full p-4">
+        <button
+          onClick={onRefetchBalance}
+          disabled={isRefetching}
+          className="bg-white/10 hover:bg-white/20 disabled:opacity-50 disabled:cursor-not-allowed text-white px-4 py-2 rounded-lg transition-colors flex items-center gap-2"
         >
-          <ArrowLeft className="w-4 h-4" /> <span>Back</span>
-        </div> */}
+          <RefreshCcw
+            className={`w-4 h-4 ${isRefetching ? 'animate-spin' : ''}`}
+          />
+          <span>{isRefetching ? 'Refetching...' : 'Refetch Balance'}</span>
+        </button>
         <button
           onClick={onClose}
           className="bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-lg transition-colors flex items-center gap-2"
