@@ -55,7 +55,7 @@ export const authApi = {
   },
 
   verifyCode: async (data: VerifyCodeData): Promise<AuthResponse> => {
-    const response = await api.post('/auth/verify-code', data)
+    const response = await api.post('/auth/confirm-access', data)
     return response.data
   },
 
