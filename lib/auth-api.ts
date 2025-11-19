@@ -50,7 +50,7 @@ export interface AuthModalImagesResponse {
 
 export const authApi = {
   sendCode: async (data: SendCodeData): Promise<SendCodeResponse> => {
-    const response = await api.post('/auth/send-code', data)
+    const response = await api.post('/auth/request-access', data)
     return response.data
   },
 
@@ -69,7 +69,9 @@ export const authApi = {
   },
 
   getAuthModalImages: async (): Promise<AuthModalImage[]> => {
-    const response = await api.get<AuthModalImagesResponse>('/auth-modal-images')
+    const response = await api.get<AuthModalImagesResponse>(
+      '/auth-modal-images'
+    )
     // Filter only active images and return the array
     return response.data.images.filter((img) => img.isActive)
   },

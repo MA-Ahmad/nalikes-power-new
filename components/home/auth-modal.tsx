@@ -269,11 +269,11 @@ export function AuthModal({ open, onOpenChange }: AuthModalProps) {
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent
-          className="w-full lg:min-w-4xl mx-4 p-0 bg-neutral-900 border-neutral-400 overflow-hidden rounded-2xl"
+          className="w-full lg:min-w-4xl sm:mx-4 p-0 bg-neutral-900 border-neutral-400 overflow-hidden rounded-2xl"
           showCloseButton={false}
         >
           <DialogTitle className="sr-only">Authentication</DialogTitle>
-          <div className="flex h-[600px] max-h-[90vh]">
+          <div className="flex sm:h-[600px] max-h-[90vh]">
             {/* Left side - Form */}
             <div className="flex-1 flex flex-col min-h-0">
               <div className="flex-1 overflow-y-auto">
@@ -283,9 +283,9 @@ export function AuthModal({ open, onOpenChange }: AuthModalProps) {
                     onValueChange={setActiveTab}
                     className="w-full h-full"
                   >
-                    <TabsList className="grid w-full grid-cols-2 bg-neutral-800 mb-6">
+                    <TabsList className="grid w-full grid-cols-1 bg-neutral-800 mb-6">
                       <TabsTrigger value="signin">SIGN IN</TabsTrigger>
-                      <TabsTrigger value="signup">CREATE ACCOUNT</TabsTrigger>
+                      {/* <TabsTrigger value="signup">CREATE ACCOUNT</TabsTrigger> */}
                     </TabsList>
 
                     <TabsContent

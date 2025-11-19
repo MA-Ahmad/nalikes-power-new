@@ -35,7 +35,7 @@ import { DepositWithdrawModal } from '../wallet/deposit-withdraw-modal'
 import { ChainBalanceSelector } from './balance-selector'
 import { UserDropdown } from './user-dropdown'
 import { cn } from '@/lib/utils'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 
 export default function Navbar() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
@@ -47,10 +47,15 @@ export default function Navbar() {
   const { isAuthenticated, user, loading } = useAuthStore()
   const handleLogout = useAuthLogout()
   const pathname = usePathname()
+  const router = useRouter()
 
   const onLogout = async () => {
-    await handleLogout()
     setIsUserDropdownOpen(false)
+    await handleLogout()
+    // Defer redirect to next tick to avoid hook issues
+    setTimeout(() => {
+      router.replace('/')
+    }, 0)
   }
 
   const valuePageYOffset = 2
@@ -368,14 +373,14 @@ export default function Navbar() {
                   </div>
                 ) : (
                   <div className="flex items-center gap-3">
-                    {/* <Button
+                    <Button
                       className="hidden sm:flex border-gray-700 text-white bg-neutral-800 hover:bg-neutral-700 hover:text-white"
                       onClick={() => setAuthModalOpen(true)}
                     >
                       Sign In
-                    </Button> */}
+                    </Button>
 
-                    <div
+                    {/* <div
                       className="relative inline-block w-full min-w-[105px] px-3 py-2 cursor-pointer"
                       onClick={() => setAuthModalOpen(true)}
                     >
@@ -438,7 +443,7 @@ export default function Navbar() {
                       <span className="relative text-purple-base font-semibold whitespace-nowrap flex items-center justify-center">
                         Sign in
                       </span>
-                    </div>
+                    </div> */}
                   </div>
                 )}
               </>
