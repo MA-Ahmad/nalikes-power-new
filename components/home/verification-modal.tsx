@@ -91,7 +91,7 @@ export function VerificationModal({
       })
       setIsAuthenticated(true)
       toast.success(
-        type === 'signup' ? 'Account created successfully!' : 'Welcome back!'
+        type === 'signup' ? 'Account created successfully!' : 'Welcome!'
       )
       onOpenChange(false)
     },
