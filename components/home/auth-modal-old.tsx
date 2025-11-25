@@ -24,8 +24,8 @@ import {
   CarouselDots,
 } from '@/components/ui/carousel'
 
-import { authApi, SignupData, SigninData } from '@/lib/auth-api'
-import { useAuthStore } from '@/store/auth'
+import { authApi, SendCodeData } from '@/lib/auth-api'
+import { VerificationModal } from './verification-modal'
 
 function CarouselWithAutoplay() {
   const plugin = useRef(
@@ -121,41 +121,17 @@ function CarouselWithAutoplay() {
   )
 }
 
-// Password validation helper - validates all conditions at once
-const passwordSchema = z.string().refine(
-  (val) => {
-    const conditions = {
-      minLength: val.length >= 8,
-      hasLowercase: /[a-z]/.test(val),
-      hasUppercase: /[A-Z]/.test(val),
-      hasNumber: /[0-9]/.test(val),
-    }
-    return Object.values(conditions).every(Boolean)
-  },
-  {
-    message: 'Password does not meet all requirements',
-  }
-)
-
 // Validation schemas
 const signupSchema = z.object({
-  usernameOrEmail: z
+  username: z
     .string()
-    .min(1, 'Username or email is required')
-    .refine(
-      (val) => {
-        // Check if it's a valid email or username
-        const isEmail = z.string().email().safeParse(val).success
-        const isUsername =
-          /^[a-zA-Z0-9_]+$/.test(val) && val.length >= 3 && val.length <= 20
-        return isEmail || isUsername
-      },
-      {
-        message:
-          'Please enter a valid username (3-20 chars, letters/numbers/underscores) or email address',
-      }
+    .min(3, 'Username must be at least 3 characters')
+    .max(20, 'Username must be less than 20 characters')
+    .regex(
+      /^[a-zA-Z0-9_]+$/,
+      'Username can only contain letters, numbers, and underscores'
     ),
-  password: passwordSchema,
+  email: z.string().email('Please enter a valid email address'),
   acceptAge: z.boolean().refine((val) => val === true, {
     message: 'You must confirm you are above 18 years old',
   }),
@@ -165,21 +141,7 @@ const signupSchema = z.object({
 })
 
 const signinSchema = z.object({
-  usernameOrEmail: z
-    .string()
-    .min(1, 'Username or email is required')
-    .refine(
-      (val) => {
-        // Check if it's a valid email or username
-        const isEmail = z.string().email().safeParse(val).success
-        const isUsername = /^[a-zA-Z0-9_]+$/.test(val) && val.length >= 3
-        return isEmail || isUsername
-      },
-      {
-        message: 'Please enter a valid username or email address',
-      }
-    ),
-  password: z.string().min(1, 'Password is required'),
+  email: z.string().email('Please enter a valid email address'),
 })
 
 type SignupFormData = z.infer<typeof signupSchema>
@@ -192,17 +154,11 @@ interface AuthModalProps {
 
 export function AuthModal({ open, onOpenChange }: AuthModalProps) {
   const [activeTab, setActiveTab] = useState('signup')
-  const { setUser, setIsAuthenticated } = useAuthStore()
-
-  // Password validation helper function
-  const checkPasswordConditions = (password: string) => {
-    return {
-      minLength: password.length >= 8,
-      hasLowercase: /[a-z]/.test(password),
-      hasUppercase: /[A-Z]/.test(password),
-      hasNumber: /[0-9]/.test(password),
-    }
-  }
+  const [verificationModalOpen, setVerificationModalOpen] = useState(false)
+  const [verificationEmail, setVerificationEmail] = useState('')
+  const [verificationType, setVerificationType] = useState<'signup' | 'signin'>(
+    'signup'
+  )
 
   // const recaptchaRef = useRef<ReCAPTCHA>(null)
 
@@ -210,8 +166,8 @@ export function AuthModal({ open, onOpenChange }: AuthModalProps) {
   const signupForm = useForm<SignupFormData>({
     resolver: zodResolver(signupSchema),
     defaultValues: {
-      usernameOrEmail: '',
-      password: '',
+      username: '',
+      email: '',
       acceptAge: false,
       acceptTerms: false,
     },
@@ -221,8 +177,7 @@ export function AuthModal({ open, onOpenChange }: AuthModalProps) {
   const signinForm = useForm<SigninFormData>({
     resolver: zodResolver(signinSchema),
     defaultValues: {
-      usernameOrEmail: '',
-      password: '',
+      email: '',
     },
   })
 
@@ -242,38 +197,16 @@ export function AuthModal({ open, onOpenChange }: AuthModalProps) {
     // recaptchaRef.current?.reset()
   }, [activeTab, signupForm, signinForm])
 
-  const signupMutation = useMutation({
-    mutationFn: authApi.signup,
-    onSuccess: (data) => {
-      setUser({
-        ...data.user,
-        depositWalletAddresses: data.user.depositWalletAddresses,
-      })
-      setIsAuthenticated(true)
-      toast.success('Account created successfully!')
+  const sendCodeMutation = useMutation({
+    mutationFn: authApi.sendCode,
+    onSuccess: (data, variables) => {
+      toast.success(data.message)
+      setVerificationEmail(variables.email)
+      setVerificationType(variables.type)
+      setVerificationModalOpen(true)
       onOpenChange(false)
-      signupForm.reset()
     },
     onError: () => {
-      // Error handling is done by axios interceptor
-      // recaptchaRef.current?.reset()
-    },
-  })
-
-  const signinMutation = useMutation({
-    mutationFn: authApi.signin,
-    onSuccess: (data) => {
-      setUser({
-        ...data.user,
-        depositWalletAddresses: data.user.depositWalletAddresses,
-      })
-      setIsAuthenticated(true)
-      toast.success('Welcome back!')
-      onOpenChange(false)
-      signinForm.reset()
-    },
-    onError: () => {
-      // Error handling is done by axios interceptor
       // recaptchaRef.current?.reset()
     },
   })
@@ -285,12 +218,14 @@ export function AuthModal({ open, onOpenChange }: AuthModalProps) {
     //   return
     // }
 
-    const signupData: SignupData = {
-      usernameOrEmail: data.usernameOrEmail,
-      password: data.password,
+    const sendCodeData: SendCodeData = {
+      username: data.username,
+      email: data.email,
+      // recaptchaToken,
+      type: 'signup',
     }
 
-    signupMutation.mutate(signupData)
+    sendCodeMutation.mutate(sendCodeData)
   }
 
   const onSigninSubmit = async (data: SigninFormData) => {
@@ -300,15 +235,35 @@ export function AuthModal({ open, onOpenChange }: AuthModalProps) {
     //   return
     // }
 
-    const signinData: SigninData = {
-      usernameOrEmail: data.usernameOrEmail,
-      password: data.password,
+    const sendCodeData: SendCodeData = {
+      email: data.email,
+      // recaptchaToken,
+      type: 'signin',
     }
 
-    signinMutation.mutate(signinData)
+    sendCodeMutation.mutate(sendCodeData)
   }
 
-  const isLoading = signupMutation.isPending || signinMutation.isPending
+  const handleResendCode = () => {
+    // const recaptchaToken = recaptchaRef.current?.getValue()
+    // if (!recaptchaToken) {
+    //   toast.error('Please complete the reCAPTCHA')
+    //   return
+    // }
+
+    const sendCodeData: SendCodeData = {
+      ...(verificationType === 'signup' && {
+        username: signupForm.getValues('username'),
+      }),
+      email: verificationEmail,
+      // recaptchaToken,
+      type: verificationType,
+    }
+
+    sendCodeMutation.mutate(sendCodeData)
+  }
+
+  const isLoading = sendCodeMutation.isPending
 
   return (
     <>
@@ -316,8 +271,6 @@ export function AuthModal({ open, onOpenChange }: AuthModalProps) {
         <DialogContent
           className="w-full lg:min-w-4xl mx-4 p-0 bg-neutral-900 border-neutral-400 overflow-hidden rounded-2xl"
           showCloseButton={false}
-          onInteractOutside={(e) => e.preventDefault()}
-          onEscapeKeyDown={(e) => e.preventDefault()}
         >
           <DialogTitle className="sr-only">Authentication</DialogTitle>
           <div className="flex h-[600px] max-h-[90vh]">
@@ -344,91 +297,38 @@ export function AuthModal({ open, onOpenChange }: AuthModalProps) {
                         className="space-y-4 flex-1 mb-8"
                       >
                         <div className="space-y-2">
-                          <Label
-                            htmlFor="signup-username-email"
-                            className="text-white"
-                          >
-                            Username or Email*
+                          <Label htmlFor="username" className="text-white">
+                            Username*
                           </Label>
                           <Input
-                            id="signup-username-email"
-                            type="text"
-                            {...signupForm.register('usernameOrEmail')}
+                            id="username"
+                            {...signupForm.register('username')}
                             className="bg-gray-700 border-gray-600 text-white placeholder:text-gray-400"
-                            placeholder="Enter username or email"
+                            placeholder="Enter username"
                           />
-                          {signupForm.formState.errors.usernameOrEmail && (
+                          {signupForm.formState.errors.username && (
                             <p className="text-red-400 text-sm mt-1">
-                              {
-                                signupForm.formState.errors.usernameOrEmail
-                                  .message
-                              }
+                              {signupForm.formState.errors.username.message}
                             </p>
                           )}
                         </div>
 
                         <div className="space-y-2">
-                          <Label htmlFor="password" className="text-white">
-                            Password*
+                          <Label htmlFor="email" className="text-white">
+                            Email*
                           </Label>
                           <Input
-                            id="password"
-                            type="password"
-                            {...signupForm.register('password')}
+                            id="email"
+                            type="email"
+                            {...signupForm.register('email')}
                             className="bg-gray-700 border-gray-600 text-white placeholder:text-gray-400"
-                            placeholder="Enter password"
+                            placeholder="Enter email"
                           />
-                          {(() => {
-                            const password = signupForm.watch('password')
-                            const conditions = checkPasswordConditions(
-                              password || ''
-                            )
-                            const hasErrors =
-                              signupForm.formState.errors.password
-                            const showConditions =
-                              password && password.length > 0
-
-                            if (!showConditions && !hasErrors) return null
-
-                            return (
-                              <div className="space-y-1 mt-2">
-                                {[
-                                  {
-                                    key: 'minLength',
-                                    label: '8 characters',
-                                    met: conditions.minLength,
-                                  },
-                                  {
-                                    key: 'hasLowercase',
-                                    label: '1 lowercase',
-                                    met: conditions.hasLowercase,
-                                  },
-                                  {
-                                    key: 'hasUppercase',
-                                    label: '1 uppercase',
-                                    met: conditions.hasUppercase,
-                                  },
-                                  {
-                                    key: 'hasNumber',
-                                    label: '1 number',
-                                    met: conditions.hasNumber,
-                                  },
-                                ].map((condition) => (
-                                  <div
-                                    key={condition.key}
-                                    className={`text-sm flex items-center gap-2 ${
-                                      condition.met
-                                        ? 'text-green-400'
-                                        : 'text-red-400'
-                                    }`}
-                                  >
-                                    <span>{condition.met ? '✓' : '✗'}</span>
-                                    <span>{condition.label}</span>
-                                  </div>
-                                ))}
-                              </div>
-                            )
-                          })()}
+                          {signupForm.formState.errors.email && (
+                            <p className="text-red-400 text-sm mt-1">
+                              {signupForm.formState.errors.email.message}
+                            </p>
+                          )}
                         </div>
 
                         <div className="space-y-3 pt-2">
@@ -524,46 +424,19 @@ export function AuthModal({ open, onOpenChange }: AuthModalProps) {
                         className="space-y-4 flex-1 mb-8"
                       >
                         <div className="space-y-2">
-                          <Label
-                            htmlFor="signin-username-email"
-                            className="text-white"
-                          >
-                            Username or Email*
+                          <Label htmlFor="signin-email" className="text-white">
+                            Email*
                           </Label>
                           <Input
-                            id="signin-username-email"
-                            type="text"
-                            {...signinForm.register('usernameOrEmail')}
+                            id="signin-email"
+                            type="email"
+                            {...signinForm.register('email')}
                             className="bg-gray-700 border-gray-600 text-white placeholder:text-gray-400"
-                            placeholder="Enter username or email"
+                            placeholder="Enter email"
                           />
-                          {signinForm.formState.errors.usernameOrEmail && (
+                          {signinForm.formState.errors.email && (
                             <p className="text-red-400 text-sm mt-1">
-                              {
-                                signinForm.formState.errors.usernameOrEmail
-                                  .message
-                              }
-                            </p>
-                          )}
-                        </div>
-
-                        <div className="space-y-2">
-                          <Label
-                            htmlFor="signin-password"
-                            className="text-white"
-                          >
-                            Password*
-                          </Label>
-                          <Input
-                            id="signin-password"
-                            type="password"
-                            {...signinForm.register('password')}
-                            className="bg-gray-700 border-gray-600 text-white placeholder:text-gray-400"
-                            placeholder="Enter password"
-                          />
-                          {signinForm.formState.errors.password && (
-                            <p className="text-red-400 text-sm mt-1">
-                              {signinForm.formState.errors.password.message}
+                              {signinForm.formState.errors.email.message}
                             </p>
                           )}
                         </div>
@@ -613,6 +486,14 @@ export function AuthModal({ open, onOpenChange }: AuthModalProps) {
           </div>
         </DialogContent>
       </Dialog>
+
+      <VerificationModal
+        open={verificationModalOpen}
+        onOpenChange={setVerificationModalOpen}
+        email={verificationEmail}
+        type={verificationType}
+        onResendCode={handleResendCode}
+      />
     </>
   )
 }

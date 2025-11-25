@@ -13,7 +13,7 @@ import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 
-import { authApi, VerifyCodeData } from '@/lib/auth-api'
+import { authApi, VerifyCodeData, VerifyEmailData } from '@/lib/auth-api'
 import { useAuthStore } from '@/store/auth'
 
 const verificationSchema = z.object({
@@ -29,7 +29,7 @@ interface VerificationModalProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   email: string
-  type: 'signup' | 'signin'
+  type: 'signup' | 'signin' | 'verify-email'
   onResendCode: () => void
 }
 
@@ -82,7 +82,7 @@ export function VerificationModal({
     }
   }, [open, form])
 
-  const verifyMutation = useMutation({
+  const verifyCodeMutation = useMutation({
     mutationFn: authApi.verifyCode,
     onSuccess: (data) => {
       setUser({
@@ -101,14 +101,41 @@ export function VerificationModal({
     },
   })
 
-  const onSubmit = async (data: VerificationFormData) => {
-    const verifyData: VerifyCodeData = {
-      email,
-      code: data.code,
-      type,
-    }
+  const verifyEmailMutation = useMutation({
+    mutationFn: authApi.verifyEmail,
+    onSuccess: (data) => {
+      // Update user state to mark email as verified
+      const currentUser = useAuthStore.getState().user
+      if (currentUser) {
+        setUser({
+          ...currentUser,
+          emailVerified: true,
+        })
+      }
+      toast.success(data.message || 'Email verified successfully!')
+      onOpenChange(false)
+    },
+    onError: () => {
+      // Error handling is done by axios interceptor
+      form.reset()
+    },
+  })
 
-    verifyMutation.mutate(verifyData)
+  const onSubmit = async (data: VerificationFormData) => {
+    if (type === 'verify-email') {
+      const verifyEmailData: VerifyEmailData = {
+        email,
+        code: data.code,
+      }
+      verifyEmailMutation.mutate(verifyEmailData)
+    } else {
+      const verifyData: VerifyCodeData = {
+        email,
+        code: data.code,
+        type,
+      }
+      verifyCodeMutation.mutate(verifyData)
+    }
   }
 
   const handleResendCode = () => {
@@ -123,7 +150,8 @@ export function VerificationModal({
     return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`
   }
 
-  const isLoading = verifyMutation.isPending
+  const isLoading =
+    verifyCodeMutation.isPending || verifyEmailMutation.isPending
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -164,6 +192,11 @@ export function VerificationModal({
                 We&apos;ve sent a 6-digit verification code to
               </p>
               <p className="text-white font-medium">{email}</p>
+              {type === 'verify-email' && (
+                <p className="text-gray-400 text-xs mt-2">
+                  Please enter the code to verify your email address
+                </p>
+              )}
             </div>
 
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
@@ -196,31 +229,16 @@ export function VerificationModal({
             </form>
 
             <div className="mt-6 text-center">
-              <p className="text-gray-400 text-sm mb-2">
-                {timeLeft > 0 ? (
-                  <>Code expires in {formatTime(timeLeft)}</>
-                ) : (
-                  <>Code has expired</>
-                )}
-              </p>
-
-              {/* {timeLeft === 0 ? (
+              {type === 'verify-email' && (
                 <Button
                   variant="ghost"
                   onClick={handleResendCode}
                   className="text-purple-400 hover:text-purple-300"
+                  disabled={isLoading}
                 >
                   Resend Code
                 </Button>
-              ) : (
-                <Button
-                  variant="ghost"
-                  onClick={handleResendCode}
-                  className="text-gray-500 hover:text-gray-400"
-                >
-                  Resend Code
-                </Button>
-              )} */}
+              )}
             </div>
           </div>
         </div>

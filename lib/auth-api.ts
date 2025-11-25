@@ -4,7 +4,7 @@ export interface SendCodeData {
   username?: string // Required for signup
   email: string
   // recaptchaToken: string
-  type: 'signup' | 'signin'
+  type: 'signup' | 'signin' | 'verify-email'
 }
 
 export interface VerifyCodeData {
@@ -13,12 +13,23 @@ export interface VerifyCodeData {
   type: 'signup' | 'signin'
 }
 
+export interface SignupData {
+  usernameOrEmail: string
+  password: string
+}
+
+export interface SigninData {
+  usernameOrEmail: string
+  password: string
+}
+
 export interface AuthResponse {
   accessToken: string
   user: {
     id: string
     username: string
     email: string
+    emailVerified?: boolean
     createdAt: Date
     lastLogin?: Date
     depositWalletAddresses?: {
@@ -27,6 +38,16 @@ export interface AuthResponse {
       tron?: { address: string; totalAmount: number; availableAmount: number }
     }
   }
+}
+
+export interface VerifyEmailData {
+  email: string
+  code: string
+}
+
+export interface VerifyEmailResponse {
+  success: boolean
+  message: string
 }
 
 export interface SendCodeResponse {
@@ -59,6 +80,16 @@ export const authApi = {
     return response.data
   },
 
+  signup: async (data: SignupData): Promise<AuthResponse> => {
+    const response = await api.post('/auth/signup', data)
+    return response.data
+  },
+
+  signin: async (data: SigninData): Promise<AuthResponse> => {
+    const response = await api.post('/auth/signin', data)
+    return response.data
+  },
+
   logout: async (): Promise<void> => {
     await api.post('/auth/logout')
   },
@@ -68,8 +99,15 @@ export const authApi = {
     return response.data
   },
 
+  verifyEmail: async (data: VerifyEmailData): Promise<VerifyEmailResponse> => {
+    const response = await api.post('/auth/verify-email', data)
+    return response.data
+  },
+
   getAuthModalImages: async (): Promise<AuthModalImage[]> => {
-    const response = await api.get<AuthModalImagesResponse>('/auth-modal-images')
+    const response = await api.get<AuthModalImagesResponse>(
+      '/auth-modal-images'
+    )
     // Filter only active images and return the array
     return response.data.images.filter((img) => img.isActive)
   },

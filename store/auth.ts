@@ -7,6 +7,7 @@ interface User {
   id: string
   username: string
   email: string
+  emailVerified?: boolean
   createdAt: Date
   lastLogin?: Date
   depositWalletAddresses?: {

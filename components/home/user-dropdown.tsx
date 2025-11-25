@@ -17,25 +17,63 @@ import {
   Gift,
   Users,
   Settings,
+  Check,
 } from 'lucide-react'
+import { VerificationModal } from './verification-modal'
+import { useMutation } from '@tanstack/react-query'
+import { authApi, SendCodeData } from '@/lib/auth-api'
+import { toast } from 'react-hot-toast'
 
 interface UserDropdownProps {
   user: {
     username: string
     email: string
+    emailVerified?: boolean
   }
   onLogout: () => void
 }
 
 export function UserDropdown({ user, onLogout }: UserDropdownProps) {
   const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false)
+  const [verificationModalOpen, setVerificationModalOpen] = useState(false)
+
+  const sendCodeMutation = useMutation({
+    mutationFn: authApi.sendCode,
+    onSuccess: (data) => {
+      toast.success(data.message)
+    },
+    onError: () => {
+      // Error handling is done by axios interceptor
+    },
+  })
+
+  const handleVerifyEmail = () => {
+    // Only open modal if email is not verified
+    if (!user.emailVerified) {
+      setVerificationModalOpen(true)
+    }
+  }
+
+  const handleResendCode = () => {
+    const sendCodeData: SendCodeData = {
+      email: user.email,
+      type: 'verify-email',
+    }
+    sendCodeMutation.mutate(sendCodeData)
+  }
 
   const getInitials = (username: string) => {
-    return username
-      .split(' ')
-      .map((word) => word.charAt(0).toUpperCase())
-      .join('')
-      .slice(0, 2)
+    return username?.length > 0
+      ? username
+          .split(' ')
+          .map((word) => word.charAt(0).toUpperCase())
+          .join('')
+          .slice(0, 2)
+      : user.email
+          .split('@')
+          .map((word) => word.charAt(0).toUpperCase())
+          .join('')
+          .slice(0, 2)
   }
 
   return (
@@ -88,6 +126,20 @@ export function UserDropdown({ user, onLogout }: UserDropdownProps) {
           Settings
         </DropdownMenuItem>
 
+        <DropdownMenuItem
+          className="hover:bg-neutral-800 focus:bg-neutral-800 cursor-pointer"
+          onClick={handleVerifyEmail}
+        >
+          <Check
+            className={`w-4 h-4 mr-3 ${
+              user.emailVerified ? 'text-green-400' : 'text-gray-400'
+            }`}
+          />
+          <span>
+            {user.emailVerified ? 'Email Verified' : 'Email not verified'}
+          </span>
+        </DropdownMenuItem>
+
         <DropdownMenuSeparator />
 
         <DropdownMenuItem
@@ -98,6 +150,14 @@ export function UserDropdown({ user, onLogout }: UserDropdownProps) {
           Logout
         </DropdownMenuItem>
       </DropdownMenuContent>
+
+      <VerificationModal
+        open={verificationModalOpen}
+        onOpenChange={setVerificationModalOpen}
+        email={user.email}
+        type="verify-email"
+        onResendCode={handleResendCode}
+      />
     </DropdownMenu>
   )
 }
