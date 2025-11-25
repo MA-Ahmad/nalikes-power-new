@@ -24,7 +24,9 @@ export default function Home() {
   const [isChatOpen, setIsChatOpen] = useState(false)
   const [gameUrl, setGameUrl] = useState<string | null>(null)
   const [isRefetchingBalance, setIsRefetchingBalance] = useState(false)
-  const [resetPasswordToken, setResetPasswordToken] = useState<string | null>(null)
+  const [resetPasswordToken, setResetPasswordToken] = useState<string | null>(
+    null
+  )
   const [showResetPasswordDialog, setShowResetPasswordDialog] = useState(false)
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -172,9 +174,9 @@ export default function Home() {
                 )}
               </div>
 
-              {/* Iframe here */}
               <div className="">
                 <Banner />
+                <InfoCards />
               </div>
               <SectionCards />
             </div>
@@ -214,6 +216,20 @@ const TypingText = ({ text, delay = 0 }: { text: string; delay?: number }) => {
   )
 }
 
+// Game display order: crash, dice, mines, roulette, plinko, blackjack
+const GAME_ORDER = ['crash', 'dice', 'mines', 'roulette', 'plinko', 'blackjack']
+
+function sortGamesByOrder(games: Game[]): Game[] {
+  return [...games].sort((a, b) => {
+    const indexA = GAME_ORDER.indexOf(a.slug)
+    const indexB = GAME_ORDER.indexOf(b.slug)
+    // If game not in order list, put it at the end
+    if (indexA === -1) return 1
+    if (indexB === -1) return -1
+    return indexA - indexB
+  })
+}
+
 function GameCardsDesktop({
   onGameClick,
 }: {
@@ -221,6 +237,7 @@ function GameCardsDesktop({
 }) {
   const [hovered, setHovered] = useState<number | null>(null)
   const { data: games = [], isLoading } = useMiniGames()
+  const sortedGames = sortGamesByOrder(games)
   const offsets = [
     { left: '45px', top: '65px', rotate: '-10deg', z: 8 },
     { left: '19px', top: '30px', rotate: '-6deg', z: 9 },
@@ -241,7 +258,7 @@ function GameCardsDesktop({
   return (
     <>
       <div className="flex justify-center gap-4 py-10">
-        {games.map((game, index) => {
+        {sortedGames.map((game, index) => {
           const { left, top, rotate, z } = offsets[index] || {}
           const isHovered = hovered === index
 
@@ -282,17 +299,27 @@ const GameCardsMobile = ({
   onGameClick: (game: Game) => void
 }) => {
   const { data: games = [], isLoading } = useMiniGames()
+  const sortedGames = sortGamesByOrder(games)
 
   // Split games into two rows
-  const firstRow = games.slice(0, 3)
-  const secondRow = games.slice(3, 6)
+  const firstRow = sortedGames.slice(0, 3)
+  const secondRow = sortedGames.slice(3, 6)
 
   const getCardStyle = (position: number) => {
     // 0 = left, 1 = center, 2 = right
     const styles = [
-      { transform: 'rotate(-6deg)', zIndex: 9, top: '15px', left: '30px' },
-      { transform: 'rotate(0deg)', zIndex: 10, top: '0px', left: '10px' },
-      { transform: 'rotate(6deg)', zIndex: 9, top: '15px', left: '-13px' },
+      {
+        transform: 'rotate(-6deg) translateY(15px)',
+        zIndex: 9,
+      },
+      {
+        transform: 'rotate(0deg)',
+        zIndex: 10,
+      },
+      {
+        transform: 'rotate(6deg) translateY(15px)',
+        zIndex: 9,
+      },
     ]
     return styles[position]
   }
@@ -306,7 +333,7 @@ const GameCardsMobile = ({
   }
 
   const renderRow = (items: typeof games) => (
-    <div className="flex justify-center items-end gap-4 mt-6 relative">
+    <div className="flex justify-center items-end gap-2 sm:gap-4 mt-6 w-full">
       {items.map((game, i) => {
         const style = getCardStyle(i)
         return (

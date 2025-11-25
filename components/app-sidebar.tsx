@@ -150,9 +150,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                   width={33}
                   height={42}
                 />
-                <h2 className="text-white text-2xl font-aeonik-bold">
+                {/* <h2 className="text-white text-2xl font-aeonik-bold">
                   Powerblocks
-                </h2>
+                </h2> */}
               </div>
             </a>
             {/* <Image src="/logo.svg" alt="Powerblocks" width={33} height={42} /> */}

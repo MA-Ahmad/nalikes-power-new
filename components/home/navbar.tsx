@@ -132,9 +132,9 @@ export default function Navbar() {
                     width={33}
                     height={42}
                   />
-                  <h2 className="text-white text-2xl font-aeonik-bold">
+                  {/* <h2 className="text-white text-2xl font-aeonik-bold">
                     Powerblocks
-                  </h2>
+                  </h2> */}
                 </Link>
 
                 <div className="flex flex-col gap-2">
@@ -234,11 +234,11 @@ export default function Navbar() {
               alt="Powerblocks"
               width={33}
               height={42}
-              className="size-10"
+              className="size-12"
             />
-            <h2 className="text-white text-2xl font-aeonik-bold sm:block hidden">
+            {/* <h2 className="text-white text-2xl font-aeonik-bold sm:block hidden">
               Powerblocks
-            </h2>
+            </h2> */}
           </Link>
         </div>
 
@@ -250,11 +250,11 @@ export default function Navbar() {
               alt="Powerblocks"
               width={33}
               height={42}
-              className="size-10"
+              className="size-12"
             />
-            <h2 className="text-white text-2xl font-aeonik-bold">
+            {/* <h2 className="text-white text-2xl font-aeonik-bold">
               Powerblocks
-            </h2>
+            </h2> */}
           </Link>
           <div className="h-6 w-px bg-gray-600"></div>
 
@@ -327,7 +327,7 @@ export default function Navbar() {
               setDepositWithdrawModalOpen={setDepositWithdrawModalOpen}
             />
           ) : null}
-          <div className="h-6 w-px bg-gray-600"></div>
+          <div className="h-6 w-px bg-gray-600 hidden sm:block"></div>
 
           <div className="flex items-center gap-3">
             {!loading && (
