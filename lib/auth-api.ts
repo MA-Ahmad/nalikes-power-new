@@ -69,6 +69,25 @@ export interface AuthModalImagesResponse {
   images: AuthModalImage[]
 }
 
+export interface RequestPasswordResetData {
+  email: string
+}
+
+export interface RequestPasswordResetResponse {
+  message: string
+}
+
+export interface ResetPasswordData {
+  token: string
+  password: string
+  confirmPassword: string
+}
+
+export interface ResetPasswordResponse {
+  success: boolean
+  message: string
+}
+
 export const authApi = {
   sendCode: async (data: SendCodeData): Promise<SendCodeResponse> => {
     const response = await api.post('/auth/send-code', data)
@@ -110,5 +129,19 @@ export const authApi = {
     )
     // Filter only active images and return the array
     return response.data.images.filter((img) => img.isActive)
+  },
+
+  requestPasswordReset: async (
+    data: RequestPasswordResetData
+  ): Promise<RequestPasswordResetResponse> => {
+    const response = await api.post('/auth/request-password-reset', data)
+    return response.data
+  },
+
+  resetPassword: async (
+    data: ResetPasswordData
+  ): Promise<ResetPasswordResponse> => {
+    const response = await api.post('/auth/reset-password', data)
+    return response.data
   },
 }

@@ -4,12 +4,12 @@ import Navbar from '@/components/home/navbar'
 import Image from 'next/image'
 import banner from '@/public/images/banner.png'
 import { SectionCards } from '@/components/home/section-cards'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { ChatSidebar } from '@/components/home/chat/chat-sidebar'
 import newBanner from '@/public/images/new-banner.png'
 import Banner from '@/components/home/banner'
 import InfoCards from '@/components/home/info-cards'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { x1Testnet } from 'viem/chains'
 import { useIsMobile } from '@/hooks/use-mobile'
 import { motion } from 'framer-motion'
@@ -18,14 +18,27 @@ import { Game } from '@/lib/api/mini-game'
 import { ArrowLeft, RefreshCcw } from 'lucide-react'
 import { useAuthStore } from '@/store/auth'
 import { toast } from 'react-hot-toast'
+import { ResetPasswordDialog } from '@/components/home/reset-password-dialog'
 
 export default function Home() {
   const [isChatOpen, setIsChatOpen] = useState(false)
   const [gameUrl, setGameUrl] = useState<string | null>(null)
   const [isRefetchingBalance, setIsRefetchingBalance] = useState(false)
+  const [resetPasswordToken, setResetPasswordToken] = useState<string | null>(null)
+  const [showResetPasswordDialog, setShowResetPasswordDialog] = useState(false)
   const router = useRouter()
+  const searchParams = useSearchParams()
   const isMobile = useIsMobile()
   const { syncWalletStatus } = useAuthStore()
+
+  // Check for reset password token in query params
+  useEffect(() => {
+    const token = searchParams?.get('token')
+    if (token) {
+      setResetPasswordToken(token)
+      setShowResetPasswordDialog(true)
+    }
+  }, [searchParams])
 
   const enterGameMutation = useEnterGame({
     onSuccess: (url) => {
@@ -64,8 +77,34 @@ export default function Home() {
   const toggleChat = () => {
     setIsChatOpen(!isChatOpen)
   }
+
+  const handleResetPasswordDialogClose = (open: boolean) => {
+    setShowResetPasswordDialog(open)
+    if (!open && resetPasswordToken) {
+      // Remove token from URL when dialog closes
+      const url = new URL(window.location.href)
+      url.searchParams.delete('token')
+      router.replace(url.pathname + url.search, { scroll: false })
+      setResetPasswordToken(null)
+    }
+  }
+
+  const handleResetPasswordSuccess = () => {
+    // Remove token from URL after successful reset
+    const url = new URL(window.location.href)
+    url.searchParams.delete('token')
+    router.replace(url.pathname + url.search, { scroll: false })
+    setResetPasswordToken(null)
+  }
+
   return (
     <div className="min-h-screen bg-black relative">
+      <ResetPasswordDialog
+        open={showResetPasswordDialog}
+        onOpenChange={handleResetPasswordDialogClose}
+        token={resetPasswordToken || ''}
+        onSuccess={handleResetPasswordSuccess}
+      />
       <Navbar />
       {!gameUrl && (
         <div className="relative sm:pt-10">

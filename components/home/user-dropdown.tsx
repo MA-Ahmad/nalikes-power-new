@@ -126,7 +126,7 @@ export function UserDropdown({ user, onLogout }: UserDropdownProps) {
           Settings
         </DropdownMenuItem>
 
-        <DropdownMenuItem
+        {/* <DropdownMenuItem
           className="hover:bg-neutral-800 focus:bg-neutral-800 cursor-pointer"
           onClick={handleVerifyEmail}
         >
@@ -138,7 +138,7 @@ export function UserDropdown({ user, onLogout }: UserDropdownProps) {
           <span>
             {user.emailVerified ? 'Email Verified' : 'Email not verified'}
           </span>
-        </DropdownMenuItem>
+        </DropdownMenuItem> */}
 
         <DropdownMenuSeparator />
 

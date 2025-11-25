@@ -1,6 +1,6 @@
 'use client'
 
-import { X } from 'lucide-react'
+import { X, Check, X as XIcon, Eye, EyeOff, Link } from 'lucide-react'
 import Image from 'next/image'
 import { useState, useRef, useEffect } from 'react'
 import { useMutation, useQuery } from '@tanstack/react-query'
@@ -26,6 +26,46 @@ import {
 
 import { authApi, SignupData, SigninData } from '@/lib/auth-api'
 import { useAuthStore } from '@/store/auth'
+import { useOAuth } from '@/hooks/use-oauth'
+import { RequestPasswordResetDialog } from '@/components/home/request-password-reset-dialog'
+
+// Simple OAuth Icons
+const GoogleIcon = ({ className }: { className?: string }) => (
+  <svg
+    className={className}
+    viewBox="0 0 24 24"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <path
+      d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+      fill="#4285F4"
+    />
+    <path
+      d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+      fill="#34A853"
+    />
+    <path
+      d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
+      fill="#FBBC05"
+    />
+    <path
+      d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+      fill="#EA4335"
+    />
+  </svg>
+)
+
+const TwitterIcon = ({ className }: { className?: string }) => (
+  <svg
+    className={className}
+    viewBox="0 0 24 24"
+    fill="currentColor"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+  </svg>
+)
 
 function CarouselWithAutoplay() {
   const plugin = useRef(
@@ -192,6 +232,9 @@ interface AuthModalProps {
 
 export function AuthModal({ open, onOpenChange }: AuthModalProps) {
   const [activeTab, setActiveTab] = useState('signup')
+  const [showSignupPassword, setShowSignupPassword] = useState(false)
+  const [showSigninPassword, setShowSigninPassword] = useState(false)
+  const [showPasswordResetDialog, setShowPasswordResetDialog] = useState(false)
   const { setUser, setIsAuthenticated } = useAuthStore()
 
   // Password validation helper function
@@ -231,6 +274,8 @@ export function AuthModal({ open, onOpenChange }: AuthModalProps) {
     if (!open) {
       signupForm.reset()
       signinForm.reset()
+      setShowSignupPassword(false)
+      setShowSigninPassword(false)
       // recaptchaRef.current?.reset()
     }
   }, [open, signupForm, signinForm])
@@ -239,6 +284,8 @@ export function AuthModal({ open, onOpenChange }: AuthModalProps) {
   useEffect(() => {
     signupForm.reset()
     signinForm.reset()
+    setShowSignupPassword(false)
+    setShowSigninPassword(false)
     // recaptchaRef.current?.reset()
   }, [activeTab, signupForm, signinForm])
 
@@ -310,11 +357,59 @@ export function AuthModal({ open, onOpenChange }: AuthModalProps) {
 
   const isLoading = signupMutation.isPending || signinMutation.isPending
 
+  const { loginWithOAuth, loading: oauthLoading } = useOAuth()
+
+  const handleOAuthLogin = async (provider: 'google' | 'twitter' | 'x') => {
+    try {
+      const result = await loginWithOAuth(provider)
+
+      // Update user state directly from OAuth response
+      // The cookie is already set by the backend, so we have all the data we need
+      setUser({
+        id: result.user.id,
+        username: result.user.username,
+        email: result.user.email,
+        emailVerified: result.user.emailVerified,
+        createdAt:
+          result.user.createdAt instanceof Date
+            ? result.user.createdAt
+            : new Date(result.user.createdAt),
+        lastLogin: result.user.lastLogin
+          ? result.user.lastLogin instanceof Date
+            ? result.user.lastLogin
+            : new Date(result.user.lastLogin)
+          : undefined,
+        depositWalletAddresses: result.user.depositWalletAddresses,
+      })
+      setIsAuthenticated(true)
+
+      // REMOVED: Don't call checkAuth immediately
+      // The cookie is set, so it will work for subsequent API calls
+      // You can call checkAuth later if needed (e.g., on next page navigation)
+
+      toast.success(
+        result.isNewConnection
+          ? `Successfully signed up with ${provider}!`
+          : `Successfully signed in with ${provider}!`
+      )
+
+      // Close modal on success
+      onOpenChange(false)
+    } catch (error) {
+      console.error(`${provider} login failed:`, error)
+      // Error toast is handled by the hook or axios interceptor
+    }
+  }
+
   return (
     <>
+      <RequestPasswordResetDialog
+        open={showPasswordResetDialog}
+        onOpenChange={setShowPasswordResetDialog}
+      />
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent
-          className="w-full lg:min-w-4xl mx-4 p-0 bg-neutral-900 border-neutral-400 overflow-hidden rounded-2xl"
+          className="w-full m-0 lg:min-w-4xl sm:mx-4 p-0 bg-neutral-900 border-neutral-400 overflow-hidden rounded-2xl"
           showCloseButton={false}
           onInteractOutside={(e) => e.preventDefault()}
           onEscapeKeyDown={(e) => e.preventDefault()}
@@ -324,7 +419,7 @@ export function AuthModal({ open, onOpenChange }: AuthModalProps) {
             {/* Left side - Form */}
             <div className="flex-1 flex flex-col min-h-0">
               <div className="flex-1 overflow-y-auto">
-                <div className="p-8 h-full">
+                <div className="p-4 h-full">
                   <Tabs
                     value={activeTab}
                     onValueChange={setActiveTab}
@@ -332,7 +427,7 @@ export function AuthModal({ open, onOpenChange }: AuthModalProps) {
                   >
                     <TabsList className="grid w-full grid-cols-2 bg-neutral-800 mb-6">
                       <TabsTrigger value="signin">SIGN IN</TabsTrigger>
-                      <TabsTrigger value="signup">CREATE ACCOUNT</TabsTrigger>
+                      <TabsTrigger value="signup">REGISTER</TabsTrigger>
                     </TabsList>
 
                     <TabsContent
@@ -371,13 +466,33 @@ export function AuthModal({ open, onOpenChange }: AuthModalProps) {
                           <Label htmlFor="password" className="text-white">
                             Password*
                           </Label>
-                          <Input
-                            id="password"
-                            type="password"
-                            {...signupForm.register('password')}
-                            className="bg-gray-700 border-gray-600 text-white placeholder:text-gray-400"
-                            placeholder="Enter password"
-                          />
+                          <div className="relative">
+                            <Input
+                              id="password"
+                              type={showSignupPassword ? 'text' : 'password'}
+                              {...signupForm.register('password')}
+                              className="bg-gray-700 border-gray-600 text-white placeholder:text-gray-400 pr-10"
+                              placeholder="Enter password"
+                            />
+                            <button
+                              type="button"
+                              onClick={() =>
+                                setShowSignupPassword(!showSignupPassword)
+                              }
+                              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition-colors"
+                              aria-label={
+                                showSignupPassword
+                                  ? 'Hide password'
+                                  : 'Show password'
+                              }
+                            >
+                              {showSignupPassword ? (
+                                <EyeOff className="h-4 w-4" />
+                              ) : (
+                                <Eye className="h-4 w-4" />
+                              )}
+                            </button>
+                          </div>
                           {(() => {
                             const password = signupForm.watch('password')
                             const conditions = checkPasswordConditions(
@@ -391,39 +506,55 @@ export function AuthModal({ open, onOpenChange }: AuthModalProps) {
                             if (!showConditions && !hasErrors) return null
 
                             return (
-                              <div className="space-y-1 mt-2">
+                              <div className="mt-2 flex items-center gap-2">
                                 {[
                                   {
                                     key: 'minLength',
-                                    label: '8 characters',
+                                    label: 'Min 8 Characters',
                                     met: conditions.minLength,
                                   },
                                   {
                                     key: 'hasLowercase',
-                                    label: '1 lowercase',
+                                    label: '1 Lowercase',
                                     met: conditions.hasLowercase,
                                   },
                                   {
                                     key: 'hasUppercase',
-                                    label: '1 uppercase',
+                                    label: '1 Uppercase',
                                     met: conditions.hasUppercase,
                                   },
                                   {
                                     key: 'hasNumber',
-                                    label: '1 number',
+                                    label: '1 Number',
                                     met: conditions.hasNumber,
                                   },
                                 ].map((condition) => (
                                   <div
                                     key={condition.key}
-                                    className={`text-sm flex items-center gap-2 ${
-                                      condition.met
-                                        ? 'text-green-400'
-                                        : 'text-red-400'
-                                    }`}
+                                    className="flex items-center gap-1"
                                   >
-                                    <span>{condition.met ? '✓' : '✗'}</span>
-                                    <span>{condition.label}</span>
+                                    <div
+                                      className={`w-3.5 h-3.5 rounded-full flex items-center justify-center flex-shrink-0 ${
+                                        condition.met
+                                          ? 'bg-green-500'
+                                          : 'bg-red-500'
+                                      }`}
+                                    >
+                                      {condition.met ? (
+                                        <Check className="w-2.5 h-2.5 text-white" />
+                                      ) : (
+                                        <XIcon className="w-2 h-2 text-white" />
+                                      )}
+                                    </div>
+                                    <span
+                                      className={`text-[11px] font-bold ${
+                                        condition.met
+                                          ? 'text-green-400'
+                                          : 'text-red-400'
+                                      }`}
+                                    >
+                                      {condition.label}
+                                    </span>
                                   </div>
                                 ))}
                               </div>
@@ -493,7 +624,7 @@ export function AuthModal({ open, onOpenChange }: AuthModalProps) {
                           </div>
                         </div>
 
-                        <div className="space-y-4">
+                        <div className="space-y-2">
                           <div className="bg-[#171717] inline-block p-[1px] rounded-md overflow-hidden">
                             {/* <ReCAPTCHA
                               ref={recaptchaRef}
@@ -509,8 +640,39 @@ export function AuthModal({ open, onOpenChange }: AuthModalProps) {
                             disabled={isLoading}
                             className="w-full bg-[linear-gradient(to_right,_#6A2A97_0%,_#C753FD_53%,_#FA96FF_100%)] text-white font-semibold py-3"
                           >
-                            {isLoading ? 'CREATING ACCOUNT...' : 'SIGN UP'}
+                            {isLoading
+                              ? 'CREATING ACCOUNT...'
+                              : 'CREATE ACCOUNT'}
                           </Button>
+
+                          <div className="flex items-center gap-4 my-4 mb-6">
+                            <div className="flex-1 h-px bg-gray-600"></div>
+                            <span className="text-gray-400 text-sm">OR</span>
+                            <div className="flex-1 h-px bg-gray-600"></div>
+                          </div>
+
+                          <div className="flex flex-col gap-2">
+                            <Button
+                              type="button"
+                              variant="outline"
+                              onClick={() => handleOAuthLogin('google')}
+                              disabled={oauthLoading || isLoading}
+                              className="w-full border-gray-600 hover:bg-gray-700 flex items-center justify-center gap-2 cursor-pointer"
+                            >
+                              <GoogleIcon className="w-5 h-5" />
+                              <span>Google</span>
+                            </Button>
+                            <Button
+                              type="button"
+                              variant="outline"
+                              onClick={() => handleOAuthLogin('twitter')}
+                              disabled={oauthLoading || isLoading}
+                              className="w-full border-gray-600 hover:bg-gray-700 flex items-center justify-center gap-2 cursor-pointer"
+                            >
+                              <TwitterIcon className="w-5 h-5" />
+                              <span>X</span>
+                            </Button>
+                          </div>
                         </div>
                       </form>
                     </TabsContent>
@@ -554,21 +716,49 @@ export function AuthModal({ open, onOpenChange }: AuthModalProps) {
                           >
                             Password*
                           </Label>
-                          <Input
-                            id="signin-password"
-                            type="password"
-                            {...signinForm.register('password')}
-                            className="bg-gray-700 border-gray-600 text-white placeholder:text-gray-400"
-                            placeholder="Enter password"
-                          />
+                          <div className="relative">
+                            <Input
+                              id="signin-password"
+                              type={showSigninPassword ? 'text' : 'password'}
+                              {...signinForm.register('password')}
+                              className="bg-gray-700 border-gray-600 text-white placeholder:text-gray-400 pr-10"
+                              placeholder="Enter password"
+                            />
+                            <button
+                              type="button"
+                              onClick={() =>
+                                setShowSigninPassword(!showSigninPassword)
+                              }
+                              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition-colors"
+                              aria-label={
+                                showSigninPassword
+                                  ? 'Hide password'
+                                  : 'Show password'
+                              }
+                            >
+                              {showSigninPassword ? (
+                                <EyeOff className="h-4 w-4" />
+                              ) : (
+                                <Eye className="h-4 w-4" />
+                              )}
+                            </button>
+                          </div>
                           {signinForm.formState.errors.password && (
                             <p className="text-red-400 text-sm mt-1">
                               {signinForm.formState.errors.password.message}
                             </p>
                           )}
+                          <div className="w-full flex justify-end">
+                            <div
+                              className="w-max text-sm text-gray-400 hover:text-white cursor-pointer transition-colors"
+                              onClick={() => setShowPasswordResetDialog(true)}
+                            >
+                              Forgot Password?
+                            </div>
+                          </div>
                         </div>
 
-                        <div className="space-y-4">
+                        <div className="space-y-2">
                           <div className="bg-[#171717] inline-block p-[1px] rounded-md overflow-hidden">
                             {/* <ReCAPTCHA
                               ref={recaptchaRef}
@@ -582,10 +772,39 @@ export function AuthModal({ open, onOpenChange }: AuthModalProps) {
                           <Button
                             type="submit"
                             disabled={isLoading}
-                            className="w-full bg-[linear-gradient(to_right,_#6A2A97_0%,_#C753FD_53%,_#FA96FF_100%)] text-white font-semibold py-3"
+                            className="w-full bg-[linear-gradient(to_right,_#6A2A97_0%,_#C753FD_53%,_#FA96FF_100%)] text-white font-semibold py-3 cursor-pointer"
                           >
                             {isLoading ? 'SIGNING IN...' : 'SIGN IN'}
                           </Button>
+
+                          <div className="flex items-center gap-4 my-4 mb-6">
+                            <div className="flex-1 h-px bg-gray-600"></div>
+                            <span className="text-gray-400 text-sm">OR</span>
+                            <div className="flex-1 h-px bg-gray-600"></div>
+                          </div>
+
+                          <div className="flex flex-col gap-2">
+                            <Button
+                              type="button"
+                              variant="outline"
+                              onClick={() => handleOAuthLogin('google')}
+                              disabled={oauthLoading || isLoading}
+                              className="w-full border-gray-600 hover:bg-gray-700 flex items-center justify-center gap-2 cursor-pointer"
+                            >
+                              <GoogleIcon className="w-5 h-5" />
+                              <span>Google</span>
+                            </Button>
+                            <Button
+                              type="button"
+                              variant="outline"
+                              onClick={() => handleOAuthLogin('twitter')}
+                              disabled={oauthLoading || isLoading}
+                              className="w-full border-gray-600 hover:bg-gray-700 flex items-center justify-center gap-2 cursor-pointer"
+                            >
+                              <TwitterIcon className="w-5 h-5" />
+                              <span>X</span>
+                            </Button>
+                          </div>
                         </div>
                       </form>
                     </TabsContent>
