@@ -72,14 +72,14 @@ function CarouselWithAutoplay() {
     Autoplay({ delay: 4000, stopOnInteraction: false, playOnInit: true })
   )
 
-  // Fetch images from backend
+  // Fetch images from backend with type 'auth' - only shows auth type images
   const {
     data: images = [],
     isLoading,
     isError,
   } = useQuery({
-    queryKey: ['auth-modal-images'],
-    queryFn: authApi.getAuthModalImages,
+    queryKey: ['auth-modal-images', 'auth'],
+    queryFn: () => authApi.getAuthModalImages('auth'),
     staleTime: 5 * 60 * 1000, // Cache for 5 minutes
   })
 
@@ -110,7 +110,13 @@ function CarouselWithAutoplay() {
     },
   ]
 
-  const displayImages = images.length > 0 ? images : fallbackImages
+  // Filter images by type 'AUTH' (client-side filtering as backup)
+  const filteredImages = images.filter(
+    (img) => img.type?.toUpperCase() === 'AUTH' || !img.type // Include if type is AUTH or undefined (for backward compatibility)
+  )
+
+  const displayImages =
+    filteredImages.length > 0 ? filteredImages : fallbackImages
 
   // Sort by orderIndex
   const sortedImages = [...displayImages].sort((a, b) => {
@@ -132,7 +138,7 @@ function CarouselWithAutoplay() {
   return (
     <Carousel
       plugins={[plugin.current]}
-      className="w-full max-w-sm"
+      className="w-full h-full"
       onMouseEnter={plugin.current.stop}
       onMouseLeave={plugin.current.reset}
       opts={{
@@ -140,16 +146,16 @@ function CarouselWithAutoplay() {
         align: 'start',
       }}
     >
-      <CarouselContent>
+      <CarouselContent className="h-full -ml-0">
         {sortedImages.map((image, index) => (
-          <CarouselItem key={image.id || index}>
-            <div className="flex items-center justify-center">
+          <CarouselItem key={image.id || index} className="h-full pl-0">
+            <div className="relative w-full h-full">
               <Image
                 src={image.image}
                 alt={image.title || image.description || 'Powerblocks Hero'}
-                width={300}
-                height={400}
-                className="object-cover rounded-md"
+                width={1920}
+                height={600}
+                className="w-full h-full object-cover rounded-md"
                 priority={index === 0}
               />
             </div>
@@ -814,7 +820,7 @@ export function AuthModal({ open, onOpenChange }: AuthModalProps) {
             </div>
 
             {/* Right side - Image Carousel */}
-            <div className="flex-1 relative min-w-0 hidden lg:flex border-l border-neutral-800 flex-col items-center justify-center p-8">
+            <div className="flex-1 relative min-w-0 hidden lg:flex border-l border-neutral-800 flex-col items-center justify-center">
               <button
                 onClick={() => onOpenChange(false)}
                 className="absolute top-4 right-4 z-10 text-white hover:text-gray-300"

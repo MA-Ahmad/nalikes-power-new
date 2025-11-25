@@ -19,6 +19,7 @@ import { ArrowLeft, RefreshCcw } from 'lucide-react'
 import { useAuthStore } from '@/store/auth'
 import { toast } from 'react-hot-toast'
 import { ResetPasswordDialog } from '@/components/home/reset-password-dialog'
+import { HeroCarousel } from '@/components/home/hero-carousel'
 
 export default function Home() {
   const [isChatOpen, setIsChatOpen] = useState(false)
@@ -109,39 +110,21 @@ export default function Home() {
       />
       <Navbar />
       {!gameUrl && (
-        <div className="relative sm:pt-10">
-          <Image
-            src={'/images/home/hero.png'}
-            alt="Banner"
-            width={1920}
-            height={600}
-            className="w-full h-full object-cover hidden sm:block"
-          />
-
-          <Image
-            src={'/images/home/mobile-hero.svg'}
-            alt="Banner"
-            width={1920}
-            height={600}
-            className="w-full h-full object-cover block sm:hidden"
-          />
-          {/* <div className="absolute top-16 sm:top-20 lg:top-[15%] left-1/2 -translate-x-1/2  flex items-center justify-center flex-col text-center gap-2">
-          <h1 className="text-xl sm:text-3xl lg:text-5xl font-bold ">
-            Enter The PWR City
-          </h1>
-          <p className="md:text-xl">Gamble Like a Degen. Win Like a Degen</p>
-        </div> */}
-
-          <div className="absolute w-full top-32 sm:top-20 lg:top-[15%] left-1/2 -translate-x-1/2 flex items-center justify-center flex-col text-center gap-2">
-            <h1 className="text-2xl sm:text-3xl lg:text-5xl font-bold">
-              <TypingText text="Enter The PWR City" delay={0.2} />
-            </h1>
-            <p className="md:text-xl">
-              <TypingText
-                text="Gamble Like a Degen. Win Like a Degen"
-                delay={1.5}
-              />
-            </p>
+        <div className="relative w-full">
+          {/* Carousel with text overlay */}
+          <div className="relative w-full">
+            <HeroCarousel />
+            <div className="absolute w-full top-32 sm:top-20 lg:top-[15%] left-1/2 -translate-x-1/2 flex items-center justify-center flex-col text-center gap-2 z-10">
+              <h1 className="text-2xl sm:text-3xl lg:text-5xl font-bold text-white">
+                <TypingText text="Enter The PWR City" delay={0.2} />
+              </h1>
+              <p className="text-sm sm:text-xl lg:text-xl text-white">
+                <TypingText
+                  text="Gamble Like a Degen. Win Like a Degen"
+                  delay={1.5}
+                />
+              </p>
+            </div>
           </div>
         </div>
       )}

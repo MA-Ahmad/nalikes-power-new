@@ -57,6 +57,7 @@ export interface SendCodeResponse {
 export interface AuthModalImage {
   id: string
   image: string
+  type?: string
   title: string
   description: string
   orderIndex: number
@@ -123,9 +124,11 @@ export const authApi = {
     return response.data
   },
 
-  getAuthModalImages: async (): Promise<AuthModalImage[]> => {
+  getAuthModalImages: async (type?: string): Promise<AuthModalImage[]> => {
+    const params = type ? { type } : {}
     const response = await api.get<AuthModalImagesResponse>(
-      '/auth-modal-images'
+      '/auth-modal-images',
+      { params }
     )
     // Filter only active images and return the array
     return response.data.images.filter((img) => img.isActive)
