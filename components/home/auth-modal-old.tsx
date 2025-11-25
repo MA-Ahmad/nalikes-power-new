@@ -39,7 +39,7 @@ function CarouselWithAutoplay() {
     isError,
   } = useQuery({
     queryKey: ['auth-modal-images'],
-    queryFn: authApi.getAuthModalImages,
+    queryFn: () => authApi.getAuthModalImages(),
     staleTime: 5 * 60 * 1000, // Cache for 5 minutes
   })
 
@@ -156,7 +156,7 @@ export function AuthModal({ open, onOpenChange }: AuthModalProps) {
   const [activeTab, setActiveTab] = useState('signup')
   const [verificationModalOpen, setVerificationModalOpen] = useState(false)
   const [verificationEmail, setVerificationEmail] = useState('')
-  const [verificationType, setVerificationType] = useState<'signup' | 'signin'>(
+  const [verificationType, setVerificationType] = useState<'signup' | 'signin' | 'verify-email'>(
     'signup'
   )
 
