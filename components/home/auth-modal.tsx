@@ -78,8 +78,8 @@ function CarouselWithAutoplay() {
     isLoading,
     isError,
   } = useQuery({
-    queryKey: ['auth-modal-images', 'auth'],
-    queryFn: () => authApi.getAuthModalImages('auth'),
+    queryKey: ['media-images', 'AUTH'],
+    queryFn: () => authApi.getMediaImages('AUTH'),
     staleTime: 5 * 60 * 1000, // Cache for 5 minutes
   })
 

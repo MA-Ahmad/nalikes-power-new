@@ -54,21 +54,25 @@ export interface SendCodeResponse {
   message: string
 }
 
-export interface AuthModalImage {
+export interface MediaImage {
   id: string
   image: string
   type?: string
-  title: string
-  description: string
+  title?: string
+  description?: string
   orderIndex: number
   isActive: boolean
   createdAt: string
   updatedAt: string
 }
 
-export interface AuthModalImagesResponse {
-  images: AuthModalImage[]
+export interface MediaImagesResponse {
+  success: boolean
+  images: MediaImage[]
 }
+
+// Legacy alias for backward compatibility
+export type AuthModalImage = MediaImage
 
 export interface RequestPasswordResetData {
   email: string
@@ -124,14 +128,31 @@ export const authApi = {
     return response.data
   },
 
-  getAuthModalImages: async (type?: string): Promise<AuthModalImage[]> => {
-    const params = type ? { type } : {}
-    const response = await api.get<AuthModalImagesResponse>(
-      '/auth-modal-images',
-      { params }
-    )
-    // Filter only active images and return the array
-    return response.data.images.filter((img) => img.isActive)
+  getMediaImages: async (type?: string): Promise<MediaImage[]> => {
+    const response = await api.get<MediaImagesResponse>('/media-images')
+    // API already returns only active images, but filter by type if provided
+    let images = response.data.images
+    if (type) {
+      images = images.filter(
+        (img) => img.type?.toUpperCase() === type.toUpperCase()
+      )
+    }
+    // Sort by orderIndex
+    return images.sort((a, b) => a.orderIndex - b.orderIndex)
+  },
+
+  // Legacy method for backward compatibility
+  getAuthModalImages: async (type?: string): Promise<MediaImage[]> => {
+    const response = await api.get<MediaImagesResponse>('/media-images')
+    // API already returns only active images, but filter by type if provided
+    let images = response.data.images
+    if (type) {
+      images = images.filter(
+        (img) => img.type?.toUpperCase() === type.toUpperCase()
+      )
+    }
+    // Sort by orderIndex
+    return images.sort((a, b) => a.orderIndex - b.orderIndex)
   },
 
   requestPasswordReset: async (

@@ -149,8 +149,8 @@ export function HeroCarousel() {
     isLoading,
     isError,
   } = useQuery({
-    queryKey: ['hero-carousel-images', 'HERO'],
-    queryFn: () => authApi.getAuthModalImages('HERO'),
+    queryKey: ['media-images', 'HERO'],
+    queryFn: () => authApi.getMediaImages('HERO'),
     staleTime: 5 * 60 * 1000, // Cache for 5 minutes
   })
 
