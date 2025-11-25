@@ -16,8 +16,11 @@ import { toast } from 'react-hot-toast'
 
 // const baseUrl = getApiUrl()
 
+const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'
+const baseUrl = apiUrl.startsWith('http') ? apiUrl : `http://${apiUrl}`
+
 // Use relative path for API calls since Next.js rewrites will handle the proxying
-const baseUrl = '/api'
+// const baseUrl = '/api'
 
 export const api = axios.create({
   baseURL: baseUrl,
