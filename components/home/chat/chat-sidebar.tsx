@@ -152,7 +152,7 @@ export function ChatSidebar({ isOpen, onToggle }: ChatSidebarProps) {
             isOpen ? 'right-80' : 'right-0'
           }`}
         >
-          <Button
+          {/* <Button
             onClick={onToggle}
             className="rounded-l-md rounded-r-none h-8 w-8 p-0 bg-brand-purple text-white hover:bg-brand-purple/80 shadow-lg cursor-pointer"
           >
@@ -164,7 +164,63 @@ export function ChatSidebar({ isOpen, onToggle }: ChatSidebarProps) {
             <span className="sr-only">
               {isOpen ? 'Close chat' : 'Open chat'}
             </span>
-          </Button>
+          </Button> */}
+
+          <svg
+            width="44"
+            height="44"
+            viewBox="0 0 44 44"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            className="cursor-pointer"
+            onClick={onToggle}
+          >
+            <foreignObject x="-69.9966" y="-70" width="183.997" height="184">
+              <div
+                // @ts-ignore
+                xmlns="http://www.w3.org/1999/xhtml"
+                style={{
+                  backdropFilter: 'blur(35px)',
+                  clipPath: 'url(#bgblur_0_5045_15484_clip_path)',
+                  height: '100%',
+                  width: '100%',
+                }}
+              ></div>
+            </foreignObject>
+            <g data-figma-bg-blur-radius="70">
+              <path
+                d="M6.24264 1.75736L1.76063 6.23937C0.633477 7.36652 0.00117818 8.89587 0.00327453 10.4899L0.039464 38.0079C0.0438179 41.3185 2.72884 44 6.03946 44H33.5147C35.106 44 36.6321 43.3679 37.7574 42.2426L42.2426 37.7574C43.3679 36.6321 44 35.106 44 33.5147V6C44 2.68629 41.3137 0 38 0H10.4853C8.89398 0 7.36786 0.632139 6.24264 1.75736Z"
+                fill="#0C0A12"
+              />
+              <path
+                d="M10.4854 0.5H38C41.0376 0.5 43.5 2.96243 43.5 6V33.5146C43.5 34.9733 42.9201 36.3719 41.8887 37.4033L37.4033 41.8887C36.3719 42.9201 34.9733 43.5 33.5146 43.5H6.03906C3.0045 43.4998 0.543053 41.0414 0.539062 38.0068L0.50293 10.4893C0.501008 9.02806 1.08104 7.626 2.11426 6.59277L6.59668 2.11133C7.62813 1.0799 9.02668 0.5 10.4854 0.5Z"
+                stroke="white"
+                stroke-opacity="0.1"
+              />
+            </g>
+            <path
+              d="M27.5116 13H28.4883C29.8755 13 31 14.1188 31 15.4989V28.5011C31 29.8812 29.8755 31 28.4884 31H27.5117C26.1245 31 25 29.8812 25 28.5011V15.4989"
+              stroke="white"
+              stroke-width="1.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+            <path
+              d="M16.5005 25.5L13 22.0003L16.5005 18.5"
+              stroke="white"
+              stroke-width="1.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+            <defs>
+              <clipPath
+                id="bgblur_0_5045_15484_clip_path"
+                transform="translate(69.9966 70)"
+              >
+                <path d="M6.24264 1.75736L1.76063 6.23937C0.633477 7.36652 0.00117818 8.89587 0.00327453 10.4899L0.039464 38.0079C0.0438179 41.3185 2.72884 44 6.03946 44H33.5147C35.106 44 36.6321 43.3679 37.7574 42.2426L42.2426 37.7574C43.3679 36.6321 44 35.106 44 33.5147V6C44 2.68629 41.3137 0 38 0H10.4853C8.89398 0 7.36786 0.632139 6.24264 1.75736Z" />
+              </clipPath>
+            </defs>
+          </svg>
         </div>
 
         {/* Sidebar - Fixed position */}
@@ -660,7 +716,7 @@ export function ChatSidebar({ isOpen, onToggle }: ChatSidebarProps) {
           isOpen ? 'right-80' : 'right-0'
         }`}
       >
-        <Button
+        {/* <Button
           onClick={onToggle}
           className="rounded-l-md rounded-r-none h-8 w-8 p-0 bg-brand-purple text-white hover:bg-brand-purple/80 shadow-lg cursor-pointer"
         >
@@ -670,7 +726,51 @@ export function ChatSidebar({ isOpen, onToggle }: ChatSidebarProps) {
             <ArrowLeft className="h-5 w-5" />
           )}
           <span className="sr-only">{isOpen ? 'Close chat' : 'Open chat'}</span>
-        </Button>
+        </Button> */}
+
+        <svg
+          width="44"
+          height="44"
+          viewBox="0 0 44 44"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          className="cursor-pointer"
+          onClick={onToggle}
+        >
+          <g data-figma-bg-blur-radius="70">
+            <path
+              d="M6.24264 1.75736L1.76063 6.23937C0.633477 7.36652 0.00117818 8.89587 0.00327453 10.4899L0.039464 38.0079C0.0438179 41.3185 2.72884 44 6.03946 44H33.5147C35.106 44 36.6321 43.3679 37.7574 42.2426L42.2426 37.7574C43.3679 36.6321 44 35.106 44 33.5147V6C44 2.68629 41.3137 0 38 0H10.4853C8.89398 0 7.36786 0.632139 6.24264 1.75736Z"
+              fill="#0C0A12"
+            />
+            <path
+              d="M10.4854 0.5H38C41.0376 0.5 43.5 2.96243 43.5 6V33.5146C43.5 34.9733 42.9201 36.3719 41.8887 37.4033L37.4033 41.8887C36.3719 42.9201 34.9733 43.5 33.5146 43.5H6.03906C3.0045 43.4998 0.543053 41.0414 0.539062 38.0068L0.50293 10.4893C0.501008 9.02806 1.08104 7.626 2.11426 6.59277L6.59668 2.11133C7.62813 1.0799 9.02668 0.5 10.4854 0.5Z"
+              stroke="white"
+              stroke-opacity="0.1"
+            />
+          </g>
+          <path
+            d="M27.5116 13H28.4883C29.8755 13 31 14.1188 31 15.4989V28.5011C31 29.8812 29.8755 31 28.4884 31H27.5117C26.1245 31 25 29.8812 25 28.5011V15.4989"
+            stroke="white"
+            stroke-width="1.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+          <path
+            d="M16.5005 25.5L13 22.0003L16.5005 18.5"
+            stroke="white"
+            stroke-width="1.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+          <defs>
+            <clipPath
+              id="bgblur_0_5045_15484_clip_path"
+              transform="translate(69.9966 70)"
+            >
+              <path d="M6.24264 1.75736L1.76063 6.23937C0.633477 7.36652 0.00117818 8.89587 0.00327453 10.4899L0.039464 38.0079C0.0438179 41.3185 2.72884 44 6.03946 44H33.5147C35.106 44 36.6321 43.3679 37.7574 42.2426L42.2426 37.7574C43.3679 36.6321 44 35.106 44 33.5147V6C44 2.68629 41.3137 0 38 0H10.4853C8.89398 0 7.36786 0.632139 6.24264 1.75736Z" />
+            </clipPath>
+          </defs>
+        </svg>
       </div>
     </>
   )

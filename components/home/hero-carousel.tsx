@@ -93,46 +93,121 @@ function CarouselVerticalControls() {
   if (scrollSnaps.length <= 1) return null
 
   return (
-    <div className="flex flex-col items-center gap-2 absolute right-4 top-1/2 -translate-y-1/2 z-10">
-      {/* Top arrow */}
-      <button
-        type="button"
-        onClick={scrollPrev}
-        disabled={!canScrollPrev}
-        className="size-8 rounded-full border border-white/20 bg-black/50 hover:bg-black/70 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center rotate-90 text-white"
-        aria-label="Previous slide"
+    <div className="flex flex-col items-center gap-2 absolute right-4 top-1/2 -translate-y-1/2 z-10 w-[48px] min-h-[144px]">
+      <svg
+        // width="48"
+        // height="144"
+        viewBox="0 0 48 144"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        className="absolute inset-0 w-full h-full"
+        preserveAspectRatio="none"
       >
-        <ArrowLeft className="h-4 w-4" />
-      </button>
-
-      {/* Dots */}
-      <div className="flex flex-col gap-2">
-        {scrollSnaps.map((_, index) => (
-          <button
-            key={index}
-            type="button"
-            onClick={() => onDotButtonClick(index)}
-            className={cn(
-              'h-2 w-2 rounded-full transition-all',
-              selectedIndex === index
-                ? 'bg-white h-6'
-                : 'bg-white/50 hover:bg-white/75'
-            )}
-            aria-label={`Go to slide ${index + 1}`}
+        <foreignObject x="-70" y="-70" width="187.999" height="284">
+          <div
+            // @ts-ignore
+            xmlns="http://www.w3.org/1999/xhtml"
+            style={{
+              backdropFilter: 'blur(35px)',
+              clipPath: 'url(#bgblur_0_5045_15476_clip_path)',
+              height: '100%',
+              width: '100%',
+            }}
+          ></div>
+        </foreignObject>
+        <g data-figma-bg-blur-radius="70">
+          <path
+            d="M6.24167 1.75736L1.75725 6.24178C0.631518 7.36751 -0.000665172 8.89449 -0.000110956 10.4865L0.0442798 138.002C0.0454331 141.315 2.73139 144 6.04429 144H37.5137C39.105 144 40.6312 143.368 41.7564 142.243L46.2417 137.757C47.3669 136.632 47.999 135.106 47.999 133.515V6C47.999 2.68629 45.3127 0 41.999 0H10.4843C8.89301 0 7.36688 0.632139 6.24167 1.75736Z"
+            fill="#0C0A12"
           />
-        ))}
-      </div>
+          <path
+            d="M10.4844 0.5H41.999C45.0366 0.5 47.499 2.96243 47.499 6V133.515C47.499 134.973 46.9191 136.372 45.8877 137.403L41.4023 141.889C40.3709 142.92 38.9723 143.5 37.5137 143.5H6.04395C3.00729 143.5 0.545022 141.039 0.543945 138.002L0.5 10.4863C0.499495 9.02717 1.07869 7.62758 2.11035 6.5957L6.5957 2.11133C7.62715 1.0799 9.0257 0.5 10.4844 0.5Z"
+            stroke="white"
+            stroke-opacity="0.1"
+          />
+        </g>
+        <defs>
+          <clipPath
+            id="bgblur_0_5045_15476_clip_path"
+            transform="translate(70 70)"
+          >
+            <path d="M6.24167 1.75736L1.75725 6.24178C0.631518 7.36751 -0.000665172 8.89449 -0.000110956 10.4865L0.0442798 138.002C0.0454331 141.315 2.73139 144 6.04429 144H37.5137C39.105 144 40.6312 143.368 41.7564 142.243L46.2417 137.757C47.3669 136.632 47.999 135.106 47.999 133.515V6C47.999 2.68629 45.3127 0 41.999 0H10.4843C8.89301 0 7.36688 0.632139 6.24167 1.75736Z" />
+          </clipPath>
+        </defs>
+      </svg>
 
-      {/* Bottom arrow */}
-      <button
-        type="button"
-        onClick={scrollNext}
-        disabled={!canScrollNext}
-        className="size-8 rounded-full border border-white/20 bg-black/50 hover:bg-black/70 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center rotate-90 text-white"
-        aria-label="Next slide"
-      >
-        <ArrowRight className="h-4 w-4" />
-      </button>
+      <div className="w-full h-full relative flex flex-col items-center justify-between min-h-[144px] py-2">
+        {/* Top arrow */}
+        <button
+          type="button"
+          onClick={scrollPrev}
+          disabled={!canScrollPrev}
+          className="size-8 rounded-md border border-white/5 bg-black/50 hover:bg-black/70 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center text-white group cursor-pointer mb-1"
+          aria-label="Previous slide"
+        >
+          <svg
+            width="21"
+            height="12"
+            viewBox="0 0 21 12"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            className="rotate-180"
+          >
+            <path
+              d="M19.6667 1L15 5.66667L13.8333 6.83333M10.3333 10.3333L1 1"
+              stroke="gray"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              className="group-hover:stroke-white"
+            />
+          </svg>
+        </button>
+
+        {/* Dots */}
+        <div className="flex flex-col gap-2">
+          {scrollSnaps.map((_, index) => (
+            <button
+              key={index}
+              type="button"
+              onClick={() => onDotButtonClick(index)}
+              className={cn(
+                'h-2 w-2 rounded-full transition-all',
+                selectedIndex === index
+                  ? 'bg-white h-6'
+                  : 'bg-white/50 hover:bg-white/75'
+              )}
+              aria-label={`Go to slide ${index + 1}`}
+            />
+          ))}
+        </div>
+
+        {/* Bottom arrow */}
+        <button
+          type="button"
+          onClick={scrollNext}
+          disabled={!canScrollNext}
+          className="size-8 rounded-lg border border-white/5 bg-black/50 hover:bg-black/70 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center text-white group cursor-pointer mt-1"
+          aria-label="Next slide"
+        >
+          <svg
+            width="21"
+            height="12"
+            viewBox="0 0 21 12"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M19.6667 1L15 5.66667L13.8333 6.83333M10.3333 10.3333L1 1"
+              stroke="gray"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              className="group-hover:stroke-white"
+            />
+          </svg>
+        </button>
+      </div>
     </div>
   )
 }
