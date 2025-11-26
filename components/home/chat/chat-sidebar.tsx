@@ -306,6 +306,7 @@ export function ChatSidebar({ isOpen, onToggle }: ChatSidebarProps) {
                               </AvatarFallback>
                             </Avatar>
                             <div className="flex-1 min-w-0">
+                              {/* Fix */}
                               <div className="flex flex-col">
                                 <span className="font-semibold text-gray-300 text-sm">
                                   {message.senderName}
