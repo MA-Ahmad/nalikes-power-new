@@ -1,3 +1,5 @@
+import { cn } from '@/lib/utils'
+
 export const ChatIcon = ({
   className,
   active = false,
@@ -170,6 +172,36 @@ export const FireIcon = ({ className }: { className?: string }) => {
         stroke-width="2.31259"
         stroke-linecap="round"
         stroke-linejoin="round"
+      />
+    </svg>
+  )
+}
+
+export const ArrowIcon = ({
+  className,
+  stroke,
+}: {
+  className?: string
+  stroke?: string
+}) => {
+  return (
+    <svg
+      width="21"
+      height="12"
+      viewBox="0 0 21 12"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={cn('rotate-180', className)}
+    >
+      <path
+        d="M19.6667 1L15 5.66667L13.8333 6.83333M10.3333 10.3333L1 1"
+        // stroke="gray"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        className="group-hover:stroke-white"
+        style={{ transition: 'stroke 0.2s ease-in-out' }}
+        stroke={stroke}
       />
     </svg>
   )
