@@ -1,67 +1,400 @@
-"use client";
+'use client'
 
-import Navbar from "@/components/home/navbar";
-import Image from "next/image";
-import banner from "@/public/images/banner.png";
-import { SectionCards } from "@/components/home/section-cards";
-import { useState } from "react";
-import { ChatSidebar } from "@/components/home/chat/chat-sidebar";
-import newBanner from "@/public/images/new-banner.png";
-import Banner from "@/components/home/banner";
-import InfoCards from "@/components/home/info-cards";
-import { useRouter } from "next/navigation";
+import Navbar from '@/components/home/navbar'
+import Image from 'next/image'
+import banner from '@/public/images/banner.png'
+import { SectionCards } from '@/components/home/section-cards'
+import { useState, useEffect } from 'react'
+import { ChatSidebar } from '@/components/home/chat/chat-sidebar'
+import newBanner from '@/public/images/new-banner.png'
+import Banner from '@/components/home/banner'
+import InfoCards from '@/components/home/info-cards'
+import { useRouter, useSearchParams } from 'next/navigation'
+import { x1Testnet } from 'viem/chains'
+import { useIsMobile } from '@/hooks/use-mobile'
+import { motion } from 'framer-motion'
+import { useMiniGames, useEnterGame } from '@/hooks/use-mini-games'
+import { Game } from '@/lib/api/mini-game'
+import { ArrowLeft, RefreshCcw } from 'lucide-react'
+import { useAuthStore } from '@/store/auth'
+import { toast } from 'react-hot-toast'
+import { ResetPasswordDialog } from '@/components/home/reset-password-dialog'
+import { HeroCarousel } from '@/components/home/hero-carousel'
 
 export default function Home() {
-  const [isChatOpen, setIsChatOpen] = useState(false);
-  const router = useRouter();
+  const [isChatOpen, setIsChatOpen] = useState(false)
+  const [gameUrl, setGameUrl] = useState<string | null>(null)
+  const [isRefetchingBalance, setIsRefetchingBalance] = useState(false)
+  const [resetPasswordToken, setResetPasswordToken] = useState<string | null>(
+    null
+  )
+  const [showResetPasswordDialog, setShowResetPasswordDialog] = useState(false)
+  const router = useRouter()
+  const searchParams = useSearchParams()
+  const isMobile = useIsMobile()
+  const { syncWalletStatus } = useAuthStore()
+
+  // Check for reset password token in query params
+  useEffect(() => {
+    const token = searchParams?.get('token')
+    if (token) {
+      setResetPasswordToken(token)
+      setShowResetPasswordDialog(true)
+    }
+  }, [searchParams])
+
+  const enterGameMutation = useEnterGame({
+    onSuccess: (url) => {
+      setGameUrl(url)
+    },
+    onError: (error) => {
+      console.error('Failed to enter game:', error)
+    },
+  })
+
+  const handleGameClick = (game: Game) => {
+    enterGameMutation.mutate({
+      gameid: game.gameid,
+      currency: 'usd',
+      screen_mode: 1,
+    })
+  }
+
+  const handleCloseGame = () => {
+    setGameUrl(null)
+  }
+
+  const handleRefetchBalance = async () => {
+    setIsRefetchingBalance(true)
+    try {
+      await syncWalletStatus()
+      // toast.success('Balance updated successfully')
+    } catch (error) {
+      toast.error('Failed to refetch balance')
+      console.error('Failed to refetch balance:', error)
+    } finally {
+      setIsRefetchingBalance(false)
+    }
+  }
 
   const toggleChat = () => {
-    setIsChatOpen(!isChatOpen);
-  };
+    setIsChatOpen(!isChatOpen)
+  }
+
+  const handleResetPasswordDialogClose = (open: boolean) => {
+    setShowResetPasswordDialog(open)
+    if (!open && resetPasswordToken) {
+      // Remove token from URL when dialog closes
+      const url = new URL(window.location.href)
+      url.searchParams.delete('token')
+      router.replace(url.pathname + url.search, { scroll: false })
+      setResetPasswordToken(null)
+    }
+  }
+
+  const handleResetPasswordSuccess = () => {
+    // Remove token from URL after successful reset
+    const url = new URL(window.location.href)
+    url.searchParams.delete('token')
+    router.replace(url.pathname + url.search, { scroll: false })
+    setResetPasswordToken(null)
+  }
+
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-black relative">
+      <ResetPasswordDialog
+        open={showResetPasswordDialog}
+        onOpenChange={handleResetPasswordDialogClose}
+        token={resetPasswordToken || ''}
+        onSuccess={handleResetPasswordSuccess}
+      />
       <Navbar />
-
-      <div className="flex pt-16">
+      {!gameUrl && (
+        <div className="relative w-full">
+          {/* Carousel with text overlay */}
+          <div className="relative w-full">
+            <HeroCarousel />
+            <div className="absolute w-full top-32 sm:top-20 lg:top-[15%] left-1/2 -translate-x-1/2 flex items-center justify-center flex-col text-center gap-2 z-10">
+              <h1 className="text-2xl sm:text-3xl lg:text-5xl font-bold text-white">
+                <TypingText text="Enter The PWR City" delay={0.2} />
+              </h1>
+              <p className="text-sm sm:text-xl lg:text-xl text-white">
+                <TypingText
+                  text="Gamble Like a Degen. Win Like a Degen"
+                  delay={1.5}
+                />
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+      <div className="flex">
         <main
-          className={`flex-1 px-4 py-8 transition-all duration-300 ease-in-out ${
-            isChatOpen ? "lg:mr-80" : "lg:mr-0"
-          }`}
+          className={`flex-1 px-4 py-4 bg-[#040315] sm:bg-transparent transition-all duration-300 ease-in-out ${
+            isChatOpen ? 'lg:mr-80' : 'lg:mr-0'
+          }
+          `}
         >
-          <div className="max-w-[1500px] mx-auto">
-            <Banner />
-
-            <InfoCards />
-            {/* Banner Image */}
-            <div className="mb-8 mt-8">
-              {/* <Image
-                src={newBanner}
-                alt="Banner"
-                layout="responsive"
-                width={1920}
-                height={600}
-                className="rounded-lg"
-                placeholder="blur"
-              /> */}
-              <Image
-                src={newBanner}
-                alt="Banner"
-                width={1920}
-                height={600}
-                className="rounded-lg object-cover w-full h-full cursor-pointer"
-                placeholder="blur"
-                onClick={() => {
-                  router.push("/post-launch");
-                }}
+          {gameUrl ? (
+            <div className="mt-8">
+              <GameIframe
+                url={gameUrl}
+                onClose={handleCloseGame}
+                onRefetchBalance={handleRefetchBalance}
+                isRefetching={isRefetchingBalance}
               />
             </div>
-            <SectionCards />
-          </div>
+          ) : (
+            <div className="max-w-[1500px] mx-auto space-y-8 sm:space-y-20">
+              <div className="pb-[3rem] sm:pb-[2rem] relative">
+                <h1 className="text-lg sm:text-2xl font-bold text-center mb-8">
+                  PWR Originals
+                </h1>
+                {isMobile ? (
+                  <GameCardsMobile onGameClick={handleGameClick} />
+                ) : (
+                  <GameCardsDesktop onGameClick={handleGameClick} />
+                )}
+              </div>
+
+              <div className="">
+                <Banner />
+                <InfoCards />
+              </div>
+              <SectionCards />
+            </div>
+          )}
         </main>
 
         {/* Chat Sidebar - Part of layout on desktop, overlay on mobile */}
         <ChatSidebar isOpen={isChatOpen} onToggle={toggleChat} />
       </div>
+      {/* <div className="flex items-center justify-center mt-52 pb-20">
+        <div className="h-32 w-[400px] bg-brand-pink/30 rounded-full  blur-3xl "></div>
+      </div> */}
     </div>
-  );
+  )
+}
+
+const TypingText = ({ text, delay = 0 }: { text: string; delay?: number }) => {
+  const words = text.split('')
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ delay }}
+    >
+      {words.map((char, i) => (
+        <motion.span
+          key={i}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: delay + i * 0.05 }}
+        >
+          {char}
+        </motion.span>
+      ))}
+    </motion.div>
+  )
+}
+
+// Game display order: crash, dice, mines, roulette, plinko, blackjack
+const GAME_ORDER = ['crash', 'dice', 'mines', 'roulette', 'plinko', 'blackjack']
+
+function sortGamesByOrder(games: Game[]): Game[] {
+  return [...games].sort((a, b) => {
+    const indexA = GAME_ORDER.indexOf(a.slug)
+    const indexB = GAME_ORDER.indexOf(b.slug)
+    // If game not in order list, put it at the end
+    if (indexA === -1) return 1
+    if (indexB === -1) return -1
+    return indexA - indexB
+  })
+}
+
+function GameCardsDesktop({
+  onGameClick,
+}: {
+  onGameClick: (game: Game) => void
+}) {
+  const [hovered, setHovered] = useState<number | null>(null)
+  const { data: games = [], isLoading } = useMiniGames()
+  const sortedGames = sortGamesByOrder(games)
+  const offsets = [
+    { left: '45px', top: '65px', rotate: '-10deg', z: 8 },
+    { left: '19px', top: '30px', rotate: '-6deg', z: 9 },
+    { left: '-5px', top: '10px', rotate: '-2deg', z: 10 },
+    { left: '-29px', top: '10px', rotate: '2deg', z: 10 },
+    { left: '-54px', top: '30px', rotate: '6deg', z: 10 },
+    { left: '-82px', top: '65px', rotate: '10deg', z: 10 },
+  ]
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center gap-4 py-10">
+        <div className="text-white">Loading games...</div>
+      </div>
+    )
+  }
+
+  return (
+    <>
+      <div className="flex justify-center gap-4 py-10">
+        {sortedGames.map((game, index) => {
+          const { left, top, rotate, z } = offsets[index] || {}
+          const isHovered = hovered === index
+
+          return (
+            <div
+              key={game.gameid}
+              onClick={() => onGameClick(game)}
+              onMouseEnter={() => setHovered(index)}
+              onMouseLeave={() => setHovered(null)}
+              className={`relative transition-all duration-300 ease-out cursor-pointer ${
+                isHovered ? 'brightness-110 -translate-y-4' : ''
+              }`}
+              style={{
+                left,
+                top,
+                transform: `rotate(${rotate})`,
+                zIndex: isHovered ? 50 : z, // Bring to front on hover
+              }}
+            >
+              <Image
+                src={`/images/games/${game.slug}.svg`}
+                alt={`Game ${game.name}`}
+                width={200}
+                height={260}
+                className="rounded-xl object-cover shadow-lg select-none"
+              />
+            </div>
+          )
+        })}
+      </div>
+    </>
+  )
+}
+
+const GameCardsMobile = ({
+  onGameClick,
+}: {
+  onGameClick: (game: Game) => void
+}) => {
+  const { data: games = [], isLoading } = useMiniGames()
+  const sortedGames = sortGamesByOrder(games)
+
+  // Split games into two rows
+  const firstRow = sortedGames.slice(0, 3)
+  const secondRow = sortedGames.slice(3, 6)
+
+  const getCardStyle = (position: number) => {
+    // 0 = left, 1 = center, 2 = right
+    const styles = [
+      {
+        transform: 'rotate(-6deg) translateY(15px)',
+        zIndex: 9,
+      },
+      {
+        transform: 'rotate(0deg)',
+        zIndex: 10,
+      },
+      {
+        transform: 'rotate(6deg) translateY(15px)',
+        zIndex: 9,
+      },
+    ]
+    return styles[position]
+  }
+
+  if (isLoading) {
+    return (
+      <div className="flex flex-col items-center">
+        <div className="text-white">Loading games...</div>
+      </div>
+    )
+  }
+
+  const renderRow = (items: typeof games) => (
+    <div className="flex justify-center items-end gap-2 sm:gap-4 mt-6 w-full">
+      {items.map((game, i) => {
+        const style = getCardStyle(i)
+        return (
+          <div
+            key={game.gameid}
+            onClick={() => onGameClick(game)}
+            className="relative transition-all duration-300 hover:-translate-y-2 hover:z-50 cursor-pointer"
+            style={{
+              ...style,
+            }}
+          >
+            <Image
+              src={`/images/games/${game.slug}.svg`}
+              alt={`Game ${game.name}`}
+              width={150}
+              height={200}
+              className="object-cover rounded-xl shadow-md transition-transform duration-300 hover:scale-105"
+            />
+          </div>
+        )
+      })}
+    </div>
+  )
+
+  return (
+    <div className="flex flex-col items-center">
+      {renderRow(firstRow)}
+      {renderRow(secondRow)}
+    </div>
+  )
+}
+
+// Game iframe component
+function GameIframe({
+  url,
+  onClose,
+  onRefetchBalance,
+  isRefetching,
+}: {
+  url: string
+  onClose: () => void
+  onRefetchBalance: () => void
+  isRefetching: boolean
+}) {
+  return (
+    <div className="relative w-full bg-black rounded-lg overflow-hidden shadow-lg">
+      {/* Close button */}
+      <div className="flex justify-end gap-2 w-full p-4">
+        <button
+          onClick={onRefetchBalance}
+          disabled={isRefetching}
+          className="bg-white/10 hover:bg-white/20 disabled:opacity-50 disabled:cursor-not-allowed text-white px-4 py-2 rounded-lg transition-colors flex items-center gap-2"
+        >
+          <RefreshCcw
+            className={`w-4 h-4 ${isRefetching ? 'animate-spin' : ''}`}
+          />
+          <span>{isRefetching ? 'Refetching...' : 'Refetch Balance'}</span>
+        </button>
+        <button
+          onClick={onClose}
+          className="bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-lg transition-colors flex items-center gap-2"
+        >
+          <span>✕</span>
+          <span>Close</span>
+        </button>
+      </div>
+      {/* Game iframe */}
+      <div
+        className="w-full"
+        style={{ aspectRatio: '16/9', minHeight: '600px' }}
+      >
+        <iframe
+          src={url}
+          className="w-full h-full border-0"
+          allow="fullscreen"
+          allowFullScreen
+        />
+      </div>
+    </div>
+  )
 }
