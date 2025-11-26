@@ -28,7 +28,7 @@ import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
 import Image from 'next/image'
 import { Separator } from '../ui/separator'
 import { AuthModal } from './auth-modal'
-import { GiftBoxIcon } from '../icons'
+import { ArrowIcon, GiftBoxIcon } from '../icons'
 import { useAuthStore } from '@/store/auth'
 import { useAuthLogout } from '@/hooks/use-auth-logout'
 import { DepositWithdrawModal } from '../wallet/deposit-withdraw-modal'
@@ -36,9 +36,29 @@ import { ChainBalanceSelector } from './balance-selector'
 import { UserDropdown } from './user-dropdown'
 import { cn } from '@/lib/utils'
 import { usePathname } from 'next/navigation'
+import {
+  BlackjackIcon,
+  BombDefuseIcon,
+  CaseIcon,
+  CoinsStackIcon,
+  CounterStrikeIcon,
+  CrashIcon,
+  DiceIcon,
+  GameControllerIcon,
+  GiftIcon,
+  LeafIcon,
+  MinesIcon,
+  PlinkoIcon,
+  RouletteIcon,
+  TargetIcon,
+  TrophyIcon,
+} from '../icons/games'
 
 export default function Navbar() {
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false)
+  const [isPwrOriginalsDropdownOpen, setIsPwrOriginalsDropdownOpen] =
+    useState(false)
+  const [isCounterStrikeDropdownOpen, setIsCounterStrikeDropdownOpen] =
+    useState(false)
   const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false)
   const [authModalOpen, setAuthModalOpen] = useState(false)
   const [depositWithdrawModalOpen, setDepositWithdrawModalOpen] =
@@ -243,8 +263,8 @@ export default function Navbar() {
         </div>
 
         {/* Desktop Left Section */}
-        <div className="hidden lg:flex items-center gap-6">
-          <Link href="/" className="flex items-center justify-center gap-2">
+        <div className="hidden lg:flex items-center gap-2">
+          <Link href="/" className="flex items-center justify-center">
             <Image
               src="/logo.svg"
               alt="Powerblocks"
@@ -256,72 +276,205 @@ export default function Navbar() {
               Powerblocks
             </h2> */}
           </Link>
-          <div className="h-6 w-px bg-gray-600"></div>
+          <div className="h-6 w-px bg-gray-600 mx-6"></div>
 
-          {/* Games Dropdown */}
-          <DropdownMenu onOpenChange={setIsDropdownOpen}>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="ghost"
-                className="text-white flex hover:!bg-white/10 items-center gap-2"
-              >
-                {/* <Gamepad2 className="w-4 h-4" /> */}
-                Games
-                <ChevronDown
+          <div className="flex items-center gap-2">
+            {/* Games Dropdown */}
+            <DropdownMenu onOpenChange={setIsPwrOriginalsDropdownOpen}>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  className="text-white flex hover:!bg-white/5 items-center gap-2 focus:outline-none focus-visible:ring-[0]"
+                >
+                  {/* <Gamepad2 className="w-4 h-4" /> */}
+                  <div className="flex items-center gap-2">
+                    <GameControllerIcon className="w-5 h-5 text-white" />
+                    <span>PWR Original</span>
+                  </div>
+                  {/* <ChevronDown
                   className={`h-4 w-4 transition-transform duration-200 ${
                     isDropdownOpen ? 'rotate-180' : 'rotate-0'
                   }`}
-                />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="z-[5555]">
-              <DropdownMenuItem className="hover:bg-neutral-800 focus:bg-neutral-800">
-                <Gamepad2 className="w-4 h-4 mr-3 text-white" />
-                All Games
-              </DropdownMenuItem>
-              <DropdownMenuItem className="hover:bg-neutral-800 focus:bg-neutral-800">
-                <Trophy className="h-4 w-4 mr-3 text-white" />
-                Tournaments
-              </DropdownMenuItem>
-              <DropdownMenuItem className="hover:bg-neutral-800 focus:bg-neutral-800">
-                <User className="h-4 w-4 mr-3 text-white" />
-                Leaderboard
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+                /> */}
+                  <ArrowIcon
+                    className={cn(
+                      isPwrOriginalsDropdownOpen
+                        ? 'rotate-180 text-white'
+                        : 'rotate-0 text-gray'
+                    )}
+                    stroke={isPwrOriginalsDropdownOpen ? 'white' : 'gray'}
+                  />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                className="z-[5555] p-0 border-0 bg-transparent min-w-[160px]"
+                sideOffset={8}
+              >
+                <div className="relative w-full min-h-[100px]">
+                  <svg
+                    width="180"
+                    height="120"
+                    viewBox="0 0 180 120"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="absolute inset-0 w-full h-full"
+                    preserveAspectRatio="none"
+                  >
+                    {/* <foreignObject x="-70" y="-70" width="320" height="260">
+                    <div
+                      // @ts-ignore
+                      xmlns="http://www.w3.org/1999/xhtml"
+                      style={{
+                        backdropFilter: 'blur(35px)',
+                        clipPath: 'url(#bgblur_games_dropdown_clip_path)',
+                        height: '100%',
+                        width: '100%',
+                      }}
+                    ></div>
+                  </foreignObject> */}
+                    <g data-figma-bg-blur-radius="70">
+                      <path
+                        d="M7.24167 2.25736L2.25725 7.24178C1.13152 8.36751 0.499335 9.89449 0.499889 11.4865L0.54428 113.002C0.54543 116.315 3.23139 119 6.54429 119H172.514C174.105 119 175.631 118.368 176.756 117.243L178.242 115.757C179.367 114.632 179.999 113.106 179.999 111.515V7C179.999 3.68629 177.313 1 173.999 1H11.4843C9.89301 1 8.36688 1.63214 7.24167 2.75736Z"
+                        fill="#0C0A12"
+                      />
+                      <path
+                        d="M11.4844 1.5H173.999C177.037 1.5 179.499 3.96243 179.499 7V111.515C179.499 112.973 178.919 114.372 177.888 115.403L176.402 116.889C175.371 117.92 173.972 118.5 172.514 118.5H6.54395C3.50729 118.5 1.04502 116.039 1.04395 113.002L1 11.4863C0.999495 10.0272 1.57869 8.62758 2.61035 7.5957L7.0957 3.11133C8.12715 2.0799 9.5257 1.5 10.9844 1.5Z"
+                        stroke="white"
+                        strokeOpacity="0.1"
+                      />
+                    </g>
+                    <defs>
+                      <clipPath
+                        id="bgblur_games_dropdown_clip_path"
+                        transform="translate(70 70)"
+                      >
+                        <path d="M7.24167 2.25736L2.25725 7.24178C1.13152 8.36751 0.499335 9.89449 0.499889 11.4865L0.54428 113.002C0.54543 116.315 3.23139 119 6.54429 119H172.514C174.105 119 175.631 118.368 176.756 117.243L178.242 115.757C179.367 114.632 179.999 113.106 179.999 111.515V7C179.999 3.68629 177.313 1 173.999 1H11.4843C9.89301 1 8.36688 1.63214 7.24167 2.75736Z" />
+                      </clipPath>
+                    </defs>
+                  </svg>
 
-          {/* Rewards Link */}
-          <Link
-            href="#"
-            className="flex items-center gap-2 text-white hover:bg-white/10 px-3 py-1.5 rounded-md transition-colors"
-          >
-            {/* <GiftBoxIcon className="h-4 w-4" /> */}
-            Rewards
-          </Link>
+                  <div className="relative w-full h-full flex flex-col py-2 px-1">
+                    {pwrOriginals.map((game) => (
+                      <DropdownMenuItem
+                        key={game.id}
+                        className="hover:bg-white/5 focus:bg-white/10 bg-transparent text-white"
+                      >
+                        {game.image}
+                        {game.name}
+                      </DropdownMenuItem>
+                    ))}
+                  </div>
+                </div>
+              </DropdownMenuContent>
+            </DropdownMenu>
 
-          {isAuthenticated && (
+            {/* Games Dropdown */}
+            <DropdownMenu onOpenChange={setIsCounterStrikeDropdownOpen}>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  className="text-white flex hover:!bg-white/5 items-center gap-2 focus-visible:ring-[0]"
+                >
+                  {/* <Gamepad2 className="w-4 h-4" /> */}
+                  <div className="flex items-center gap-2">
+                    <CounterStrikeIcon className="w-5 h-5 text-white" />
+                    <span>Counter Strike</span>
+                  </div>
+                  {/* <ChevronDown
+                  className={`h-4 w-4 transition-transform duration-200 ${
+                    isDropdownOpen ? 'rotate-180' : 'rotate-0'
+                  }`}
+                /> */}
+                  <ArrowIcon
+                    className={cn(
+                      isCounterStrikeDropdownOpen
+                        ? 'rotate-180 text-white'
+                        : 'rotate-0 text-gray'
+                    )}
+                    stroke={isCounterStrikeDropdownOpen ? 'white' : 'gray'}
+                  />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                className="z-[5555] p-0 border-0 bg-transparent min-w-[160px]"
+                sideOffset={8}
+              >
+                <div className="relative w-full min-h-[100px]">
+                  <svg
+                    width="180"
+                    height="120"
+                    viewBox="0 0 180 120"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="absolute inset-0 w-full h-full"
+                    preserveAspectRatio="none"
+                  >
+                    <g data-figma-bg-blur-radius="70">
+                      <path
+                        d="M7.24167 2.25736L2.25725 7.24178C1.13152 8.36751 0.499335 9.89449 0.499889 11.4865L0.54428 113.002C0.54543 116.315 3.23139 119 6.54429 119H172.514C174.105 119 175.631 118.368 176.756 117.243L178.242 115.757C179.367 114.632 179.999 113.106 179.999 111.515V7C179.999 3.68629 177.313 1 173.999 1H11.4843C9.89301 1 8.36688 1.63214 7.24167 2.75736Z"
+                        fill="#0C0A12"
+                      />
+                      <path
+                        d="M11.4844 1.5H173.999C177.037 1.5 179.499 3.96243 179.499 7V111.515C179.499 112.973 178.919 114.372 177.888 115.403L176.402 116.889C175.371 117.92 173.972 118.5 172.514 118.5H6.54395C3.50729 118.5 1.04502 116.039 1.04395 113.002L1 11.4863C0.999495 10.0272 1.57869 8.62758 2.61035 7.5957L7.0957 3.11133C8.12715 2.0799 9.5257 1.5 10.9844 1.5Z"
+                        stroke="white"
+                        strokeOpacity="0.1"
+                      />
+                    </g>
+                    <defs>
+                      <clipPath
+                        id="bgblur_games_dropdown_clip_path"
+                        transform="translate(70 70)"
+                      >
+                        <path d="M7.24167 2.25736L2.25725 7.24178C1.13152 8.36751 0.499335 9.89449 0.499889 11.4865L0.54428 113.002C0.54543 116.315 3.23139 119 6.54429 119H172.514C174.105 119 175.631 118.368 176.756 117.243L178.242 115.757C179.367 114.632 179.999 113.106 179.999 111.515V7C179.999 3.68629 177.313 1 173.999 1H11.4843C9.89301 1 8.36688 1.63214 7.24167 2.75736Z" />
+                      </clipPath>
+                    </defs>
+                  </svg>
+
+                  <div className="relative w-full h-full flex flex-col py-2 px-1">
+                    {counterStrike.map((game) => (
+                      <DropdownMenuItem
+                        key={game.id}
+                        className="hover:bg-white/5 focus:bg-white/10 bg-transparent text-white"
+                      >
+                        {game.image}
+                        {game.name}
+                      </DropdownMenuItem>
+                    ))}
+                  </div>
+                </div>
+              </DropdownMenuContent>
+            </DropdownMenu>
+
             <Link
-              href="/mystery-box"
-              className="flex items-center gap-2 text-white hover:bg-white/10 px-3 py-1.5 rounded-md transition-colors"
+              href="#"
+              className="hidden xl:flex items-center gap-2 text-white hover:bg-white/5 px-3 py-1.5 rounded-md transition-colors"
             >
-              Mystery Box
+              <CoinsStackIcon className="h-4 w-4" />
+              Casino
             </Link>
-          )}
 
-          {/* <Link
-            href="/blog"
-            className={cn(
-              'flex items-center gap-2 text-white hover:bg-neutral-800 px-3 py-1.5 rounded-md transition-colors',
-              pathname === '/blog' && 'bg-neutral-800'
+            <Link
+              href="#"
+              className="hidden xl:flex items-center gap-2 text-white hover:bg-white/5 px-3 py-1.5 rounded-md transition-colors"
+            >
+              <LeafIcon className="h-4 w-4" />
+              Lottery
+            </Link>
+
+            {isAuthenticated && (
+              <Link
+                href="/mystery-box"
+                className="hidden xl:flex items-center gap-2 text-white hover:bg-white/5 px-3 py-1.5 rounded-md transition-colors"
+              >
+                <GiftIcon className="h-4 w-4" />
+                Mystery Box
+              </Link>
             )}
-          >
-            <Book className="h-4 w-4 text-white" />
-            <span>Blog</span>
-          </Link> */}
+          </div>
         </div>
 
         {/* Right Section - Auth */}
-        <div className="flex items-center gap-5">
+        <div className="flex items-center gap-0 sm:gap-5">
           {isAuthenticated && user ? (
             <ChainBalanceSelector
               setDepositWithdrawModalOpen={setDepositWithdrawModalOpen}
@@ -455,3 +608,69 @@ export default function Navbar() {
     </>
   )
 }
+
+const pwrOriginals = [
+  {
+    id: 1,
+    name: 'Mines',
+    image: <MinesIcon />,
+    url: '#',
+  },
+  {
+    id: 2,
+    name: 'Plinko',
+    image: <PlinkoIcon />,
+    url: '#',
+  },
+  {
+    id: 1,
+    name: 'Crash',
+    image: <CrashIcon />,
+    url: '#',
+  },
+  {
+    id: 2,
+    name: 'Dice',
+    image: <DiceIcon />,
+    url: '#',
+  },
+  {
+    id: 1,
+    name: 'BlackJack',
+    image: <BlackjackIcon />,
+    url: '#',
+  },
+  {
+    id: 2,
+    name: 'Roulette',
+    image: <RouletteIcon />,
+    url: '#',
+  },
+]
+
+const counterStrike = [
+  {
+    id: 1,
+    name: 'Case Opening',
+    image: <CaseIcon />,
+    url: '#',
+  },
+  {
+    id: 2,
+    name: 'Case Battle',
+    image: <TrophyIcon />,
+    url: '#',
+  },
+  {
+    id: 1,
+    name: 'Bomb Defuse',
+    image: <BombDefuseIcon />,
+    url: '#',
+  },
+  {
+    id: 2,
+    name: 'Sniper',
+    image: <TargetIcon />,
+    url: '#',
+  },
+]
