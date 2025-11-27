@@ -139,7 +139,7 @@ export default function Navbar() {
             </SheetTrigger>
             <SheetContent
               side="left"
-              className="bg-sidebar border-neutral-800 z-[5555]"
+              className="bg-black/30 border-neutral-800 z-[5555] !max-w-[15rem] !backdrop-blur-md !backdrop-brightness-75"
             >
               <div className="flex flex-col gap-4 py-6 px-6">
                 <Link

@@ -157,7 +157,8 @@ export default function Home() {
                 )}
               </div>
 
-              <div className="max-w-[1200px] mx-auto">
+              <div className="max-w-[1200px] mx-auto relative">
+                <div className="absolute top-10 -left-[5rem] h-[15rem] sm:h-[20rem] w-[400px] bg-brand-pink/30 rounded-full blur-3xl "></div>
                 <Banner />
                 <InfoCards />
               </div>

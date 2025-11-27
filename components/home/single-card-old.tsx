@@ -4,8 +4,6 @@ import { Badge } from '@/components/ui/badge'
 import { Card, CardContent } from '@/components/ui/card'
 import { Star, Play } from 'lucide-react'
 import { useState } from 'react'
-import { ButtonBlue, ButtonPink, ButtonPinkSmall } from '../game/buttons'
-import { HeartIconGray } from '../game/svgs'
 
 interface GameCardProps {
   title: string
@@ -32,8 +30,8 @@ export function GameCard({
   const [isHovered, setIsHovered] = useState(false)
 
   return (
-    <div
-      className="relative border-0 text-white overflow-hidden cursor-pointer transition-transform hover:scale-102 px-4 min-h-[24rem] py-6"
+    <Card
+      className="relative border-0 text-white overflow-hidden cursor-pointer transition-transform hover:scale-102 px-4 min-h-[24rem]"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
@@ -50,24 +48,20 @@ export function GameCard({
           className=" w-full h-full  "
         />
       </div>
-      {/* <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black to-transparent z-10" /> */}
-      <div className="flex flex-col justify-between px-2 h-full z-10">
+      <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black to-transparent z-10" />
+      <CardContent className="flex flex-col justify-between px-2 h-full z-10">
         {/* Header with badges and star */}
         <div className="flex justify-between items-start pb-2">
           <div className="flex gap-2">
             {isNew && (
-              <ButtonBlue>
-                <span className="relative text-[#4F9FFB] whitespace-nowrap flex items-center justify-center">
-                  New
-                </span>
-              </ButtonBlue>
+              <div className="bg-gradient-to-b from-[#6F6BFF] to-[#434099] text-white text-xs px-2 py-1 rounded-md flex items-center justify-center">
+                NEW
+              </div>
             )}
             {isHot && (
-              <ButtonPinkSmall>
-                <span className="relative text-pink-light whitespace-nowrap flex items-center justify-center">
-                  Hot
-                </span>
-              </ButtonPinkSmall>
+              <div className="bg-gradient-to-b from-[#EE4FFB] to-[#8D2F95] text-white text-xs px-2 py-1 rounded-md flex items-center justify-center">
+                HOT
+              </div>
             )}
             {badges.map((badge, index) => (
               <Badge
@@ -79,15 +73,13 @@ export function GameCard({
               </Badge>
             ))}
           </div>
-          {/* <Star
+          <Star
             className={`h-6 w-6 transition-opacity duration-200 ${
               isHovered ? 'opacity-100' : 'opacity-0'
             }`}
             stroke="white"
             fill="none"
-          /> */}
-
-          <HeartIconGray />
+          />
         </div>
 
         {/* Footer with amount and play */}
@@ -131,8 +123,8 @@ export function GameCard({
             </div>
           </div>
         </div>
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   )
 }
 
@@ -144,7 +136,7 @@ const GameCardSvg = () => {
       viewBox="0 0 330 292"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
-      className="absolute inset-0 w-full h-full object-cover -z-[1]"
+      className="absolute inset-0 w-full h-full object-cover"
       preserveAspectRatio="none" // <— important
     >
       {/* <foreignObject x="-878.591" y="-878.591" width="2087.18" height="2049.18">

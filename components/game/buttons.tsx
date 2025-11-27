@@ -537,7 +537,7 @@ export const ButtonPink = ({
           className="absolute inset-0 w-full h-full"
           preserveAspectRatio="none"
         >
-          <foreignObject x="-60" y="-60" width="245" height="168">
+          {/* <foreignObject x="-60" y="-60" width="245" height="168">
             <div
               // @ts-ignore
               xmlns="http://www.w3.org/1999/xhtml"
@@ -548,7 +548,7 @@ export const ButtonPink = ({
                 width: '100%',
               }}
             ></div>
-          </foreignObject>
+          </foreignObject> */}
           <g data-figma-bg-blur-radius="60">
             <path
               d="M7.13595 1.5491L1.97639 6.21335C0.718034 7.3509 0 8.96794 0 10.6642V42C0 45.3137 2.68629 48 6 48H113.84C115.327 48 116.761 47.448 117.864 46.4509L123.024 41.7867C124.282 40.6491 125 39.0321 125 37.3358V6C125 2.68629 122.314 0 119 0H11.1596C9.67275 0 8.2389 0.552038 7.13595 1.5491Z"
@@ -573,6 +573,137 @@ export const ButtonPink = ({
               y1="0.461856"
               x2="-20.5357"
               y2="48.4948"
+              gradientUnits="userSpaceOnUse"
+            >
+              <stop stop-color="#EE4FFB" stop-opacity="0.2" />
+              <stop offset="1" stop-color="#EE4FFB" stop-opacity="0" />
+            </linearGradient>
+          </defs>
+        </svg>
+        {children}
+      </div>
+    </div>
+  )
+}
+
+export const ButtonBlue = ({
+  children,
+  onClick,
+}: {
+  children: React.ReactNode
+  onClick?: () => void
+}) => {
+  return (
+    <div className="flex items-center gap-3">
+      <div
+        className="relative inline-block w-full min-w-[40px] px-3 py-1 cursor-pointer cut-corner-button"
+        onClick={onClick}
+      >
+        <svg
+          // width="56"
+          // height="33"
+          viewBox="0 0 56 33"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          className="absolute inset-0 w-full h-full"
+          preserveAspectRatio="none"
+        >
+          {/* <foreignObject x="-60" y="-60" width="176" height="153">
+            <div
+              xmlns="http://www.w3.org/1999/xhtml"
+              style="backdrop-filter:blur(30px);clip-path:url(#bgblur_0_5142_14512_clip_path);height:100%;width:100%"
+            ></div>
+          </foreignObject> */}
+          <g data-figma-bg-blur-radius="60">
+            <path
+              d="M4.42081 2.24798L1.31786 6.12014C0.464833 7.18464 0 8.50804 0 9.87216V27C0 30.3137 2.68629 33 6 33H46.8971C48.718 33 50.4405 32.173 51.5792 30.752L54.6821 26.8799C55.5352 25.8154 56 24.492 56 23.1278V6C56 2.68629 53.3137 0 50 0H9.10294C7.28197 0 5.55953 0.826974 4.42081 2.24798Z"
+              fill="url(#paint0_linear_5142_14512)"
+            />
+            <path
+              d="M9.10254 0.5H50C53.0376 0.5 55.5 2.96243 55.5 6V23.1279C55.5 24.3783 55.0739 25.5916 54.292 26.5674L51.1895 30.4395C50.1457 31.7419 48.5665 32.4999 46.8975 32.5H6C2.96244 32.5 0.500001 30.0376 0.5 27V9.87207C0.50002 8.62166 0.926081 7.40838 1.70801 6.43262L4.81055 2.56055C5.85429 1.25806 7.43346 0.500122 9.10254 0.5Z"
+              stroke="#4F9FFB"
+              stroke-opacity="0.6"
+            />
+          </g>
+          <defs>
+            <clipPath
+              id="bgblur_0_5142_14512_clip_path"
+              transform="translate(60 60)"
+            >
+              <path d="M4.42081 2.24798L1.31786 6.12014C0.464833 7.18464 0 8.50804 0 9.87216V27C0 30.3137 2.68629 33 6 33H46.8971C48.718 33 50.4405 32.173 51.5792 30.752L54.6821 26.8799C55.5352 25.8154 56 24.492 56 23.1278V6C56 2.68629 53.3137 0 50 0H9.10294C7.28197 0 5.55953 0.826974 4.42081 2.24798Z" />
+            </clipPath>
+            <linearGradient
+              id="paint0_linear_5142_14512"
+              x1="-9.2"
+              y1="0.317526"
+              x2="-9.2"
+              y2="33.3402"
+              gradientUnits="userSpaceOnUse"
+            >
+              <stop stop-color="#4F9FFB" stop-opacity="0.2" />
+              <stop offset="1" stop-color="#4F9FFB" stop-opacity="0" />
+            </linearGradient>
+          </defs>
+        </svg>
+        {children}
+      </div>
+    </div>
+  )
+}
+
+export const ButtonPinkSmall = ({
+  children,
+  onClick,
+}: {
+  children: React.ReactNode
+  onClick?: () => void
+}) => {
+  return (
+    <div className="flex items-center gap-3">
+      <div
+        className="relative inline-block w-full min-w-[40px] px-3 py-1 cursor-pointer cut-corner-button"
+        onClick={onClick}
+      >
+        <svg
+          // width="50"
+          // height="33"
+          viewBox="0 0 50 33"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          className="absolute inset-0 w-full h-full"
+          preserveAspectRatio="none"
+        >
+          <foreignObject x="-60" y="-60" width="170" height="153">
+            <div
+              // @ts-ignore
+              xmlns="http://www.w3.org/1999/xhtml"
+              style={{
+                backdropFilter: 'blur(30px)',
+                clipPath: 'url(#bgblur_0_5142_14516_clip_path)',
+                height: '100%',
+                width: '100%',
+              }}
+            ></div>
+          </foreignObject>
+          <path
+            data-figma-bg-blur-radius="60"
+            d="M8.02344 0.5H44C47.0376 0.5 49.5 2.96243 49.5 6V23.3096C49.5 24.4573 49.1405 25.5763 48.4727 26.5098L45.833 30.2002C44.8003 31.6435 43.1341 32.5 41.3594 32.5H6C2.96243 32.5 0.5 30.0376 0.5 27V8.00293C0.500009 6.53467 1.08744 5.12771 2.13086 4.09473L4.15332 2.0918C5.18314 1.07228 6.57432 0.5 8.02344 0.5Z"
+            fill="url(#paint0_linear_5142_14516)"
+            stroke="#EE4FFB"
+          />
+          <defs>
+            <clipPath
+              id="bgblur_0_5142_14516_clip_path"
+              transform="translate(60 60)"
+            >
+              <path d="M8.02344 0.5H44C47.0376 0.5 49.5 2.96243 49.5 6V23.3096C49.5 24.4573 49.1405 25.5763 48.4727 26.5098L45.833 30.2002C44.8003 31.6435 43.1341 32.5 41.3594 32.5H6C2.96243 32.5 0.5 30.0376 0.5 27V8.00293C0.500009 6.53467 1.08744 5.12771 2.13086 4.09473L4.15332 2.0918C5.18314 1.07228 6.57432 0.5 8.02344 0.5Z" />
+            </clipPath>
+            <linearGradient
+              id="paint0_linear_5142_14516"
+              x1="-8.21428"
+              y1="0.317526"
+              x2="-8.21428"
+              y2="33.3402"
               gradientUnits="userSpaceOnUse"
             >
               <stop stop-color="#EE4FFB" stop-opacity="0.2" />
