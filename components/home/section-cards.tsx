@@ -20,9 +20,9 @@ export function SectionCards() {
     <div className="relative max-w-[1200px] mx-auto mb-10">
       <div
         className="absolute -bottom-2 -left-[8rem] h-[15rem] sm:h-[20rem] w-[400px] bg-[#005f5a]/30 rounded-full blur-3xl "
-        style={{
-          rotate: '-30deg',
-        }}
+        // style={{
+        //   rotate: '-30deg',
+        // }}
       ></div>
 
       {!isMobile && <MysteryBoxesSvg />}
