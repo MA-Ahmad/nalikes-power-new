@@ -17,14 +17,14 @@ export default function Banner() {
       />
       <div className=" z-10 flex flex-col items-start lg:flex-row justify-center md:justify-between sm:items-center w-full gap-1 gap-2 sm:gap-4 py-4 absolute px-4 md:px-8 lg:px-12 ">
         {/* Left Section */}
-        <div className="flex flex-col items-center md:items-start text-center  sm:space-y-3">
-          <h1 className="text-lg sm:text-2xl md:text-3xl lg:text-5xl font-extrabold text-white  tracking-tight">
+        <div className="flex flex-col items-center lg:items-start text-center  sm:space-y-3">
+          <h1 className="text-lg sm:text-2xl lg:text-5xl font-extrabold text-white  tracking-tight">
             BITCOIN <span className="text-brand-pink">HASH</span> HUNT
           </h1>
           <img
             src={'/images/home/prize.png'}
             alt="Prize"
-            className="w-[12rem] sm:w-auto"
+            className="w-[12rem] md:w-[14rem] lg:w-auto"
           />
           <Link
             href="#"
@@ -35,13 +35,13 @@ export default function Banner() {
         </div>
 
         {/* Right Section */}
-        <div className="flex flex-col items-center md:items-start text-center md:text-right sm:space-y-3">
+        <div className="flex flex-col items-center lg:items-start text-center md:text-right sm:space-y-3">
           <h2 className="text-lg sm:text-2xl lg:text-2xl font-semibold text-white tracking-tight">
             <span className="text-[#B9B5D6]">Next Round:</span> Monday, 12 Aug
           </h2>
           <div className=" space-x-2 md:space-x-0 flex sm:flex">
             <div className="flex flex-col items-center justify-center size-14 lg:size-20 bg-brand-pink/20 rounded-lg border-2 border-brand-pink/20 text-brand-pink  text-base md:text-xl gap-2">
-              <span className="text-xl lg:text-3xl font-bold leading-none text-white">
+              <span className="text-xl md:tex-lg lg:text-3xl font-bold leading-none text-white">
                 02
               </span>
               <span className="text-xs lg:text-sm leading-none uppercase text-pink-light font-bold">

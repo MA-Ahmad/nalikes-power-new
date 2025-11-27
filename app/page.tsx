@@ -4,7 +4,7 @@ import Navbar from '@/components/home/navbar'
 import Image from 'next/image'
 import banner from '@/public/images/banner.png'
 import { SectionCards } from '@/components/home/section-cards'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { ChatSidebar } from '@/components/home/chat/chat-sidebar'
 import newBanner from '@/public/images/new-banner.png'
 import Banner from '@/components/home/banner'
@@ -12,7 +12,7 @@ import InfoCards from '@/components/home/info-cards'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { x1Testnet } from 'viem/chains'
 import { useIsMobile } from '@/hooks/use-mobile'
-import { motion } from 'framer-motion'
+import { motion, useInView } from 'framer-motion'
 import { useMiniGames, useEnterGame } from '@/hooks/use-mini-games'
 import { Game } from '@/lib/api/mini-game'
 import { ArrowLeft, RefreshCcw } from 'lucide-react'
@@ -130,7 +130,7 @@ export default function Home() {
       )}
       <div className="flex">
         <main
-          className={`flex-1 px-4 py-4 bg-[#040315] sm:bg-transparent transition-all duration-300 ease-in-out ${
+          className={`flex-1 px-4 lg:px-16 xl:px-4 py-6 sm:py-4 bg-[#040315] sm:bg-transparent transition-all duration-300 ease-in-out ${
             isChatOpen ? 'lg:mr-80' : 'lg:mr-0'
           }
           `}
@@ -145,9 +145,9 @@ export default function Home() {
               />
             </div>
           ) : (
-            <div className="max-w-[1500px] mx-auto space-y-8 sm:space-y-20">
+            <div className="max-w-[1300px] mx-auto space-y-8 sm:space-y-20">
               <div className="pb-[3rem] sm:pb-[2rem] relative">
-                <h1 className="text-lg sm:text-2xl font-bold text-center mb-8">
+                <h1 className="text-lg sm:text-2xl font-bold text-center mb-4 sm:mb-8">
                   PWR Originals
                 </h1>
                 {isMobile ? (
@@ -157,7 +157,7 @@ export default function Home() {
                 )}
               </div>
 
-              <div className="">
+              <div className="max-w-[1200px] mx-auto">
                 <Banner />
                 <InfoCards />
               </div>
@@ -221,6 +221,9 @@ function GameCardsDesktop({
   const [hovered, setHovered] = useState<number | null>(null)
   const { data: games = [], isLoading } = useMiniGames()
   const sortedGames = sortGamesByOrder(games)
+  const containerRef = useRef<HTMLDivElement>(null)
+  const isInViewOnce = useInView(containerRef, { once: true, amount: 0.6 })
+
   const offsets = [
     { left: '45px', top: '65px', rotate: '-10deg', z: 8 },
     { left: '19px', top: '30px', rotate: '-6deg', z: 9 },
@@ -239,40 +242,69 @@ function GameCardsDesktop({
   }
 
   return (
-    <>
-      <div className="flex justify-center gap-4 py-10">
-        {sortedGames.map((game, index) => {
-          const { left, top, rotate, z } = offsets[index] || {}
-          const isHovered = hovered === index
+    <div ref={containerRef} className="flex justify-center gap-4 py-10">
+      {sortedGames.map((game, index) => {
+        const { left, top, rotate, z } = offsets[index] || {}
+        const isHovered = hovered === index
+        // Parse rotation value for framer-motion
+        const rotateValue = parseFloat(rotate.replace('deg', ''))
 
-          return (
-            <div
-              key={game.gameid}
-              onClick={() => onGameClick(game)}
-              onMouseEnter={() => setHovered(index)}
-              onMouseLeave={() => setHovered(null)}
-              className={`relative transition-all duration-300 ease-out cursor-pointer ${
-                isHovered ? 'brightness-110 -translate-y-4' : ''
-              }`}
-              style={{
-                left,
-                top,
-                transform: `rotate(${rotate})`,
-                zIndex: isHovered ? 50 : z, // Bring to front on hover
-              }}
+        return (
+          <motion.div
+            key={game.gameid}
+            initial={{
+              opacity: 0,
+              scale: 0.8,
+              y: 40,
+              rotate: rotateValue,
+            }}
+            animate={{
+              opacity: isInViewOnce ? 1 : 0,
+              scale: isInViewOnce ? 1 : 0.8,
+              y: isInViewOnce ? 0 : 40,
+              rotate: isInViewOnce ? rotateValue : rotateValue,
+              transition: {
+                type: 'spring',
+                stiffness: 100,
+                damping: 15,
+                mass: 0.8,
+                delay: index * 0.15,
+              },
+            }}
+            whileHover={{
+              y: -16,
+              scale: 1.05,
+              rotate: rotateValue,
+              transition: { duration: 0.3, ease: 'easeOut' },
+            }}
+            onClick={() => onGameClick(game)}
+            onMouseEnter={() => setHovered(index)}
+            onMouseLeave={() => setHovered(null)}
+            className="relative cursor-pointer"
+            style={{
+              left,
+              top,
+              zIndex: isHovered ? 50 : z,
+            }}
+          >
+            <motion.div
+              animate={isHovered ? { filter: 'brightness(1.15)' } : {}}
+              transition={{ duration: 0.3 }}
             >
               <Image
                 src={`/images/games/${game.slug}.svg`}
                 alt={`Game ${game.name}`}
                 width={200}
                 height={260}
+                quality={90}
                 className="rounded-xl object-cover shadow-lg select-none"
+                priority={index < 3}
               />
-            </div>
-          )
-        })}
-      </div>
-    </>
+            </motion.div>
+          </motion.div>
+        )
+      })}
+    </div>
   )
 }
 
