@@ -1,12 +1,10 @@
 'use client'
 
 import * as React from 'react'
-import { useRef } from 'react'
+import { useRef, useMemo } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import Image from 'next/image'
 import Autoplay from 'embla-carousel-autoplay'
-import { ArrowLeft, ArrowRight } from 'lucide-react'
-
 import {
   Carousel,
   CarouselContent,
@@ -20,6 +18,9 @@ import {
 import { authApi } from '@/lib/auth-api'
 import { useIsMobile } from '@/hooks/use-mobile'
 import { cn } from '@/lib/utils'
+
+// Cache duration: 48 hours in milliseconds
+const CACHE_DURATION = 48 * 60 * 60 * 1000 // 172800000 ms
 
 // Fallback images if API fails or returns empty
 const fallbackImages: Array<{
@@ -219,6 +220,7 @@ export function HeroCarousel() {
   )
 
   // Fetch images from backend with type 'hero' - only shows hero type images
+  // Optimized with 48-hour cache duration
   const {
     data: images = [],
     isLoading,
@@ -226,21 +228,28 @@ export function HeroCarousel() {
   } = useQuery({
     queryKey: ['media-images', 'HERO'],
     queryFn: () => authApi.getMediaImages('HERO'),
-    staleTime: 5 * 60 * 1000, // Cache for 5 minutes
+    staleTime: CACHE_DURATION, // Data stays fresh for 48 hours
+    gcTime: CACHE_DURATION, // Keep in cache for 48 hours (React Query v5)
+    refetchOnWindowFocus: false, // Don't refetch on window focus
+    refetchOnMount: false, // Don't refetch on mount if data is fresh
+    refetchOnReconnect: false, // Don't refetch on reconnect if data is fresh
   })
 
-  // Filter images by type 'HERO' (client-side filtering as backup)
-  const filteredImages = images.filter(
-    (img) => img.type?.toUpperCase() === 'HERO' || !img.type // Include if type is HERO or undefined (for backward compatibility)
-  )
+  // Memoize filtered and sorted images to avoid unnecessary recalculations
+  const sortedImages = useMemo(() => {
+    // Filter images by type 'HERO' (client-side filtering as backup)
+    const filteredImages = images.filter(
+      (img) => img.type?.toUpperCase() === 'HERO' || !img.type // Include if type is HERO or undefined (for backward compatibility)
+    )
 
-  const displayImages =
-    filteredImages.length > 0 ? filteredImages : fallbackImages
+    const displayImages =
+      filteredImages.length > 0 ? filteredImages : fallbackImages
 
-  // Sort by orderIndex
-  const sortedImages = [...displayImages].sort((a, b) => {
-    return a.orderIndex - b.orderIndex
-  })
+    // Sort by orderIndex - API already sorts, but we do it here as well for consistency
+    return [...displayImages].sort((a, b) => {
+      return a.orderIndex - b.orderIndex
+    })
+  }, [images])
 
   if (isLoading) {
     return (
@@ -276,10 +285,14 @@ export function HeroCarousel() {
                   //   src="/images/home/hero.png"
                   alt={image.title || image.description || 'Powerblocks Hero'}
                   width={1920}
-                  height={600}
+                  height={1080}
+                  quality={95}
+                  sizes="100vw"
                   className="w-full h-[500px] sm:h-[500px] object-cover"
                   priority={index === 0}
                 />
+                {/* Fade overlay from top to bottom for navbar visibility */}
+                <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/20 to-transparent pointer-events-none" />
               </div>
             </CarouselItem>
           ))}
@@ -313,10 +326,14 @@ export function HeroCarousel() {
                   //   src="/images/home/hero.png"
                   alt={image.title || image.description || 'Powerblocks Hero'}
                   width={1920}
-                  height={600}
+                  height={1080}
+                  quality={95}
+                  sizes="100vw"
                   className="w-full h-[800px] object-cover"
                   priority={index === 0}
                 />
+                {/* Fade overlay from top to bottom for navbar visibility */}
+                <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/20 to-transparent pointer-events-none" />
               </div>
             </CarouselItem>
           ))}

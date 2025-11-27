@@ -2,7 +2,7 @@
 
 import { X, Check, X as XIcon, Eye, EyeOff, Link } from 'lucide-react'
 import Image from 'next/image'
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useMemo } from 'react'
 import { useMutation, useQuery } from '@tanstack/react-query'
 // import ReCAPTCHA from 'react-google-recaptcha'
 import { toast } from 'react-hot-toast'
@@ -28,6 +28,9 @@ import { authApi, SignupData, SigninData } from '@/lib/auth-api'
 import { useAuthStore } from '@/store/auth'
 import { useOAuth } from '@/hooks/use-oauth'
 import { RequestPasswordResetDialog } from '@/components/home/request-password-reset-dialog'
+
+// Cache duration: 48 hours in milliseconds
+const CACHE_DURATION = 48 * 60 * 60 * 1000 // 172800000 ms
 
 // Simple OAuth Icons
 const GoogleIcon = ({ className }: { className?: string }) => (
@@ -73,6 +76,7 @@ function CarouselWithAutoplay() {
   )
 
   // Fetch images from backend with type 'auth' - only shows auth type images
+  // Optimized with 48-hour cache duration
   const {
     data: images = [],
     isLoading,
@@ -80,7 +84,11 @@ function CarouselWithAutoplay() {
   } = useQuery({
     queryKey: ['media-images', 'AUTH'],
     queryFn: () => authApi.getMediaImages('AUTH'),
-    staleTime: 5 * 60 * 1000, // Cache for 5 minutes
+    staleTime: CACHE_DURATION, // Data stays fresh for 48 hours
+    gcTime: CACHE_DURATION, // Keep in cache for 48 hours (React Query v5)
+    refetchOnWindowFocus: false, // Don't refetch on window focus
+    refetchOnMount: false, // Don't refetch on mount if data is fresh
+    refetchOnReconnect: false, // Don't refetch on reconnect if data is fresh
   })
 
   // Fallback images if API fails or returns empty
@@ -110,18 +118,21 @@ function CarouselWithAutoplay() {
     },
   ]
 
-  // Filter images by type 'AUTH' (client-side filtering as backup)
-  const filteredImages = images.filter(
-    (img) => img.type?.toUpperCase() === 'AUTH' || !img.type // Include if type is AUTH or undefined (for backward compatibility)
-  )
+  // Memoize filtered and sorted images to avoid unnecessary recalculations
+  const sortedImages = useMemo(() => {
+    // Filter images by type 'AUTH' (client-side filtering as backup)
+    const filteredImages = images.filter(
+      (img) => img.type?.toUpperCase() === 'AUTH' || !img.type // Include if type is AUTH or undefined (for backward compatibility)
+    )
 
-  const displayImages =
-    filteredImages.length > 0 ? filteredImages : fallbackImages
+    const displayImages =
+      filteredImages.length > 0 ? filteredImages : fallbackImages
 
-  // Sort by orderIndex
-  const sortedImages = [...displayImages].sort((a, b) => {
-    return a.orderIndex - b.orderIndex
-  })
+    // Sort by orderIndex - API already sorts, but we do it here as well for consistency
+    return [...displayImages].sort((a, b) => {
+      return a.orderIndex - b.orderIndex
+    })
+  }, [images])
 
   if (isLoading) {
     return (
@@ -154,7 +165,9 @@ function CarouselWithAutoplay() {
                 src={image.image}
                 alt={image.title || image.description || 'Powerblocks Hero'}
                 width={1920}
-                height={600}
+                height={1080}
+                quality={95}
+                sizes="(max-width: 768px) 100vw, 50vw"
                 className="w-full h-full object-cover rounded-md"
                 priority={index === 0}
               />
