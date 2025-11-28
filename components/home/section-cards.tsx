@@ -17,9 +17,9 @@ import { useIsMobile } from '@/hooks/use-mobile'
 export function SectionCards() {
   const isMobile = useIsMobile()
   return (
-    <div className="relative max-w-[1200px] mx-auto mb-10">
+    <div className="relative max-w-[1100px] mx-auto mb-10 sm:mb-20">
       <div
-        className="absolute -bottom-2 -left-[8rem] h-[15rem] sm:h-[20rem] w-[400px] bg-[#005f5a]/30 rounded-full blur-3xl "
+        className="absolute -bottom-10 -left-[10rem] h-[15rem] sm:h-[25rem] w-[400px] bg-[#005f5a]/30 rounded-full blur-3xl "
         // style={{
         //   rotate: '-30deg',
         // }}
@@ -53,7 +53,7 @@ export function SectionCards() {
             amount="$2.5"
             isNew={true}
             isHot={true}
-            image="/images/cards/sol-card.png"
+            image="/images/cards/pwr-box1.svg"
             // badges={[{ text: 'Trending Up', variant: 'outline' }]}
             progress={45}
           />
@@ -61,14 +61,14 @@ export function SectionCards() {
             title="Ice-Ice"
             progress={45}
             amount="$12.5"
-            image="/images/cards/ice-ice.png"
+            image="/images/cards/pwr-box2.svg"
           />
           <GameCard
             title="Doge Treasure"
             progress={100}
             amount="$12.5"
             isHot={true}
-            image="/images/cards/doge.png"
+            image="/images/cards/pwr-box3.svg"
           />{' '}
           <GameCard
             title="ETH Madness"
@@ -76,20 +76,20 @@ export function SectionCards() {
             amount="$2.5"
             isNew={true}
             isHot={true}
-            image="/images/cards/eth-madness.png"
+            image="/images/cards/pwr-box3.svg"
           />
           <GameCard
             title="Phantom Pack"
             progress={0}
             amount="$2.5"
-            image="/images/cards/phantom.png"
+            image="/images/cards/pwr-box1.svg"
           />
           <GameCard
             title="Lambo Starter Pack"
             progress={0}
             amount="$12.5"
             isNew={true}
-            image="/images/cards/lambo.png"
+            image="/images/cards/pwr-box2.svg"
           />
         </div>
         {isMobile && (

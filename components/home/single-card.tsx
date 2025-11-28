@@ -33,7 +33,7 @@ export function GameCard({
 
   return (
     <div
-      className="relative border-0 text-white overflow-hidden cursor-pointer transition-transform hover:scale-102 px-4 min-h-[24rem] py-6"
+      className="relative border-0 text-white overflow-hidden cursor-pointer transition-transform hover:scale-102 px-4 min-h-[19rem] py-6"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
@@ -44,11 +44,7 @@ export function GameCard({
     > */}
       <GameCardSvg />
       <div className="absolute object-contain w-full flex items-center-justify-center top-0 left-1/2 -translate-x-1/2">
-        <img
-          src={image}
-          alt="Solana themed items"
-          className=" w-full h-full  "
-        />
+        <img src={image} alt="Solana themed items" className="w-full h-full" />
       </div>
       {/* <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black to-transparent z-10" /> */}
       <div className="flex flex-col justify-between px-2 h-full z-10">
@@ -94,12 +90,12 @@ export function GameCard({
         <div className="flex flex-col pt-0">
           <div className="flex flex-col justify-center mb-2">
             {/* Title */}
-            <h3 className="text-2xl font-bold text-white leading-tight">
+            <h3 className="text-xl font-bold text-white leading-tight">
               {title}
             </h3>
           </div>
           <div className="flex justify-between items-center gap-4">
-            <span className="px-4 py-px  bg-[#A27B01]/30 border border-[#FDC61C] rounded text-[#FDC61C] font-semibold">
+            <span className="px-3 py-px  bg-[#A27B01]/30 border border-[#FDC61C] rounded text-[#FDC61C] font-semibold">
               {amount}
             </span>
             <div className="flex gap-px w-full">

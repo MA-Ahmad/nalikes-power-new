@@ -3,14 +3,19 @@ import { cn } from '@/lib/utils'
 export const ButtonDarkPurple = ({
   children,
   onClick,
+  className,
 }: {
   children: React.ReactNode
   onClick?: () => void
+  className?: string
 }) => {
   return (
     <div className="flex items-center gap-3">
       <div
-        className="relative inline-block w-full min-w-[80px] px-3 py-2 cursor-pointer cut-corner-button"
+        className={cn(
+          'relative inline-block w-full min-w-[80px] px-3 py-2 cursor-pointer cut-corner-button',
+          className
+        )}
         onClick={onClick}
       >
         <svg
@@ -711,6 +716,83 @@ export const ButtonPinkSmall = ({
             </linearGradient>
           </defs>
         </svg>
+        {children}
+      </div>
+    </div>
+  )
+}
+
+export const ButtonDarkPurple1 = ({
+  children,
+  onClick,
+  className,
+}: {
+  children: React.ReactNode
+  onClick?: () => void
+  className?: string
+}) => {
+  return (
+    <div className="flex items-center gap-3">
+      <div
+        className={cn(
+          'relative inline-block w-full min-w-[40px] px-3 py-1 cursor-pointer cut-corner-button',
+          className
+        )}
+        onClick={onClick}
+      >
+        <svg
+          // width="296"
+          // height="48"
+          viewBox="0 0 296 48"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          className="absolute inset-0 w-full h-full"
+          preserveAspectRatio="none"
+        >
+          <foreignObject x="-60" y="-60" width="416" height="168">
+            <div
+              // @ts-ignore
+              xmlns="http://www.w3.org/1999/xhtml"
+              style={{
+                backdropFilter: 'blur(30px)',
+                clipPath: 'url(#bgblur_0_5142_2048_clip_path)',
+                height: '100%',
+                width: '100%',
+              }}
+            ></div>
+          </foreignObject>
+          <g data-figma-bg-blur-radius="60">
+            <path
+              d="M19.9222 0.394576L3.86009 6.52638C1.53562 7.41377 0 9.64371 0 12.1318V42C0 45.3137 2.6863 48 6.00001 48H273.938C274.669 48 275.395 47.8663 276.078 47.6054L292.14 41.4736C294.464 40.5862 296 38.3563 296 35.8682V6C296 2.68629 293.314 0 290 0H22.0621C21.3307 0 20.6055 0.133724 19.9222 0.394576Z"
+              fill="url(#paint0_linear_5142_2048)"
+            />
+            <path
+              d="M22.0625 0.5H290C293.038 0.500016 295.5 2.96245 295.5 6V35.8682C295.5 38.1489 294.093 40.1933 291.962 41.0068L275.899 47.1387C275.273 47.3777 274.608 47.5 273.938 47.5H6C2.96244 47.5 0.5 45.0376 0.5 42V12.1318C0.5 9.85114 1.90742 7.80664 4.03809 6.99316L20.1006 0.861328C20.7269 0.622264 21.3921 0.5 22.0625 0.5Z"
+              stroke="#6F6BFF"
+              stroke-opacity="0.6"
+            />
+          </g>
+          <defs>
+            <clipPath
+              id="bgblur_0_5142_2048_clip_path"
+              transform="translate(60 60)"
+            >
+              <path d="M19.9222 0.394576L3.86009 6.52638C1.53562 7.41377 0 9.64371 0 12.1318V42C0 45.3137 2.6863 48 6.00001 48H273.938C274.669 48 275.395 47.8663 276.078 47.6054L292.14 41.4736C294.464 40.5862 296 38.3563 296 35.8682V6C296 2.68629 293.314 0 290 0H22.0621C21.3307 0 20.6055 0.133724 19.9222 0.394576Z" />
+            </clipPath>
+            <linearGradient
+              id="paint0_linear_5142_2048"
+              x1="-48.6285"
+              y1="0.461856"
+              x2="-48.6285"
+              y2="48.4948"
+              gradientUnits="userSpaceOnUse"
+            >
+              <stop stop-color="#6F6BFF" stop-opacity="0.2" />
+              <stop offset="1" stop-color="#6F6BFF" stop-opacity="0" />
+            </linearGradient>
+          </defs>
+        </svg>
+
         {children}
       </div>
     </div>

@@ -145,7 +145,7 @@ export default function Home() {
               />
             </div>
           ) : (
-            <div className="max-w-[1300px] mx-auto space-y-8 sm:space-y-20">
+            <div className="max-w-[1100px] mx-auto space-y-8 sm:space-y-20">
               <div className="pb-[3rem] sm:pb-[2rem] relative">
                 <h1 className="text-lg sm:text-2xl font-bold text-center mb-4 sm:mb-8">
                   PWR Originals
@@ -157,8 +157,8 @@ export default function Home() {
                 )}
               </div>
 
-              <div className="max-w-[1200px] mx-auto relative">
-                <div className="absolute top-10 -left-[5rem] h-[15rem] sm:h-[20rem] w-[400px] bg-brand-pink/30 rounded-full blur-3xl "></div>
+              <div className="max-w-[1100px] mx-auto relative">
+                <div className="absolute top-10 -left-[5rem] h-[15rem] sm:h-[20rem] w-[400px] bg-brand-pink/30 rounded-full blur-3xl"></div>
                 <Banner />
                 <InfoCards />
               </div>
@@ -226,13 +226,22 @@ function GameCardsDesktop({
   const isInViewOnce = useInView(containerRef, { once: true, amount: 0.6 })
 
   const offsets = [
-    { left: '45px', top: '65px', rotate: '-10deg', z: 8 },
-    { left: '19px', top: '30px', rotate: '-6deg', z: 9 },
+    { left: '10px', top: '55px', rotate: '-10deg', z: 8 },
+    { left: '3px', top: '25px', rotate: '-6deg', z: 9 },
     { left: '-5px', top: '10px', rotate: '-2deg', z: 10 },
-    { left: '-29px', top: '10px', rotate: '2deg', z: 10 },
-    { left: '-54px', top: '30px', rotate: '6deg', z: 10 },
-    { left: '-82px', top: '65px', rotate: '10deg', z: 10 },
+    { left: '-10px', top: '10px', rotate: '2deg', z: 10 },
+    { left: '-16px', top: '25px', rotate: '6deg', z: 10 },
+    { left: '-25px', top: '50px', rotate: '10deg', z: 10 },
   ]
+
+  // const offsets = [
+  //   { left: '45px', top: '65px', rotate: '-10deg', z: 8 },
+  //   { left: '19px', top: '30px', rotate: '-6deg', z: 9 },
+  //   { left: '-5px', top: '10px', rotate: '-2deg', z: 10 },
+  //   { left: '-29px', top: '10px', rotate: '2deg', z: 10 },
+  //   { left: '-54px', top: '30px', rotate: '6deg', z: 10 },
+  //   { left: '-82px', top: '65px', rotate: '10deg', z: 10 },
+  // ]
 
   if (isLoading) {
     return (
