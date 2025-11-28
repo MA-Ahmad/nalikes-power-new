@@ -177,12 +177,12 @@ export default function Home() {
 
               <div className="max-w-[1100px] mx-auto relative">
                 <div className="absolute top-10 -left-[5rem] h-[15rem] sm:h-[20rem] w-[400px] bg-brand-pink/30 rounded-full blur-3xl"></div>
-                <div
+                {/* <div
                   className="absolute -bottom-20 -right-[5rem] h-[15rem] sm:h-[25rem] w-[400px] bg-[#005f5a]/30 rounded-full blur-[8rem]"
                   // style={{
                   //   rotate: '-30deg',
                   // }}
-                ></div>
+                ></div> */}
                 <Banner />
                 <InfoCards />
               </div>
