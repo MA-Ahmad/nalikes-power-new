@@ -119,7 +119,7 @@ export default function Home() {
             {/* Hero Image */}
             <div className="relative w-full h-[500px] sm:h-[500px] lg:h-[800px]">
               <Image
-                src="/images/hero-image.svg"
+                src="/images/hero-image.webp"
                 alt="Hero"
                 width={1920}
                 height={1080}
