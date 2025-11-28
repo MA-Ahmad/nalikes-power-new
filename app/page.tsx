@@ -130,7 +130,7 @@ export default function Home() {
                 priority
               />
               {/* Gradient fade at bottom to merge with next section */}
-              <div className="absolute inset-x-0 -bottom-10 h-32 sm:h-40 lg:h-48 bg-gradient-to-b from-transparent via-black/30 to-black pointer-events-none" />
+              <div className="absolute inset-x-0 -bottom-[13px] sm:-bottom-10 h-20 sm:h-40 lg:h-48 bg-gradient-to-b from-transparent via-black/30 to-black pointer-events-none" />
             </div>
             {/* Text Overlay */}
             <div className="absolute w-full top-24 sm:top-20 lg:top-[15%] left-1/2 -translate-x-1/2 flex items-center justify-center flex-col text-center gap-2 z-10">
@@ -165,7 +165,7 @@ export default function Home() {
             </div>
           ) : (
             <div className="max-w-[1100px] mx-auto space-y-8 sm:space-y-20">
-              <div className="pb-[3rem] sm:pb-[2rem] relative -mt-[1rem] sm:-mt-20 lg:-mt-[2.5rem] px-4 lg:px-16 xl:px-4 pb-6 pt-0 sm:py-6 sm:py-4 bg-black sm:bg-transparent">
+              <div className="pb-[3rem] sm:pb-[2rem] relative mt-0 sm:-mt-20 lg:-mt-[2.5rem] px-4 lg:px-16 xl:px-4 pb-6 pt-0 sm:py-6 sm:py-4 bg-black sm:bg-transparent">
                 <h1 className="text-lg sm:text-2xl font-bold text-center mb-4 sm:mb-8">
                   PWR Originals
                 </h1>
