@@ -2,11 +2,14 @@ import Link from 'next/link'
 import { ArrowRight } from 'lucide-react'
 import Image from 'next/image'
 import { cn } from '@/lib/utils'
+import { useIsMobile } from '@/hooks/use-mobile'
 
 export default function Banner() {
+  const isMobile = useIsMobile()
+
   return (
     <section
-      className="relative w-full bg-cover bg-center flex items-start sm:items-center justify-center overflow-hidden rounded-2xl h-[16rem] sm:h-auto"
+      className="relative w-full bg-cover bg-center flex items-start sm:items-center justify-center overflow-hidden rounded-2xl sm:h-auto"
       // style={{ backgroundImage: "url('/images/home/banner.png')" }}
     >
       <Image
@@ -14,18 +17,34 @@ export default function Banner() {
         alt="Banner"
         width={1920}
         height={600}
-        className="w-full h-full object-cover "
+        className="w-full h-full object-cover hidden sm:block"
       />
-      <div className=" z-10 flex flex-col items-start lg:flex-row justify-center md:justify-between sm:items-center w-full gap-1 gap-2 sm:gap-4 py-4 absolute px-4 md:px-8 lg:px-12 ">
+
+      <Image
+        src={'/images/mobile-banner.svg'}
+        alt="Banner"
+        width={1920}
+        height={600}
+        className="w-full h-full object-cover block sm:hidden"
+      />
+
+      <Image
+        src={'/images/money-banner.svg'}
+        alt="Banner"
+        width={1920}
+        height={600}
+        className="w-full object-cover block sm:hidden absolute bottom-0 left-0 right-0 z-10"
+      />
+      <div className="h-full pb-10 pl-5 pt-10 z-10 flex flex-col justify-between sm:justify-center items-start sm:flex-row md:justify-between sm:items-center w-full gap-1 gap-2 sm:gap-4 py-4 absolute px-4 md:px-8 lg:px-12">
         {/* Left Section */}
-        <div className="flex flex-col items-center lg:items-start text-center  sm:space-y-3">
-          <h1 className="text-lg sm:text-2xl lg:text-3xl font-extrabold text-white  tracking-tight">
+        <div className="flex flex-col items-start sm:items-center lg:items-start text-center sm:space-y-3">
+          <h1 className="text-2xl sm:text-2xl lg:text-3xl font-extrabold text-white  tracking-tight">
             BITCOIN <span className="text-brand-pink">HASH</span> HUNT
           </h1>
           <img
             src={'/images/home/prize.svg'}
             alt="Prize"
-            className="w-[12rem] md:w-[14rem] lg:w-auto"
+            className="w-[18rem] md:w-[14rem] lg:w-auto"
           />
           {/* <Link
             href="#"
@@ -34,11 +53,13 @@ export default function Banner() {
             Join the Game <ArrowRight className="ml-2 h-4 w-4" />
           </Link> */}
 
-          <PinkButton className="py-3 px-8">
-            <span className="relative text-pink-light whitespace-nowrap flex items-center justify-center">
-              Join the Game <ArrowRight className="ml-2 h-4 w-4" />
-            </span>
-          </PinkButton>
+          {!isMobile && (
+            <PinkButton className="py-3 px-8">
+              <span className="relative text-pink-light whitespace-nowrap flex items-center justify-center">
+                Join the Game <ArrowRight className="ml-2 h-4 w-4" />
+              </span>
+            </PinkButton>
+          )}
         </div>
 
         {/* Right Section */}
@@ -82,12 +103,20 @@ export default function Banner() {
           </div>
         </div>
 
-        <Link
+        {/* <Link
           href="#"
           className="items-center justify-center inline-flex md:hidden px-3 py-1.5 rounded-lg text-brand-pink font-semibold text-base bg-brand-pink/10 border border-brand-pink/20 hover:bg-brand-pink/20 transition-all"
         >
           Join the Game <ArrowRight className="ml-2 h-4 w-4" />
-        </Link>
+        </Link> */}
+
+        {isMobile && (
+          <PinkButton className="py-3 px-8">
+            <span className="relative text-pink-light whitespace-nowrap flex items-center justify-center">
+              Join the Game <ArrowRight className="ml-2 h-4 w-4" />
+            </span>
+          </PinkButton>
+        )}
       </div>
     </section>
   )

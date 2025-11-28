@@ -19,7 +19,7 @@ import { ArrowLeft, RefreshCcw } from 'lucide-react'
 import { useAuthStore } from '@/store/auth'
 import { toast } from 'react-hot-toast'
 import { ResetPasswordDialog } from '@/components/home/reset-password-dialog'
-import { HeroCarousel } from '@/components/home/hero-carousel'
+// import { HeroCarousel } from '@/components/home/hero-carousel'
 
 export default function Home() {
   const [isChatOpen, setIsChatOpen] = useState(false)
@@ -112,13 +112,31 @@ export default function Home() {
       {!gameUrl && (
         <div className="relative w-full">
           {/* Carousel with text overlay */}
-          <div className="relative w-full">
-            <HeroCarousel />
-            <div className="absolute w-full top-32 sm:top-20 lg:top-[15%] left-1/2 -translate-x-1/2 flex items-center justify-center flex-col text-center gap-2 z-10">
+          {/* <div className="relative w-full">
+            <HeroCarousel /> */}
+          {/* Hero Image Section with text overlay */}
+          <div className="relative w-full overflow-hidden">
+            {/* Hero Image */}
+            <div className="relative w-full h-[500px] sm:h-[500px] lg:h-[800px]">
+              <Image
+                src="/images/hero-image.svg"
+                alt="Hero"
+                width={1920}
+                height={1080}
+                quality={95}
+                sizes="100vw"
+                className="w-full h-[500px] sm:h-[500px] lg:h-[800px] object-cover mt-[5rem] sm:mt-0"
+                priority
+              />
+              {/* Gradient fade at bottom to merge with next section */}
+              <div className="absolute inset-x-0 bottom-0 h-32 sm:h-40 lg:h-48 bg-gradient-to-b from-transparent via-black/30 to-black pointer-events-none" />
+            </div>
+            {/* Text Overlay */}
+            <div className="absolute w-full top-24 sm:top-20 lg:top-[15%] left-1/2 -translate-x-1/2 flex items-center justify-center flex-col text-center gap-2 z-10">
               <h1 className="text-2xl sm:text-3xl lg:text-5xl font-bold text-white">
                 <TypingText text="Enter The PWR City" delay={0.2} />
               </h1>
-              <p className="text-sm sm:text-xl lg:text-xl text-white">
+              <p className="text-sm sm:text-xl lg:text-xl text-white hidden sm:block">
                 <TypingText
                   text="Gamble Like a Degen. Win Like a Degen"
                   delay={1.5}
@@ -146,7 +164,7 @@ export default function Home() {
             </div>
           ) : (
             <div className="max-w-[1100px] mx-auto space-y-8 sm:space-y-20">
-              <div className="pb-[3rem] sm:pb-[2rem] relative">
+              <div className="pb-[3rem] sm:pb-[2rem] relative -mt-[9rem] sm:-mt-20 lg:-mt-[7.5rem]">
                 <h1 className="text-lg sm:text-2xl font-bold text-center mb-4 sm:mb-8">
                   PWR Originals
                 </h1>
@@ -159,6 +177,12 @@ export default function Home() {
 
               <div className="max-w-[1100px] mx-auto relative">
                 <div className="absolute top-10 -left-[5rem] h-[15rem] sm:h-[20rem] w-[400px] bg-brand-pink/30 rounded-full blur-3xl"></div>
+                <div
+                  className="absolute -bottom-20 -right-[5rem] h-[15rem] sm:h-[25rem] w-[400px] bg-[#005f5a]/30 rounded-full blur-[8rem]"
+                  // style={{
+                  //   rotate: '-30deg',
+                  // }}
+                ></div>
                 <Banner />
                 <InfoCards />
               </div>
@@ -252,7 +276,7 @@ function GameCardsDesktop({
   }
 
   return (
-    <div ref={containerRef} className="flex justify-center gap-4 py-10">
+    <div ref={containerRef} className="flex justify-center gap-4 py-10 pt-0">
       {sortedGames.map((game, index) => {
         const { left, top, rotate, z } = offsets[index] || {}
         const isHovered = hovered === index
@@ -269,10 +293,14 @@ function GameCardsDesktop({
               rotate: rotateValue,
             }}
             animate={{
-              opacity: isInViewOnce ? 1 : 0,
-              scale: isInViewOnce ? 1 : 0.8,
-              y: isInViewOnce ? 0 : 40,
-              rotate: isInViewOnce ? rotateValue : rotateValue,
+              // opacity: isInViewOnce ? 1 : 0,
+              // scale: isInViewOnce ? 1 : 0.8,
+              // y: isInViewOnce ? 0 : 40,
+              // rotate: isInViewOnce ? rotateValue : rotateValue,
+              opacity: 1,
+              scale: 1,
+              y: 0,
+              rotate: rotateValue,
               transition: {
                 type: 'spring',
                 stiffness: 100,
@@ -335,6 +363,7 @@ const GameCardsMobile = ({
     const styles = [
       {
         transform: 'rotate(-6deg) translateY(15px)',
+        left: '1.3rem',
         zIndex: 9,
       },
       {
@@ -343,6 +372,7 @@ const GameCardsMobile = ({
       },
       {
         transform: 'rotate(6deg) translateY(15px)',
+        left: '-1.3rem',
         zIndex: 9,
       },
     ]
@@ -358,7 +388,7 @@ const GameCardsMobile = ({
   }
 
   const renderRow = (items: typeof games) => (
-    <div className="flex justify-center items-end gap-2 sm:gap-4 mt-6 w-full">
+    <div className="flex justify-center items-end gap-2 sm:gap-4 mt-6 first:mt-0 w-full">
       {items.map((game, i) => {
         const style = getCardStyle(i)
         return (

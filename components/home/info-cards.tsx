@@ -9,7 +9,7 @@ const InfoCards = () => {
   return (
     <>
       {user && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-4 mb-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-6 mt-4 mb-6">
           {/* Profile Card */}
           <div className="p-6 relative">
             <CardWrapperSvg />
@@ -159,7 +159,7 @@ const InfoCards = () => {
               </div>
             </div>
 
-            <ButtonDarkPurple1 className="py-3">
+            <ButtonDarkPurple1 className="py-3" id="1">
               <span className="relative text-purple-base font-semibold whitespace-nowrap flex items-center justify-center">
                 Go to Reward <ArrowRight className="w-4 h-4" />
               </span>
@@ -253,7 +253,7 @@ const InfoCards = () => {
               </div>
             </div>
 
-            <ButtonDarkPurple1 className="py-3">
+            <ButtonDarkPurple1 className="py-3" id="2">
               <span className="relative text-purple-base font-semibold whitespace-nowrap flex items-center justify-center">
                 View next mission (35 lefts) <ArrowRight className="w-4 h-4" />
               </span>

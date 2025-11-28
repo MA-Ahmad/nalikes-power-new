@@ -43,7 +43,7 @@ export function GameCard({
       onMouseLeave={() => setIsHovered(false)}
     > */}
       <GameCardSvg />
-      <div className="absolute object-contain w-full flex items-center-justify-center top-0 left-1/2 -translate-x-1/2">
+      <div className="absolute object-contain w-full flex items-center justify-center top-0 left-1/2 -translate-x-1/2">
         <img src={image} alt="Solana themed items" className="w-full h-full" />
       </div>
       {/* <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black to-transparent z-10" /> */}
