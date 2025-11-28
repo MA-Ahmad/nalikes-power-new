@@ -117,7 +117,7 @@ export default function Home() {
           {/* Hero Image Section with text overlay */}
           <div className="relative w-full overflow-hidden">
             {/* Hero Image */}
-            <div className="relative w-full h-[500px] sm:h-[500px] lg:h-[800px]">
+            <div className="relative w-full h-full">
               <Image
                 src="/images/hero-image.webp"
                 alt="Hero"
@@ -125,11 +125,12 @@ export default function Home() {
                 height={1080}
                 quality={95}
                 sizes="100vw"
-                className="w-full h-[500px] sm:h-[500px] lg:h-[800px] object-cover mt-[5rem] sm:mt-0"
+                // className="w-full h-[500px] sm:h-[500px] lg:h-[800px] object-cover mt-[5rem] sm:mt-0"
+                className="w-full h-[500px] sm:h-full object-cover mt-[5rem] sm:mt-0"
                 priority
               />
               {/* Gradient fade at bottom to merge with next section */}
-              <div className="absolute inset-x-0 bottom-0 h-32 sm:h-40 lg:h-48 bg-gradient-to-b from-transparent via-black/30 to-black pointer-events-none" />
+              <div className="absolute inset-x-0 -bottom-10 h-32 sm:h-40 lg:h-48 bg-gradient-to-b from-transparent via-black/30 to-black pointer-events-none" />
             </div>
             {/* Text Overlay */}
             <div className="absolute w-full top-24 sm:top-20 lg:top-[15%] left-1/2 -translate-x-1/2 flex items-center justify-center flex-col text-center gap-2 z-10">
@@ -148,7 +149,7 @@ export default function Home() {
       )}
       <div className="flex">
         <main
-          className={`flex-1 px-4 lg:px-16 xl:px-4 py-6 sm:py-4 bg-[#040315] sm:bg-transparent transition-all duration-300 ease-in-out ${
+          className={`flex-1 bg-[#040315] sm:bg-transparent transition-all duration-300 ease-in-out ${
             isChatOpen ? 'lg:mr-80' : 'lg:mr-0'
           }
           `}
@@ -164,7 +165,7 @@ export default function Home() {
             </div>
           ) : (
             <div className="max-w-[1100px] mx-auto space-y-8 sm:space-y-20">
-              <div className="pb-[3rem] sm:pb-[2rem] relative -mt-[9rem] sm:-mt-20 lg:-mt-[7.5rem]">
+              <div className="pb-[3rem] sm:pb-[2rem] relative -mt-[1rem] sm:-mt-20 lg:-mt-[2.5rem] px-4 lg:px-16 xl:px-4 pb-6 pt-0 sm:py-6 sm:py-4 bg-black sm:bg-transparent">
                 <h1 className="text-lg sm:text-2xl font-bold text-center mb-4 sm:mb-8">
                   PWR Originals
                 </h1>
@@ -175,8 +176,8 @@ export default function Home() {
                 )}
               </div>
 
-              <div className="max-w-[1100px] mx-auto relative">
-                <div className="absolute top-10 -left-[5rem] h-[15rem] sm:h-[20rem] w-[400px] bg-brand-pink/30 rounded-full blur-3xl"></div>
+              <div className="max-w-[1100px] mx-auto relative px-4 lg:px-16 xl:px-4 py-6 sm:py-4">
+                <div className="absolute top-10 -left-[5rem] h-[15rem] hidden sm:block sm:h-[20rem] w-[400px] bg-brand-pink/30 rounded-full blur-3xl"></div>
                 {/* <div
                   className="absolute -bottom-20 -right-[5rem] h-[15rem] sm:h-[25rem] w-[400px] bg-[#005f5a]/30 rounded-full blur-[8rem]"
                   // style={{

@@ -17,7 +17,7 @@ import { useIsMobile } from '@/hooks/use-mobile'
 export function SectionCards() {
   const isMobile = useIsMobile()
   return (
-    <div className="relative max-w-[1100px] mx-auto mb-10 sm:mb-20">
+    <div className="relative max-w-[1100px] mx-auto mb-10 sm:mb-20 px-4 lg:px-16 xl:px-4 py-6 sm:py-4">
       <div
         className="absolute -bottom-10 -left-[10rem] h-[15rem] sm:h-[25rem] w-[400px] bg-[#005f5a]/30 rounded-full blur-[8rem]"
         // style={{

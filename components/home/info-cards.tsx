@@ -155,7 +155,7 @@ const InfoCards = () => {
                 <p className="text-gray-400 text-sm font-medium">
                   5 Available rewards
                 </p>
-                <p className="text-white text-xl font-bold">$73.22</p>
+                <p className="text-white text-lg font-bold">$73.22</p>
               </div>
             </div>
 
@@ -247,7 +247,7 @@ const InfoCards = () => {
                 <p className="text-gray-400 text-sm font-medium">
                   5 Available rewards
                 </p>
-                <p className="text-white text-xl font-bold">
+                <p className="text-white text-lg font-bold">
                   Deposit $500 with Card
                 </p>
               </div>
