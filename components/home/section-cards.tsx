@@ -28,7 +28,7 @@ export function SectionCards() {
       {!isMobile && <MysteryBoxesSvg />}
       {/* <div className="size-32 bg-pink-light/50 rounded-full absolute -left-10 top-[50%] -translate-y-1/2 blur-3xl "></div> */}
       {/* <div className="z-10 bg-gradient-dark rounded-md p-6 border border-pink-light/10 relative"> */}
-      <div className="z-10 p-6 relative mb-12 sm:mb-0">
+      <div className="z-10 pb-6 sm:p-6 relative mb-12 sm:mb-0">
         <div className="flex items-center justify-center sm:justify-between w-full gap-2">
           <div className="flex items-center gap-2">
             <h5 className="text-2xl font-semibold">Mystery Boxes</h5>
@@ -47,7 +47,7 @@ export function SectionCards() {
             </ButtonDarkPurple>
           )}
         </div>
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 my-8">
+        <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 my-8">
           <GameCard
             title="The SOl Pot"
             amount="$2.5"

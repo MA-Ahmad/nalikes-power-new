@@ -33,7 +33,7 @@ export function GameCard({
 
   return (
     <div
-      className="relative border-0 text-white overflow-hidden cursor-pointer transition-transform hover:scale-102 px-4 min-h-[19rem] py-6"
+      className="relative border-0 text-white overflow-hidden cursor-pointer transition-transform hover:scale-102 px-4 min-h-[17rem] sm:min-h-[19rem] py-6"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
@@ -43,14 +43,14 @@ export function GameCard({
       onMouseLeave={() => setIsHovered(false)}
     > */}
       <GameCardSvg />
-      <div className="absolute object-contain w-full flex items-center justify-center top-0 left-1/2 -translate-x-1/2">
+      <div className="absolute object-contain w-full flex items-center justify-center top-0 left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2">
         <img src={image} alt="Solana themed items" className="w-full h-full" />
       </div>
       {/* <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black to-transparent z-10" /> */}
       <div className="flex flex-col justify-between px-2 h-full z-10">
         {/* Header with badges and star */}
         <div className="flex justify-between items-start pb-2">
-          <div className="flex gap-2">
+          <div className="hidden sm:flex gap-2">
             {isNew && (
               <ButtonBlue>
                 <span className="relative text-[#4F9FFB] whitespace-nowrap flex items-center justify-center">
@@ -87,39 +87,40 @@ export function GameCard({
         </div>
 
         {/* Footer with amount and play */}
-        <div className="flex flex-col pt-0">
+        <div className="flex flex-col pt-0 z-10 items-center sm:items-start">
           <div className="flex flex-col justify-center mb-2">
             {/* Title */}
-            <h3 className="text-xl font-bold text-white leading-tight">
+            <h3 className="text-lg sm:text-xl font-bold text-white leading-tight">
               {title}
             </h3>
           </div>
-          <div className="flex justify-between items-center gap-4">
+          <div className="flex flex-col sm:flex-row justify-between items-center gap-4 w-full">
             <span className="px-3 py-px  bg-[#A27B01]/30 border border-[#FDC61C] rounded text-[#FDC61C] font-semibold">
               {amount}
             </span>
             <div className="flex gap-px w-full">
               {Array.from({ length: 4 }, (_, index) => {
-                const totalProgress = progress
-                const segmentWidth = 100 / 4
-                const segmentStart = index * segmentWidth
-                const segmentEnd = (index + 1) * segmentWidth
+                // const totalProgress = progress
+                // const segmentWidth = 100 / 4
+                // const segmentStart = index * segmentWidth
+                // const segmentEnd = (index + 1) * segmentWidth
 
-                let segmentFillPercentage = 0
-                if (totalProgress >= segmentEnd) {
-                  segmentFillPercentage = 100
-                } else if (totalProgress > segmentStart) {
-                  segmentFillPercentage =
-                    ((totalProgress - segmentStart) / segmentWidth) * 100
-                }
+                // let segmentFillPercentage = 0
+                // if (totalProgress >= segmentEnd) {
+                //   segmentFillPercentage = 100
+                // } else if (totalProgress > segmentStart) {
+                //   segmentFillPercentage =
+                //     ((totalProgress - segmentStart) / segmentWidth) * 100
+                // }
+
                 return (
                   <div
                     key={index}
-                    className="flex-1 h-5 rounded bg-white/10 border border-white/20 overflow-hidden group/segment hover:scale-110 transition-transform duration-300"
+                    className="flex-1 h-5 rounded bg-white/10 border border-[#FFF2CC]/20 overflow-hidden group/segment hover:scale-110 transition-transform duration-300 shadow-[0_0_15px_rgba(253,198,28,0.8)]"
                   >
                     <div
-                      className="h-full bg-gradient-to-r from-[#FEE59A]  to-[#FED867] transition-all duration-500 ease-out shadow-lg"
-                      style={{ width: `${segmentFillPercentage}%` }}
+                      className="h-full bg-[#fdc61c] transition-all duration-500 ease-out shadow-lg"
+                      style={{ width: `${100}%` }}
                     />
                   </div>
                 )
