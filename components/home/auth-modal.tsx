@@ -215,6 +215,7 @@ const signupSchema = z.object({
       }
     ),
   password: passwordSchema,
+  referralCode: z.string().optional(),
   acceptAge: z.boolean().refine((val) => val === true, {
     message: 'You must confirm you are above 18 years old',
   }),
@@ -254,6 +255,7 @@ export function AuthModal({ open, onOpenChange }: AuthModalProps) {
   const [showSignupPassword, setShowSignupPassword] = useState(false)
   const [showSigninPassword, setShowSigninPassword] = useState(false)
   const [showPasswordResetDialog, setShowPasswordResetDialog] = useState(false)
+  const [showReferralCode, setShowReferralCode] = useState(false)
   const { setUser, setIsAuthenticated } = useAuthStore()
 
   // Password validation helper function
@@ -274,6 +276,7 @@ export function AuthModal({ open, onOpenChange }: AuthModalProps) {
     defaultValues: {
       usernameOrEmail: '',
       password: '',
+      referralCode: '',
       acceptAge: false,
       acceptTerms: false,
     },
@@ -295,6 +298,7 @@ export function AuthModal({ open, onOpenChange }: AuthModalProps) {
       signinForm.reset()
       setShowSignupPassword(false)
       setShowSigninPassword(false)
+      setShowReferralCode(false)
       // recaptchaRef.current?.reset()
     }
   }, [open, signupForm, signinForm])
@@ -305,6 +309,7 @@ export function AuthModal({ open, onOpenChange }: AuthModalProps) {
     signinForm.reset()
     setShowSignupPassword(false)
     setShowSigninPassword(false)
+    setShowReferralCode(false)
     // recaptchaRef.current?.reset()
   }, [activeTab, signupForm, signinForm])
 
@@ -354,6 +359,10 @@ export function AuthModal({ open, onOpenChange }: AuthModalProps) {
     const signupData: SignupData = {
       usernameOrEmail: data.usernameOrEmail,
       password: data.password,
+      ...(data.referralCode &&
+        data.referralCode.trim() !== '' && {
+          referralCode: data.referralCode.trim(),
+        }),
     }
 
     signupMutation.mutate(signupData)
@@ -584,62 +593,87 @@ export function AuthModal({ open, onOpenChange }: AuthModalProps) {
                         <div className="space-y-3 pt-2">
                           <div className="flex items-center space-x-2">
                             <Checkbox
-                              id="age"
+                              id="referral-code-checkbox"
                               className="border-gray-500"
-                              checked={signupForm.watch('acceptAge')}
-                              onCheckedChange={(checked) =>
-                                signupForm.setValue(
-                                  'acceptAge',
-                                  checked === true
-                                )
-                              }
+                              checked={showReferralCode}
+                              onCheckedChange={(checked) => {
+                                setShowReferralCode(checked === true)
+                                if (!checked) {
+                                  signupForm.setValue('referralCode', '')
+                                }
+                              }}
                             />
-                            <div className="space-y-1">
-                              <Label
-                                htmlFor="age"
-                                className="text-sm text-gray-300"
-                              >
-                                I confirm I&apos;m above 18 years old.*
-                              </Label>
-                              {signupForm.formState.errors.acceptAge && (
-                                <p className="text-red-400 text-sm">
-                                  {
-                                    signupForm.formState.errors.acceptAge
-                                      .message
-                                  }
-                                </p>
-                              )}
-                            </div>
+                            <Label
+                              htmlFor="referral-code-checkbox"
+                              className="text-sm text-gray-300 cursor-pointer"
+                            >
+                              Referral code (optional)
+                            </Label>
                           </div>
-
-                          <div className="flex items-center space-x-2">
-                            <Checkbox
-                              id="terms"
-                              className="border-gray-500"
-                              checked={signupForm.watch('acceptTerms')}
-                              onCheckedChange={(checked) =>
-                                signupForm.setValue(
-                                  'acceptTerms',
-                                  checked === true
-                                )
-                              }
-                            />
-                            <div className="space-y-1">
-                              <Label
-                                htmlFor="terms"
-                                className="text-sm text-gray-300"
-                              >
-                                I agree to the terms & Conditions.*
-                              </Label>
-                              {signupForm.formState.errors.acceptTerms && (
-                                <p className="text-red-400 text-sm">
-                                  {
-                                    signupForm.formState.errors.acceptTerms
-                                      .message
-                                  }
-                                </p>
-                              )}
+                          {showReferralCode && (
+                            <div className="space-y-2">
+                              <Input
+                                id="referral-code"
+                                type="text"
+                                {...signupForm.register('referralCode')}
+                                className="bg-gray-700 border-gray-600 text-white placeholder:text-gray-400"
+                                placeholder="Enter referral code"
+                              />
                             </div>
+                          )}
+                        </div>
+
+                        <div className="flex items-center space-x-2">
+                          <Checkbox
+                            id="age"
+                            className="border-gray-500"
+                            checked={signupForm.watch('acceptAge')}
+                            onCheckedChange={(checked) =>
+                              signupForm.setValue('acceptAge', checked === true)
+                            }
+                          />
+                          <div className="space-y-1">
+                            <Label
+                              htmlFor="age"
+                              className="text-sm text-gray-300"
+                            >
+                              I confirm I&apos;m above 18 years old.*
+                            </Label>
+                            {signupForm.formState.errors.acceptAge && (
+                              <p className="text-red-400 text-sm">
+                                {signupForm.formState.errors.acceptAge.message}
+                              </p>
+                            )}
+                          </div>
+                        </div>
+
+                        <div className="flex items-center space-x-2">
+                          <Checkbox
+                            id="terms"
+                            className="border-gray-500"
+                            checked={signupForm.watch('acceptTerms')}
+                            onCheckedChange={(checked) =>
+                              signupForm.setValue(
+                                'acceptTerms',
+                                checked === true
+                              )
+                            }
+                          />
+                          <div className="space-y-1">
+                            <Label
+                              htmlFor="terms"
+                              className="text-sm text-gray-300"
+                            >
+                              I agree to the terms & Conditions.*
+                            </Label>
+                            {signupForm.formState.errors.acceptTerms && (
+                              <p className="text-red-400 text-sm">
+                                {
+                                  signupForm.formState.errors.acceptTerms
+                                    .message
+                                }
+                              </p>
+                            )}
                           </div>
                         </div>
 

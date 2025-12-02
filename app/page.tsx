@@ -13,18 +13,13 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { x1Testnet } from 'viem/chains'
 import { useIsMobile } from '@/hooks/use-mobile'
 import { motion, useInView } from 'framer-motion'
-import { useMiniGames, useEnterGame } from '@/hooks/use-mini-games'
+import { useMiniGames } from '@/hooks/use-mini-games'
 import { Game } from '@/lib/api/mini-game'
-import { ArrowLeft, RefreshCcw } from 'lucide-react'
-import { useAuthStore } from '@/store/auth'
-import { toast } from 'react-hot-toast'
 import { ResetPasswordDialog } from '@/components/home/reset-password-dialog'
 // import { HeroCarousel } from '@/components/home/hero-carousel'
 
 export default function Home() {
   const [isChatOpen, setIsChatOpen] = useState(false)
-  const [gameUrl, setGameUrl] = useState<string | null>(null)
-  const [isRefetchingBalance, setIsRefetchingBalance] = useState(false)
   const [resetPasswordToken, setResetPasswordToken] = useState<string | null>(
     null
   )
@@ -32,7 +27,6 @@ export default function Home() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const isMobile = useIsMobile()
-  const { syncWalletStatus } = useAuthStore()
 
   // Check for reset password token in query params
   useEffect(() => {
@@ -43,38 +37,8 @@ export default function Home() {
     }
   }, [searchParams])
 
-  const enterGameMutation = useEnterGame({
-    onSuccess: (url) => {
-      setGameUrl(url)
-    },
-    onError: (error) => {
-      console.error('Failed to enter game:', error)
-    },
-  })
-
   const handleGameClick = (game: Game) => {
-    enterGameMutation.mutate({
-      gameid: game.gameid,
-      currency: 'usd',
-      screen_mode: 1,
-    })
-  }
-
-  const handleCloseGame = () => {
-    setGameUrl(null)
-  }
-
-  const handleRefetchBalance = async () => {
-    setIsRefetchingBalance(true)
-    try {
-      await syncWalletStatus()
-      // toast.success('Balance updated successfully')
-    } catch (error) {
-      toast.error('Failed to refetch balance')
-      console.error('Failed to refetch balance:', error)
-    } finally {
-      setIsRefetchingBalance(false)
-    }
+    router.push(`/game/${game.gameid}`)
   }
 
   const toggleChat = () => {
@@ -109,44 +73,43 @@ export default function Home() {
         onSuccess={handleResetPasswordSuccess}
       />
       <Navbar />
-      {!gameUrl && (
-        <div className="relative w-full">
-          {/* Carousel with text overlay */}
-          {/* <div className="relative w-full">
-            <HeroCarousel /> */}
-          {/* Hero Image Section with text overlay */}
-          <div className="relative w-full overflow-hidden">
-            {/* Hero Image */}
-            <div className="relative w-full h-full">
-              <Image
-                src="/images/hero-image.webp"
-                alt="Hero"
-                width={1920}
-                height={1080}
-                quality={95}
-                sizes="100vw"
-                // className="w-full h-[500px] sm:h-[500px] lg:h-[800px] object-cover mt-[5rem] sm:mt-0"
-                className="w-full h-[500px] sm:h-full object-cover mt-[5rem] sm:mt-0"
-                priority
+      <div className="relative w-full">
+        {/* Carousel with text overlay */}
+        {/* <div className="relative w-full">
+          <HeroCarousel /> */}
+        {/* Hero Image Section with text overlay */}
+        <div className="relative w-full overflow-hidden select-none">
+          {/* Hero Image */}
+          <div className="relative w-full h-full">
+            <Image
+              src="/images/hero-image.webp"
+              alt="Hero"
+              width={1920}
+              height={1080}
+              quality={95}
+              sizes="100vw"
+              // className="w-full h-[500px] sm:h-[500px] lg:h-[800px] object-cover mt-[5rem] sm:mt-0"
+              className="w-full h-[500px] sm:h-full object-cover mt-[5rem] sm:mt-0 select-none"
+              priority
+              draggable={false}
+            />
+            {/* Gradient fade at bottom to merge with next section */}
+            <div className="absolute inset-x-0 -bottom-[13px] sm:-bottom-10 h-20 sm:h-40 lg:h-48 bg-gradient-to-b from-transparent via-black/30 to-black pointer-events-none" />
+          </div>
+          {/* Text Overlay */}
+          <div className="absolute w-full top-24 sm:top-20 lg:top-[15%] left-1/2 -translate-x-1/2 flex items-center justify-center flex-col text-center gap-2 z-10 select-none">
+            <h1 className="text-2xl sm:text-3xl lg:text-5xl font-bold text-white select-none">
+              <TypingText text="Enter The PWR City" delay={0.2} />
+            </h1>
+            <p className="text-sm sm:text-xl lg:text-xl text-white hidden sm:block select-none">
+              <TypingText
+                text="Gamble Like a Degen. Win Like a Degen"
+                delay={1.5}
               />
-              {/* Gradient fade at bottom to merge with next section */}
-              <div className="absolute inset-x-0 -bottom-[13px] sm:-bottom-10 h-20 sm:h-40 lg:h-48 bg-gradient-to-b from-transparent via-black/30 to-black pointer-events-none" />
-            </div>
-            {/* Text Overlay */}
-            <div className="absolute w-full top-24 sm:top-20 lg:top-[15%] left-1/2 -translate-x-1/2 flex items-center justify-center flex-col text-center gap-2 z-10">
-              <h1 className="text-2xl sm:text-3xl lg:text-5xl font-bold text-white">
-                <TypingText text="Enter The PWR City" delay={0.2} />
-              </h1>
-              <p className="text-sm sm:text-xl lg:text-xl text-white hidden sm:block">
-                <TypingText
-                  text="Gamble Like a Degen. Win Like a Degen"
-                  delay={1.5}
-                />
-              </p>
-            </div>
+            </p>
           </div>
         </div>
-      )}
+      </div>
       <div className="flex">
         <main
           className={`flex-1 bg-[#040315] sm:bg-transparent transition-all duration-300 ease-in-out ${
@@ -154,42 +117,31 @@ export default function Home() {
           }
           `}
         >
-          {gameUrl ? (
-            <div className="mt-8">
-              <GameIframe
-                url={gameUrl}
-                onClose={handleCloseGame}
-                onRefetchBalance={handleRefetchBalance}
-                isRefetching={isRefetchingBalance}
-              />
+          <div className="max-w-[1100px] mx-auto space-y-8 sm:space-y-6">
+            <div className="pb-[3rem] sm:pb-[2rem] relative mt-0 sm:-mt-20 lg:-mt-[2.5rem] px-4 lg:px-16 xl:px-4 pb-6 pt-0 sm:py-6 sm:py-4 bg-black sm:bg-transparent">
+              <h1 className="text-lg sm:text-2xl font-bold text-center mb-4 sm:mb-8">
+                PWR Originals
+              </h1>
+              {isMobile ? (
+                <GameCardsMobile onGameClick={handleGameClick} />
+              ) : (
+                <GameCardsDesktop onGameClick={handleGameClick} />
+              )}
             </div>
-          ) : (
-            <div className="max-w-[1100px] mx-auto space-y-8 sm:space-y-20">
-              <div className="pb-[3rem] sm:pb-[2rem] relative mt-0 sm:-mt-20 lg:-mt-[2.5rem] px-4 lg:px-16 xl:px-4 pb-6 pt-0 sm:py-6 sm:py-4 bg-black sm:bg-transparent">
-                <h1 className="text-lg sm:text-2xl font-bold text-center mb-4 sm:mb-8">
-                  PWR Originals
-                </h1>
-                {isMobile ? (
-                  <GameCardsMobile onGameClick={handleGameClick} />
-                ) : (
-                  <GameCardsDesktop onGameClick={handleGameClick} />
-                )}
-              </div>
 
-              <div className="max-w-[1100px] mx-auto relative px-4 lg:px-16 xl:px-4 py-6 sm:py-4">
-                <div className="absolute top-10 -left-[5rem] h-[15rem] hidden sm:block sm:h-[20rem] w-[400px] bg-brand-pink/30 rounded-full blur-3xl"></div>
-                {/* <div
-                  className="absolute -bottom-20 -right-[5rem] h-[15rem] sm:h-[25rem] w-[400px] bg-[#005f5a]/30 rounded-full blur-[8rem]"
-                  // style={{
-                  //   rotate: '-30deg',
-                  // }}
-                ></div> */}
-                <Banner />
-                <InfoCards />
-              </div>
-              <SectionCards />
+            <div className="max-w-[1100px] mx-auto relative px-4 lg:px-16 xl:px-4 py-6 sm:py-4">
+              <div className="absolute top-10 -left-[5rem] h-[15rem] hidden sm:block sm:h-[20rem] w-[400px] bg-brand-pink/30 rounded-full blur-3xl"></div>
+              {/* <div
+                className="absolute -bottom-20 -right-[5rem] h-[15rem] sm:h-[25rem] w-[400px] bg-[#005f5a]/30 rounded-full blur-[8rem]"
+                // style={{
+                //   rotate: '-30deg',
+                // }}
+              ></div> */}
+              <Banner />
+              <InfoCards />
             </div>
-          )}
+            <SectionCards />
+          </div>
         </main>
 
         {/* Chat Sidebar - Part of layout on desktop, overlay on mobile */}
@@ -418,56 +370,6 @@ const GameCardsMobile = ({
     <div className="flex flex-col items-center">
       {renderRow(firstRow)}
       {renderRow(secondRow)}
-    </div>
-  )
-}
-
-// Game iframe component
-function GameIframe({
-  url,
-  onClose,
-  onRefetchBalance,
-  isRefetching,
-}: {
-  url: string
-  onClose: () => void
-  onRefetchBalance: () => void
-  isRefetching: boolean
-}) {
-  return (
-    <div className="relative w-full bg-black rounded-lg overflow-hidden shadow-lg">
-      {/* Close button */}
-      <div className="flex justify-end gap-2 w-full p-4">
-        <button
-          onClick={onRefetchBalance}
-          disabled={isRefetching}
-          className="bg-white/10 hover:bg-white/20 disabled:opacity-50 disabled:cursor-not-allowed text-white px-4 py-2 rounded-lg transition-colors flex items-center gap-2"
-        >
-          <RefreshCcw
-            className={`w-4 h-4 ${isRefetching ? 'animate-spin' : ''}`}
-          />
-          <span>{isRefetching ? 'Refetching...' : 'Refetch Balance'}</span>
-        </button>
-        <button
-          onClick={onClose}
-          className="bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-lg transition-colors flex items-center gap-2"
-        >
-          <span>✕</span>
-          <span>Close</span>
-        </button>
-      </div>
-      {/* Game iframe */}
-      <div
-        className="w-full"
-        style={{ aspectRatio: '16/9', minHeight: '600px' }}
-      >
-        <iframe
-          src={url}
-          className="w-full h-full border-0"
-          allow="fullscreen"
-          allowFullScreen
-        />
-      </div>
     </div>
   )
 }

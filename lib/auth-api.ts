@@ -16,6 +16,7 @@ export interface VerifyCodeData {
 export interface SignupData {
   usernameOrEmail: string
   password: string
+  referralCode?: string
 }
 
 export interface SigninData {

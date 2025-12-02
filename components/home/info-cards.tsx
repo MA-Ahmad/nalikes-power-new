@@ -9,7 +9,7 @@ const InfoCards = () => {
   return (
     <>
       {user && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-6 mt-4 mb-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-6 mt-4">
           {/* Profile Card */}
           <div className="p-6 relative">
             <CardWrapperSvg />

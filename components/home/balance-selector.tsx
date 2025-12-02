@@ -174,6 +174,7 @@ export function ChainBalanceSelector({
       {/* Balance Display with Dropdown */}
       <div className="relative flex-1 flex items-center z-10">
         <Select
+          modal={false}
           value={selectedChain}
           onValueChange={setSelectedChain}
           onOpenChange={setIsOpen}

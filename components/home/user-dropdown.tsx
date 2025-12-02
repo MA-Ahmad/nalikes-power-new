@@ -79,7 +79,7 @@ export function UserDropdown({ user, onLogout }: UserDropdownProps) {
   }
 
   return (
-    <DropdownMenu onOpenChange={setIsUserDropdownOpen}>
+    <DropdownMenu modal={false} onOpenChange={setIsUserDropdownOpen}>
       <DropdownMenuTrigger asChild>
         <div className="relative flex items-center overflow-hidden h-12">
           {/* SVG Background for container */}
