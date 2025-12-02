@@ -1,6 +1,6 @@
 'use client'
 
-import { X, Wallet, Copy, Check } from 'lucide-react'
+import { X, Wallet, Copy, Check, QrCode } from 'lucide-react'
 import { useState, useEffect, useRef } from 'react'
 import { toast } from 'react-hot-toast'
 import { Button } from '@/components/ui/button'
@@ -16,32 +16,40 @@ import {
 } from '../ui/select'
 import Image from 'next/image'
 import WithdrawForm from './withdraw-form'
+import { Input } from '@/components/ui/input'
 
 const actions = [
   {
     label: 'Deposit',
     icon: (
       <svg
-        width="23"
-        height="32"
-        viewBox="0 0 23 32"
+        width="20"
+        height="17"
+        viewBox="0 0 20 17"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
         className="w-4 h-4"
       >
         <path
-          d="M21.4229 14.7857L14.669 21.5396L7.91524 14.7857"
-          stroke="white"
-          strokeWidth="2.25127"
-          strokeLinecap="round"
-          strokeLinejoin="round"
+          d="M18.7491 7.99146V4.91607C18.7491 2.475 17.2284 0.75 14.7844 0.75H4.71467C2.27749 0.75 0.75 2.475 0.75 4.91607"
+          stroke="currentColor"
+          stroke-width="1.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
         />
         <path
-          d="M1.16143 1.27843H5.66397C8.05226 1.27843 10.3427 2.22717 12.0315 3.91595C13.7203 5.60473 14.669 7.89521 14.669 10.2835V21.5398M21.4229 23.7911L14.669 30.5449L7.91524 23.7911"
-          stroke="white"
-          strokeWidth="2.25127"
-          strokeLinecap="round"
-          strokeLinejoin="round"
+          d="M8.6375 15.6689H4.71467C2.27068 15.6689 0.75 13.9439 0.75 11.5029V8.20898"
+          stroke="currentColor"
+          stroke-width="1.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+        <path
+          d="M14.4844 11.916L12.4287 13.963L14.4844 16.011"
+          stroke="currentColor"
+          stroke-width="1.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
         />
       </svg>
     ),
@@ -50,26 +58,47 @@ const actions = [
     label: 'Withdraw',
     icon: (
       <svg
-        width="23"
-        height="32"
-        viewBox="0 0 23 32"
+        width="20"
+        height="17"
+        viewBox="0 0 20 17"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
         className="w-4 h-4"
       >
         <path
-          d="M21.7002 17.2392L14.9464 10.4854L8.19259 17.2392"
-          stroke="#B5B5B5"
-          strokeWidth="2.25127"
-          strokeLinecap="round"
-          strokeLinejoin="round"
+          d="M18.75 7.99186V4.91627C18.75 2.47508 17.2292 0.75 14.7851 0.75H4.71486C2.27757 0.75 0.75 2.47508 0.75 4.91627"
+          stroke="currentColor"
+          stroke-width="1.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
         />
         <path
-          d="M1.43879 30.746H5.94133C8.32962 30.746 10.6201 29.7972 12.3089 28.1084C13.9976 26.4197 14.9464 24.1292 14.9464 21.7409V10.4846M21.7002 8.23329L14.9464 1.47949L8.19259 8.23329"
-          stroke="#B5B5B5"
-          strokeWidth="2.25127"
-          strokeLinecap="round"
-          strokeLinejoin="round"
+          d="M9.5165 15.6693H4.71486C2.27076 15.6693 0.75 13.9442 0.75 11.503V8.20898"
+          stroke="currentColor"
+          stroke-width="1.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+        <path
+          d="M4.70117 5.72461H14.7987"
+          stroke="currentColor"
+          stroke-width="1.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+        <path
+          d="M18.7491 13.9648H12.4277"
+          stroke="currentColor"
+          stroke-width="1.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+        <path
+          d="M17 11.8809L19.0559 13.928L17 15.9761"
+          stroke="currentColor"
+          stroke-width="1.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
         />
       </svg>
     ),
@@ -78,33 +107,124 @@ const actions = [
     label: 'Buy Crypto',
     icon: (
       <svg
-        width="25"
-        height="25"
-        viewBox="0 0 25 25"
+        width="18"
+        height="20"
+        viewBox="0 0 18 20"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
         className="w-4 h-4"
       >
         <path
-          d="M8.07019 14.8455C11.743 14.8455 14.7205 11.868 14.7205 8.19519C14.7205 4.52235 11.743 1.54492 8.07019 1.54492C4.39735 1.54492 1.41992 4.52235 1.41992 8.19519C1.41992 11.868 4.39735 14.8455 8.07019 14.8455Z"
-          stroke="#B5B5B5"
-          strokeWidth="2.21676"
-          strokeLinecap="round"
-          strokeLinejoin="round"
+          d="M7.60547 12.0508C7.60547 13.3964 9.71877 14.488 12.3263 14.488C12.9514 14.488 13.5482 14.4253 14.0943 14.3113"
+          stroke="currentColor"
+          stroke-width="1.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
         />
         <path
-          d="M19.2538 10.8216C20.3016 11.2123 21.2339 11.8608 21.9646 12.7072C22.6954 13.5536 23.2008 14.5707 23.4343 15.6642C23.6678 16.7578 23.6218 17.8926 23.3006 18.9636C22.9793 20.0347 22.3931 21.0074 21.5963 21.7919C20.7995 22.5764 19.8177 23.1473 18.7417 23.4519C17.6658 23.7564 16.5304 23.7847 15.4407 23.5341C14.3509 23.2836 13.3419 22.7623 12.5069 22.0185C11.672 21.2746 11.0381 20.3323 10.6639 19.2786M6.96191 5.97803H8.07029V10.4115"
-          stroke="#B5B5B5"
-          strokeWidth="2.21676"
-          strokeLinecap="round"
-          strokeLinejoin="round"
+          d="M5.47174 9.8865C2.86423 9.8865 0.75 8.7958 0.75 7.44922"
+          stroke="currentColor"
+          stroke-width="1.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
         />
         <path
-          d="M17.7238 14.7119L18.4996 15.4989L15.374 18.6245"
-          stroke="#B5B5B5"
-          strokeWidth="2.21676"
-          strokeLinecap="round"
-          strokeLinejoin="round"
+          d="M0.75 3.1875V11.7124C0.75 13.059 2.86423 14.1496 5.47174 14.1496"
+          stroke="currentColor"
+          stroke-width="1.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+        <path
+          d="M5.47174 5.62449C2.86423 5.62449 0.75 4.53381 0.75 3.18724C0.75 1.84165 2.86423 0.75 5.47174 0.75C8.07924 0.75 10.1934 1.84165 10.1934 3.18724"
+          stroke="currentColor"
+          stroke-width="1.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+        <path
+          d="M12.3263 18.7512C9.71877 18.7512 7.60547 17.6605 7.60547 16.314V7.78906"
+          stroke="currentColor"
+          stroke-width="1.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+        <path
+          d="M17.0475 7.78906V16.314C17.0475 17.1902 16.1523 17.958 14.8086 18.3875"
+          stroke="currentColor"
+          stroke-width="1.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+        <path
+          d="M12.3263 5.35156C9.71877 5.35156 7.60547 6.44321 7.60547 7.7888C7.60547 9.1344 9.71877 10.2261 12.3263 10.2261C14.9338 10.2261 17.048 9.1344 17.048 7.7888C17.048 7.03609 16.3864 6.36284 15.347 5.91569"
+          stroke="currentColor"
+          stroke-width="1.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+      </svg>
+    ),
+  },
+  {
+    label: 'Redeem',
+    icon: (
+      <svg
+        width="18"
+        height="20"
+        viewBox="0 0 18 20"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        className="w-4 h-4"
+      >
+        <path
+          d="M7.60547 12.0508C7.60547 13.3964 9.71877 14.488 12.3263 14.488C12.9514 14.488 13.5482 14.4253 14.0943 14.3113"
+          stroke="currentColor"
+          stroke-width="1.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+        <path
+          d="M5.47174 9.8865C2.86423 9.8865 0.75 8.7958 0.75 7.44922"
+          stroke="currentColor"
+          stroke-width="1.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+        <path
+          d="M0.75 3.1875V11.7124C0.75 13.059 2.86423 14.1496 5.47174 14.1496"
+          stroke="currentColor"
+          stroke-width="1.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+        <path
+          d="M5.47174 5.62449C2.86423 5.62449 0.75 4.53381 0.75 3.18724C0.75 1.84165 2.86423 0.75 5.47174 0.75C8.07924 0.75 10.1934 1.84165 10.1934 3.18724"
+          stroke="currentColor"
+          stroke-width="1.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+        <path
+          d="M12.3263 18.7512C9.71877 18.7512 7.60547 17.6605 7.60547 16.314V7.78906"
+          stroke="currentColor"
+          stroke-width="1.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+        <path
+          d="M17.0475 7.78906V16.314C17.0475 17.1902 16.1523 17.958 14.8086 18.3875"
+          stroke="currentColor"
+          stroke-width="1.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+        <path
+          d="M12.3263 5.35156C9.71877 5.35156 7.60547 6.44321 7.60547 7.7888C7.60547 9.1344 9.71877 10.2261 12.3263 10.2261C14.9338 10.2261 17.048 9.1344 17.048 7.7888C17.048 7.03609 16.3864 6.36284 15.347 5.91569"
+          stroke="currentColor"
+          stroke-width="1.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
         />
       </svg>
     ),
@@ -122,8 +242,25 @@ export function DepositWithdrawModal({
   const { isAuthenticated, user } = useAuthStore()
   const [activeAction, setActiveAction] = useState(actions[0])
   const [currency, setCurrency] = useState('evm')
+  const [network, setNetwork] = useState('')
   const [copiedDeposit, setCopiedDeposit] = useState(false)
+  const [selectedBonus, setSelectedBonus] = useState<string | null>(null)
+  const [customBonusAmount, setCustomBonusAmount] = useState('')
   const copyTimeoutRef = useRef<number | null>(null)
+  const qrCanvasRef = useRef<HTMLCanvasElement>(null)
+
+  const depositBonusOptions = [
+    { value: '15', amount: 15, bonus: 18.75 },
+    { value: '25', amount: 25, bonus: 31.25 },
+    { value: '50', amount: 50, bonus: 62.5 },
+    { value: '100', amount: 100, bonus: 125 },
+  ]
+
+  const networks = {
+    evm: ['Ethereum', 'Base', 'Polygon', 'Arbitrum'],
+    solana: ['Solana Mainnet'],
+    tron: ['Tron Mainnet'],
+  }
 
   const handleCopyDepositAddress = async () => {
     if (
@@ -156,16 +293,99 @@ export function DepositWithdrawModal({
 
   useEffect(() => {
     setCurrency('evm')
+    setNetwork('')
+    setSelectedBonus(null)
+    setCustomBonusAmount('')
   }, [activeTab])
+
+  useEffect(() => {
+    if (!open) return
+
+    const generateQRCode = async () => {
+      const address =
+        user?.depositWalletAddresses?.[
+          currency as keyof typeof user.depositWalletAddresses
+        ]?.address
+
+      if (!address) {
+        return
+      }
+
+      // Wait for canvas to be mounted in DOM
+      const tryGenerate = async (retries = 0) => {
+        if (!qrCanvasRef.current) {
+          if (retries < 10) {
+            // Retry up to 10 times with increasing delay
+            setTimeout(() => tryGenerate(retries + 1), 50 * (retries + 1))
+            return
+          }
+          return
+        }
+
+        try {
+          // Dynamic import for QR code generation
+          const qrcode = await import('qrcode')
+          const QRCode = qrcode.default || qrcode
+
+          // Clear previous canvas content
+          const ctx = qrCanvasRef.current.getContext('2d')
+          if (ctx && qrCanvasRef.current.width && qrCanvasRef.current.height) {
+            ctx.clearRect(
+              0,
+              0,
+              qrCanvasRef.current.width,
+              qrCanvasRef.current.height
+            )
+          }
+
+          await QRCode.toCanvas(qrCanvasRef.current, address, {
+            width: 100,
+            margin: 1,
+            color: {
+              dark: '#ffffff',
+              light: '#171717',
+            },
+          })
+        } catch (error) {
+          console.error('Error generating QR code:', error)
+        }
+      }
+
+      // Use requestAnimationFrame to ensure DOM is ready
+      requestAnimationFrame(() => {
+        tryGenerate()
+      })
+    }
+
+    generateQRCode()
+  }, [currency, user?.depositWalletAddresses, open])
+
+  const getCurrencyDisplayName = (currency: string) => {
+    const currencyMap: Record<string, string> = {
+      evm: 'EVM',
+      solana: 'SOLANA',
+      tron: 'TRON',
+    }
+    return currencyMap[currency] || currency.toUpperCase()
+  }
+
+  const getCurrencyIcon = (currency: string) => {
+    const iconMap: Record<string, string> = {
+      evm: '/images/crypto/eth-icon.svg',
+      solana: '/images/crypto/solana-icon.svg',
+      tron: '/images/crypto/tron-icon.svg',
+    }
+    return iconMap[currency] || '/images/crypto/eth-icon.svg'
+  }
 
   return (
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent
-          className="sm:max-w-2xl bg-neutral-900 border-gray-700 max-h-[90vh] overflow-y-auto"
+          className="sm:max-w-xl bg-[linear-gradient(to_bottom,#11042F_-100%,#04010E_100%)] max-h-[90vh] overflow-y-auto z-[555555] border border-[#4A2F4C]/20"
           showCloseButton={false}
         >
-          <div className="flex items-center justify-between">
+          {/* <div className="flex items-center justify-end absolute top-2 right-2">
             <DialogTitle className="text-xl font-bold text-white flex items-center gap-2">
               <Wallet className="h-5 w-5" />
               Cashier
@@ -173,14 +393,14 @@ export function DepositWithdrawModal({
             <Button
               size="icon"
               onClick={() => onOpenChange(false)}
-              className="text-gray-400 hover:text-white hover:bg-neutral-800 bg-neutral-800"
+              className="text-gray-400 hover:text-white hover:bg-neutral-800 bg-neutral-800 w-6 h-6"
             >
-              <X className="h-4 w-4" />
+              <X className="h-2 w-2" />
             </Button>
-          </div>
+          </div> */}
 
           <>
-            <div className="bg-neutral-800 rounded-lg p-6">
+            {/* <div className="bg-neutral-800 rounded-lg p-6">
               <div className="flex flex-col gap-1 justify-start items-start">
                 <span className="text-gray-400 text-xs uppercase">
                   Estimated Balance
@@ -193,9 +413,9 @@ export function DepositWithdrawModal({
                   )?.toFixed(4)}`}
                 </span>
               </div>
-            </div>
+            </div> */}
 
-            <div className="flex items-center gap-2 mb-4">
+            <div className="flex items-center justify-between mb-4 w-full border border-[#4A2F4C] rounded-lg p-0.5 bg-[#2D1B2F]/50">
               {actions.map((action, idx) => {
                 const isActive = action.label === activeAction.label
 
@@ -203,12 +423,13 @@ export function DepositWithdrawModal({
                   <div
                     key={idx}
                     className={cn(
-                      'p-1.5 px-2 text-sm flex items-center gap-2 uppercase rounded-md border text-white cursor-pointer transition-all duration-300',
+                      'p-2 px-2 text-sm flex items-center gap-2 uppercase rounded-md text-brand-pink cursor-pointer transition-all duration-300',
                       isActive
-                        ? 'border-[#EE4FFB] bg-gradient-to-r from-[#EE4FFB]/30 to-[#8D2F95]/30 shadow-[0_0_11.68px_2.34px_rgba(104,100,246,0.25)]'
-                        : 'bg-neutral-800 border-neutral-700 hover:border-[#EE4FFB] hover:bg-gradient-to-r from-[#EE4FFB]/30 to-[#8D2F95]/30'
+                        ? 'border border-[#EE4FFB] bg-gradient-to-b from-[#EE4FFB]/20 to-[#EE4FFB]/10 text-[#EE4FFB]'
+                        : 'text-[#6B6B6B]'
                     )}
                     onClick={() => {
+                      if (idx > 1) return
                       setActiveAction(action)
                       setActiveTab(action.label.toLowerCase())
                     }}
@@ -221,102 +442,308 @@ export function DepositWithdrawModal({
             </div>
 
             {activeAction.label === 'Deposit' && (
-              <div className="flex flex-col gap-4">
-                <div className="bg-neutral-800 rounded-lg p-4">
-                  <div className="flex flex-col gap-2 justify-start items-start">
-                    <span className="text-gray-400 text-xs uppercase">
-                      Currency to Deposit
-                    </span>
-
-                    <Select onValueChange={setCurrency} defaultValue={currency}>
-                      <SelectTrigger
-                        className="w-full dark:bg-neutral-900 hover:dark:bg-neutral-900"
-                        defaultValue="evm"
+              <div className="flex flex-col gap-0">
+                {/* Step 1: Currency to Deposit */}
+                <div className="flex gap-4">
+                  <div className="flex flex-col items-center">
+                    <div className="w-6 h-6 border border-[#EE4FFB]/30 rounded-md bg-gradient-to-b from-[#EE4FFB]/20 to-[#EE4FFB]/10 flex items-center justify-center text-neutral-200 font-bold text-sm">
+                      1
+                    </div>
+                    <div className="w-[1px] h-full bg-[#515151] flex-1 min-h-[60px]"></div>
+                  </div>
+                  <div className="flex-1 px-2 pb-6">
+                    <div className="flex flex-col gap-2 justify-start items-start">
+                      <span className="text-neutral-400 text-[16px] uppercase">
+                        Currency to Deposit
+                      </span>
+                      <Select
+                        onValueChange={setCurrency}
+                        value={currency}
+                        modal={false}
                       >
-                        <SelectValue placeholder="Select a timezone" />
-                      </SelectTrigger>
-                      <SelectContent className="bg-neutral-900 active:bg-neutral-900">
-                        <SelectItem value="evm">
-                          <div className="flex items-center gap-2">
-                            <div className="p-[4px] rounded-full bg-neutral-700 w-5 h-5 flex items-center justify-center">
-                              <Image
-                                src="/images/crypto/eth-icon.svg"
-                                alt="EVM"
-                                width={20}
-                                height={20}
-                                className="w-full h-full"
-                              />
-                            </div>
-                            <span>EVM</span>
+                        <SelectTrigger className="w-full border border-[#FFFFFF]/10 bg-gradient-to-b from-[#FFFFFF]/-10 to-[#FFFFFF]/0 hover:bg-[#FFFFFF]/10 text-white max-w-[12rem]">
+                          <div className="flex items-center justify-between w-full">
+                            <SelectValue placeholder="Select currency" />
+                            <span className="text-neutral-400 text-xs ml-2">
+                              {`$ ${
+                                Number(
+                                  user?.depositWalletAddresses?.[
+                                    currency as keyof typeof user.depositWalletAddresses
+                                  ]?.availableAmount
+                                )?.toFixed(4) || '0.0000'
+                              }`}
+                            </span>
                           </div>
-                        </SelectItem>
-                        <SelectItem value="solana">
-                          <div className="flex items-center gap-2">
-                            <div className="p-[4px] rounded-full bg-neutral-700 w-5 h-5 flex items-center justify-center">
-                              <Image
-                                src="/images/crypto/solana-icon.svg"
-                                alt="SOLANA"
-                                width={20}
-                                height={20}
-                                className="w-full h-full"
-                              />
+                        </SelectTrigger>
+                        <SelectContent className="border border-[#FFFFFF]/10 bg-[#080219] z-[999999]">
+                          <SelectItem
+                            value="evm"
+                            className="text-white hover:bg-[#FFFFFF]/10 focus:bg-[#FFFFFF]/10"
+                          >
+                            <div className="flex items-center gap-2">
+                              <div className="p-[4px] rounded-full bg-neutral-700 w-5 h-5 flex items-center justify-center">
+                                <Image
+                                  src="/images/crypto/eth-icon.svg"
+                                  alt="EVM"
+                                  width={20}
+                                  height={20}
+                                  className="w-full h-full"
+                                />
+                              </div>
+                              <span>EVM</span>
                             </div>
-                            <span>SOLANA</span>
-                          </div>
-                        </SelectItem>
-                        <SelectItem value="tron">
-                          <div className="flex items-center gap-2">
-                            <div className="p-[4px] rounded-full bg-neutral-700 w-5 h-5 flex items-center justify-center">
-                              <Image
-                                src="/images/crypto/tron-icon.svg"
-                                alt="TRON"
-                                width={20}
-                                height={20}
-                                className="w-full h-full"
-                              />
+                          </SelectItem>
+                          <SelectItem
+                            value="solana"
+                            className="text-white hover:bg-[#FFFFFF]/10 focus:bg-[#FFFFFF]/10"
+                          >
+                            <div className="flex items-center gap-2">
+                              <div className="p-[4px] rounded-full bg-neutral-700 w-5 h-5 flex items-center justify-center">
+                                <Image
+                                  src="/images/crypto/solana-icon.svg"
+                                  alt="SOLANA"
+                                  width={20}
+                                  height={20}
+                                  className="w-full h-full"
+                                />
+                              </div>
+                              <span>SOLANA</span>
                             </div>
-                            <span>TRON</span>
-                          </div>
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
+                          </SelectItem>
+                          <SelectItem
+                            value="tron"
+                            className="text-white hover:bg-[#FFFFFF]/10 focus:bg-[#FFFFFF]/10"
+                          >
+                            <div className="flex items-center gap-2">
+                              <div className="p-[4px] rounded-full bg-neutral-700 w-5 h-5 flex items-center justify-center">
+                                <Image
+                                  src="/images/crypto/tron-icon.svg"
+                                  alt="TRON"
+                                  width={20}
+                                  height={20}
+                                  className="w-full h-full"
+                                />
+                              </div>
+                              <span>TRON</span>
+                            </div>
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
                   </div>
                 </div>
-                <div className="bg-neutral-800 rounded-lg p-4">
-                  <div className="flex flex-col gap-2 justify-start items-start">
-                    <span className="text-gray-400 text-xs uppercase">
-                      Deposit Address
-                    </span>
-                    <div className="flex gap-2 w-full">
-                      <div className="bg-neutral-900 border-neutral-700 border text-white text-sm p-2 px-2 rounded-md w-full">
-                        {
-                          user?.depositWalletAddresses?.[
-                            currency as keyof typeof user.depositWalletAddresses
-                          ]?.address
-                        }
-                      </div>
 
-                      {copiedDeposit ? (
-                        <div className="flex items-center justify-center gap-2 cursor-pointer bg-neutral-900 rounded-md p-2 px-2.5 border-neutral-700 border">
-                          <Check className="h-4 w-4 text-green-500" />
-                        </div>
-                      ) : (
+                {/* Step 2: Select Network */}
+                {/* <div className="flex gap-4">
+                  <div className="flex flex-col items-center">
+                    <div className="w-6 h-6 border border-[#EE4FFB]/30 rounded-md bg-gradient-to-b from-[#EE4FFB]/20 to-[#EE4FFB]/10 flex items-center justify-center text-white font-bold text-sm">
+                      2
+                    </div>
+                    <div className="w-[1px] h-full bg-[#515151] flex-1 min-h-[60px]"></div>
+                  </div>
+                  <div className="flex-1 px-2 pb-6">
+                    <div className="flex flex-col gap-2 justify-start items-start">
+                      <span className="text-neutral-300 text-[16px] uppercase">
+                        Select Network
+                      </span>
+                      <Select
+                        onValueChange={setNetwork}
+                        value={network}
+                        disabled={!currency}
+                        modal={false}
+                      >
+                        <SelectTrigger className="w-full border border-[#FFFFFF]/10 bg-gradient-to-b from-[#FFFFFF]/-10 to-[#FFFFFF]/0 hover:bg-[#FFFFFF]/10 text-white">
+                          <SelectValue placeholder="Select" />
+                        </SelectTrigger>
+                        <SelectContent className="border border-[#FFFFFF]/10 bg-[#080219] z-[999999]">
+                          {networks[currency as keyof typeof networks]?.map(
+                            (net) => (
+                              <SelectItem
+                                key={net}
+                                value={net}
+                                className="text-white hover:bg-[#FFFFFF]/10 focus:bg-[#FFFFFF]/10"
+                              >
+                                {net}
+                              </SelectItem>
+                            )
+                          )}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                </div> */}
+
+                {/* Step 3: Deposit Address */}
+                <div className="flex gap-4">
+                  <div className="flex flex-col items-center">
+                    <div className="w-6 h-6 border border-[#EE4FFB]/30 rounded-md bg-gradient-to-b from-[#EE4FFB]/20 to-[#EE4FFB]/10 flex items-center justify-center text-neutral-200 font-bold text-sm">
+                      2
+                    </div>
+                    <div className="w-[1px] h-full bg-[#515151] flex-1 min-h-[60px]"></div>
+                  </div>
+                  <div className="flex-1 px-2 pb-6">
+                    <div className="flex flex-col gap-2 justify-start items-start">
+                      <span className="text-neutral-400 text-[16px] uppercase">
+                        Deposit Address
+                      </span>
+                      <div className="flex gap-2 w-full">
                         <div
-                          className="flex items-center justify-center gap-2 cursor-pointer bg-neutral-900 rounded-md p-2 px-2.5 border-neutral-700 border"
+                          className="cursor-pointer flex items-center justify-between gap-2 border border-[#FFFFFF]/10 bg-[#14101f] hover:bg-[#FFFFFF]/10 text-white text-sm p-3 px-3 rounded-md flex-1 font-mono text-xs"
                           onClick={handleCopyDepositAddress}
                         >
-                          <Copy className="h-4 w-4" />
+                          <span>
+                            {user?.depositWalletAddresses?.[
+                              currency as keyof typeof user.depositWalletAddresses
+                            ]?.address || 'No address available'}
+                          </span>
+                          {copiedDeposit ? (
+                            <div className="">
+                              <Check className="h-4 w-4 text-green-500" />
+                            </div>
+                          ) : (
+                            <div>
+                              <svg
+                                width="20"
+                                height="20"
+                                viewBox="0 0 20 20"
+                                fill="none"
+                                xmlns="http://www.w3.org/2000/svg"
+                                className="w-4 h-4"
+                              >
+                                <path
+                                  d="M4.82782 12.7405C3.39282 12.5626 2.51758 11.4342 2.51758 9.90284V7.63672"
+                                  stroke="#A5A9C1"
+                                  stroke-width="1.25"
+                                  stroke-linecap="round"
+                                  stroke-linejoin="round"
+                                />
+                                <path
+                                  d="M12.7373 4.79002C12.5253 3.42297 11.5409 2.5 10.0574 2.5H5.24522C3.56997 2.5 2.51758 3.6899 2.51758 5.37081"
+                                  stroke="#A5A9C1"
+                                  stroke-width="1.25"
+                                  stroke-linecap="round"
+                                  stroke-linejoin="round"
+                                />
+                                <path
+                                  d="M17.4827 14.632C17.4827 16.3121 16.4367 17.4988 14.7542 17.4988H9.94441C8.26271 17.4988 7.2168 16.3121 7.2168 14.632V10.0997C7.2168 8.41958 8.26837 7.23291 9.94441 7.23291H14.755C16.4367 7.23291 17.4827 8.41958 17.4827 10.0997V11.9281"
+                                  stroke="#A5A9C1"
+                                  stroke-width="1.25"
+                                  stroke-linecap="round"
+                                  stroke-linejoin="round"
+                                />
+                              </svg>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-3 w-full mt-2">
+                        <div className="border border-[#FFFFFF]/10 bg-[#14101f] hover:bg-[#FFFFFF]/10 text-white rounded-lg p-4 flex items-center justify-center min-w-[120px]">
+                          {user?.depositWalletAddresses?.[
+                            currency as keyof typeof user.depositWalletAddresses
+                          ]?.address ? (
+                            <canvas
+                              ref={qrCanvasRef}
+                              className="w-[100px] h-[100px]"
+                            />
+                          ) : (
+                            <QrCode className="h-12 w-12 text-gray-600" />
+                          )}
+                        </div>
+                        <p className="text-gray-400 text-xs max-w-[300px] flex-1">
+                          Deposit to this address must be sent on{' '}
+                          {getCurrencyDisplayName(currency)} network to be
+                          accepted.{' '}
+                          <span className="text-[#EE4FFB] font-semibold">
+                            POWERBLOCKS does not process deposits of less than
+                            10 USD
+                          </span>
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Step 4: Deposit Bonus (optional) */}
+                <div className="flex gap-4">
+                  <div className="flex flex-col items-center">
+                    <div className="w-6 h-6 border border-[#EE4FFB]/30 rounded-md bg-gradient-to-b from-[#EE4FFB]/20 to-[#EE4FFB]/10 flex items-center justify-center text-neutral-200 font-bold text-sm">
+                      3
+                    </div>
+                    <div className="w-[1px] h-full bg-[#515151] flex-1 min-h-[60px]"></div>
+                  </div>
+                  <div className="flex-1 px-2">
+                    <div className="flex flex-col gap-3 justify-start items-start">
+                      <span className="text-neutral-400 text-[16px] uppercase">
+                        Deposit Bonus (optional)
+                      </span>
+
+                      <div className="flex flex-wrap gap-3 w-full">
+                        {depositBonusOptions.map((option) => (
+                          <div
+                            key={option.value}
+                            className={cn(
+                              'flex flex-col items-center justify-center',
+                              selectedBonus !== option.value && 'opacity-[0.5]'
+                            )}
+                          >
+                            <button
+                              key={option.value}
+                              type="button"
+                              onClick={() => {
+                                setSelectedBonus(option.value)
+                                setCustomBonusAmount('')
+                              }}
+                              className={cn(
+                                'py-0.5 px-2 w-16 text-sm flex items-center justify-center gap-2 uppercase rounded-md text-white cursor-pointer transition-all duration-300',
+                                selectedBonus === option.value
+                                  ? 'border border-[#EE4FFB] bg-gradient-to-b from-[#EE4FFB]/20 to-[#EE4FFB]/10'
+                                  : 'border border-[#EE4FFB] bg-gradient-to-b from-[#EE4FFB]/20 to-[#EE4FFB]/10'
+                              )}
+                            >
+                              <span className="text-white text-sm">
+                                ${option.amount}
+                              </span>
+                            </button>
+                            <span className="text-white text-xs mt-1">
+                              Get ${option.bonus}
+                            </span>
+                          </div>
+                        ))}
+
+                        {/* <button
+                          type="button"
+                          onClick={() => {
+                            setSelectedBonus('custom')
+                          }}
+                          className={cn(
+                            'flex flex-col items-center justify-center p-3 rounded-lg border-2 transition-all duration-300 min-w-[120px]',
+                            selectedBonus === 'custom'
+                              ? 'border-[#EE4FFB] bg-gradient-to-r from-[#EE4FFB]/30 to-[#8D2F95]/30 shadow-[0_0_11.68px_2.34px_rgba(238,79,251,0.25)]'
+                              : 'border-neutral-700 bg-neutral-900 hover:border-[#EE4FFB]/50'
+                          )}
+                        >
+                          <span className="text-white font-bold text-sm">
+                            Custom Amount
+                          </span>
+                          <span className="text-gray-400 text-xs mt-1">
+                            Get $-
+                          </span>
+                        </button> */}
+                      </div>
+                      {selectedBonus === 'custom' && (
+                        <div className="w-full mt-2">
+                          <Input
+                            type="number"
+                            placeholder="Enter custom amount"
+                            value={customBonusAmount}
+                            onChange={(e) =>
+                              setCustomBonusAmount(e.target.value)
+                            }
+                            className="bg-neutral-900 border-neutral-700 text-white"
+                          />
                         </div>
                       )}
                     </div>
-                    <p className="text-gray-400 text-xs">
-                      Deposit to this address must be sent on Bitcoin network to
-                      be accepted.{' '}
-                      <span className="text-[#6F6BFF]">
-                        POWERBLOCKS does not process deposits of less than 10
-                        USD
-                      </span>
-                    </p>
                   </div>
                 </div>
               </div>

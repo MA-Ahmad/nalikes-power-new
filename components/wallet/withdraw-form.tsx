@@ -21,6 +21,8 @@ import { useWithdrawMutation } from '@/hooks/use-transactions'
 import toast from 'react-hot-toast'
 import { WithdrawRequest } from '@/lib/api/transactions'
 import { Loader2 } from 'lucide-react'
+import { cn } from '@/lib/utils'
+import { useAuthStore } from '@/store/auth'
 
 // Dummy token data - will be replaced with CoinGecko API later
 const tokensByChain: Record<
@@ -89,6 +91,7 @@ export default function WithdrawForm({
 }: {
   setCurrency: (currency: string) => void
 }) {
+  const { user } = useAuthStore()
   const form = useForm({
     mode: 'onChange',
     defaultValues: {
@@ -126,8 +129,10 @@ export default function WithdrawForm({
     const withdrawalData = {
       amount: Number.parseFloat(data.amount),
       address: data.address,
-      chainId: Number.parseInt(data.chainId),
-      tokenAddress: data.tokenAddress,
+      // chainId: Number.parseInt(data.chainId),
+      // tokenAddress: data.tokenAddress,
+      chainId: 11155111,
+      tokenAddress: '0x0000000000000000000000000000000000000000',
     }
 
     console.log('Withdrawal data:', withdrawalData)
@@ -145,151 +150,218 @@ export default function WithdrawForm({
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="flex flex-col gap-4"
+          className="flex flex-col gap-0"
         >
-          <div className="bg-neutral-800 rounded-lg p-4">
-            <div className="flex flex-col gap-2 justify-start items-start">
-              <span className="text-gray-400 text-xs uppercase">
-                Choose a currency to withdraw
-              </span>
-
-              <FormField
-                control={form.control}
-                name="currency"
-                render={({ field }) => (
-                  <FormItem className="w-full">
-                    <FormControl>
-                      <Select
-                        onValueChange={(value) => {
-                          field.onChange(value)
-                          setCurrency(value)
-                        }}
-                        value={field.value}
-                      >
-                        <SelectTrigger className="w-full dark:bg-neutral-900 hover:dark:bg-neutral-900">
-                          <SelectValue placeholder="Select a currency type" />
-                        </SelectTrigger>
-                        <SelectContent className="bg-neutral-900 active:bg-neutral-900">
-                          <SelectItem value="evm">EVM</SelectItem>
-                          <SelectItem value="solana">SOLANA</SelectItem>
-                          <SelectItem value="tron">TRON</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+          {/* Step 1: Choose Currency */}
+          <div className="flex gap-4">
+            <div className="flex flex-col items-center">
+              <div className="w-6 h-6 border border-[#EE4FFB]/30 rounded-md bg-gradient-to-b from-[#EE4FFB]/20 to-[#EE4FFB]/10 flex items-center justify-center text-neutral-200 font-bold text-sm">
+                1
+              </div>
+              <div className="w-[1px] h-full bg-[#515151] flex-1 min-h-[60px]"></div>
             </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-              <FormField
-                control={form.control}
-                name="chainId"
-                rules={{ required: 'Network is required' }}
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>
-                      <span className="text-gray-400 text-xs uppercase">
-                        Choose a network *
-                      </span>
-                    </FormLabel>
-                    <FormControl>
-                      <Select
-                        onValueChange={(value) => {
-                          field.onChange(value)
-                          handleChainChange(value)
-                        }}
-                        value={field.value}
-                        disabled={
-                          !form.watch('currency') ||
-                          form.watch('currency') !== 'evm'
-                        }
-                      >
-                        <SelectTrigger className="w-full dark:bg-neutral-900 hover:dark:bg-neutral-900">
-                          <SelectValue placeholder="Select a network" />
-                        </SelectTrigger>
-                        <SelectContent className="bg-neutral-900">
-                          {chains.map((chain) => (
+            <div className="flex-1 px-2 pb-6">
+              <div className="flex flex-col gap-2 justify-start items-start">
+                <span className="text-neutral-400 text-[16px] uppercase">
+                  Choose a currency to withdraw
+                </span>
+                <FormField
+                  control={form.control}
+                  name="currency"
+                  render={({ field }) => (
+                    <FormItem className="w-full">
+                      <FormControl>
+                        <Select
+                          onValueChange={(value) => {
+                            field.onChange(value)
+                            setCurrency(value)
+                          }}
+                          value={field.value}
+                          modal={false}
+                        >
+                          <SelectTrigger className="w-full border border-[#FFFFFF]/10 bg-gradient-to-b from-[#FFFFFF]/-10 to-[#FFFFFF]/0 hover:bg-[#FFFFFF]/10 text-white max-w-[12rem]">
+                            <div className="flex items-center justify-between w-full">
+                              <SelectValue placeholder="Select a currency type" />
+                              <span className="text-neutral-400 text-xs ml-2">
+                                {user?.depositWalletAddresses
+                                  ? `$ ${
+                                      Number(
+                                        user.depositWalletAddresses[
+                                          form.watch(
+                                            'currency'
+                                          ) as keyof typeof user.depositWalletAddresses
+                                        ]?.availableAmount
+                                      )?.toFixed(4) || '0.0000'
+                                    }`
+                                  : '$ 0.0000'}
+                              </span>
+                            </div>
+                          </SelectTrigger>
+                          <SelectContent className="border border-[#FFFFFF]/10 bg-[#080219] z-[999999]">
                             <SelectItem
-                              key={chain.id}
-                              value={chain.id.toString()}
+                              value="evm"
+                              className="text-white hover:bg-[#FFFFFF]/10 focus:bg-[#FFFFFF]/10"
                             >
-                              <div className="flex items-center gap-2">
-                                {chain.name}
-                              </div>
+                              EVM
                             </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="tokenAddress"
-                rules={{ required: 'Token is required' }}
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>
-                      <span className="text-gray-400 text-xs uppercase">
-                        Choose a token *
-                      </span>
-                    </FormLabel>
-                    <FormControl>
-                      <Select
-                        onValueChange={field.onChange}
-                        value={field.value}
-                        // disabled={!watchedChainId}
-                        disabled={
-                          !form.watch('currency') ||
-                          form.watch('currency') !== 'evm'
-                        }
-                      >
-                        <SelectTrigger className="w-full dark:bg-neutral-900 hover:dark:bg-neutral-900">
-                          <SelectValue placeholder="Select a token" />
-                        </SelectTrigger>
-                        <SelectContent className="bg-neutral-900">
-                          {availableTokens.map((token) => (
                             <SelectItem
-                              key={token.address}
-                              value={token.address}
+                              value="solana"
+                              className="text-white hover:bg-[#FFFFFF]/10 focus:bg-[#FFFFFF]/10"
                             >
-                              <div className="flex items-center gap-2">
-                                <div className="flex flex-col">
-                                  <div className="flex items-center gap-1">
-                                    <span className="font-medium">
-                                      {token.symbol}
-                                    </span>
-                                    {token.isNative && (
-                                      <span className="text-xs bg-brand-pink text-white px-1 py-0.5 rounded">
-                                        Native
-                                      </span>
-                                    )}
-                                  </div>
-                                </div>
-                              </div>
+                              SOLANA
                             </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+                            <SelectItem
+                              value="tron"
+                              className="text-white hover:bg-[#FFFFFF]/10 focus:bg-[#FFFFFF]/10"
+                            >
+                              TRON
+                            </SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
             </div>
           </div>
 
-          <div className="bg-neutral-800 rounded-lg p-4">
-            <div className="flex flex-col gap-2 justify-start items-start">
-              <span className="text-gray-400 text-xs uppercase">
-                Withdrawal Details
-              </span>
-              <div className="flex flex-col gap-2 w-full">
+          {/* Step 2: Choose Network */}
+          {/* <div className="flex gap-4">
+            <div className="flex flex-col items-center">
+              <div className="w-6 h-6 border border-[#EE4FFB]/30 rounded-md bg-gradient-to-b from-[#EE4FFB]/20 to-[#EE4FFB]/10 flex items-center justify-center text-neutral-200 font-bold text-sm">
+                2
+              </div>
+              <div className="w-[1px] h-full bg-[#515151] flex-1 min-h-[60px]"></div>
+            </div>
+            <div className="flex-1 px-2 pb-6">
+              <div className="flex flex-col gap-2 justify-start items-start">
+                <span className="text-neutral-400 text-[16px] uppercase">
+                  Choose a network *
+                </span>
+                <FormField
+                  control={form.control}
+                  name="chainId"
+                  rules={{ required: 'Network is required' }}
+                  render={({ field }) => (
+                    <FormItem className="w-full">
+                      <FormControl>
+                        <Select
+                          onValueChange={(value) => {
+                            field.onChange(value)
+                            handleChainChange(value)
+                          }}
+                          value={field.value}
+                          disabled={
+                            !form.watch('currency') ||
+                            form.watch('currency') !== 'evm'
+                          }
+                          modal={false}
+                        >
+                          <SelectTrigger className="w-full border border-[#FFFFFF]/10 bg-gradient-to-b from-[#FFFFFF]/-10 to-[#FFFFFF]/0 hover:bg-[#FFFFFF]/10 text-white">
+                            <SelectValue placeholder="Select a network" />
+                          </SelectTrigger>
+                          <SelectContent className="border border-[#FFFFFF]/10 bg-[#080219] z-[999999]">
+                            {chains.map((chain) => (
+                              <SelectItem
+                                key={chain.id}
+                                value={chain.id.toString()}
+                                className="text-white hover:bg-[#FFFFFF]/10 focus:bg-[#FFFFFF]/10"
+                              >
+                                {chain.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+            </div>
+          </div> */}
+
+          {/* Step 3: Choose Token */}
+          {/* <div className="flex gap-4">
+            <div className="flex flex-col items-center">
+              <div className="w-6 h-6 border border-[#EE4FFB]/30 rounded-md bg-gradient-to-b from-[#EE4FFB]/20 to-[#EE4FFB]/10 flex items-center justify-center text-neutral-200 font-bold text-sm">
+                3
+              </div>
+              <div className="w-[1px] h-full bg-[#515151] flex-1 min-h-[60px]"></div>
+            </div>
+            <div className="flex-1 px-2 pb-6">
+              <div className="flex flex-col gap-2 justify-start items-start">
+                <span className="text-neutral-400 text-[16px] uppercase">
+                  Choose a token *
+                </span>
+                <FormField
+                  control={form.control}
+                  name="tokenAddress"
+                  rules={{ required: 'Token is required' }}
+                  render={({ field }) => (
+                    <FormItem className="w-full">
+                      <FormControl>
+                        <Select
+                          onValueChange={field.onChange}
+                          value={field.value}
+                          disabled={
+                            !form.watch('currency') ||
+                            form.watch('currency') !== 'evm'
+                          }
+                          modal={false}
+                        >
+                          <SelectTrigger className="w-full border border-[#FFFFFF]/10 bg-gradient-to-b from-[#FFFFFF]/-10 to-[#FFFFFF]/0 hover:bg-[#FFFFFF]/10 text-white">
+                            <SelectValue placeholder="Select a token" />
+                          </SelectTrigger>
+                          <SelectContent className="border border-[#FFFFFF]/10 bg-[#080219] z-[999999]">
+                            {availableTokens.map((token) => (
+                              <SelectItem
+                                key={token.address}
+                                value={token.address}
+                                className="text-white hover:bg-[#FFFFFF]/10 focus:bg-[#FFFFFF]/10"
+                              >
+                                <div className="flex items-center gap-2">
+                                  <div className="flex flex-col">
+                                    <div className="flex items-center gap-1">
+                                      <span className="font-medium">
+                                        {token.symbol}
+                                      </span>
+                                      {token.isNative && (
+                                        <span className="text-xs bg-brand-pink text-white px-1 py-0.5 rounded">
+                                          Native
+                                        </span>
+                                      )}
+                                    </div>
+                                  </div>
+                                </div>
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+            </div>
+          </div> */}
+
+          {/* Step 5: Amount */}
+          <div className="flex gap-4">
+            <div className="flex flex-col items-center">
+              <div className="w-6 h-6 border border-[#EE4FFB]/30 rounded-md bg-gradient-to-b from-[#EE4FFB]/20 to-[#EE4FFB]/10 flex items-center justify-center text-neutral-200 font-bold text-sm">
+                2
+              </div>
+              <div className="w-[1px] h-full bg-[#515151] flex-1 min-h-[60px]"></div>
+            </div>
+            <div className="flex-1 px-2 pb-6">
+              <div className="flex flex-col gap-2 justify-start items-start">
+                <span className="text-neutral-400 text-[16px] uppercase">
+                  Amount
+                </span>
                 <FormField
                   control={form.control}
                   name="amount"
@@ -304,15 +376,14 @@ export default function WithdrawForm({
                     },
                   }}
                   render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Amount</FormLabel>
+                    <FormItem className="w-full">
                       <FormControl>
                         <Input
                           id="withdraw-amount"
                           type="number"
                           step="any"
                           placeholder="0.1"
-                          className="dark:bg-neutral-900 border-gray-700 text-white pr-20 w-full"
+                          className="border border-[#FFFFFF]/10 bg-gradient-to-b from-[#FFFFFF]/-10 to-[#FFFFFF]/0 hover:bg-[#FFFFFF]/10 text-white w-full"
                           {...field}
                         />
                       </FormControl>
@@ -320,7 +391,23 @@ export default function WithdrawForm({
                     </FormItem>
                   )}
                 />
+              </div>
+            </div>
+          </div>
 
+          {/* Step 6: Wallet Address */}
+          <div className="flex gap-4">
+            <div className="flex flex-col items-center">
+              <div className="w-6 h-6 border border-[#EE4FFB]/30 rounded-md bg-gradient-to-b from-[#EE4FFB]/20 to-[#EE4FFB]/10 flex items-center justify-center text-neutral-200 font-bold text-sm">
+                3
+              </div>
+              <div className="w-[1px] h-full bg-[#515151] flex-1 min-h-[60px]"></div>
+            </div>
+            <div className="flex-1 px-2">
+              <div className="flex flex-col gap-2 justify-start items-start">
+                <span className="text-neutral-400 text-[16px] uppercase">
+                  Wallet Address
+                </span>
                 <FormField
                   control={form.control}
                   name="address"
@@ -334,14 +421,13 @@ export default function WithdrawForm({
                     },
                   }}
                   render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Wallet Address</FormLabel>
+                    <FormItem className="w-full">
                       <FormControl>
                         <Input
                           id="withdraw-address"
                           type="text"
                           placeholder="0x..."
-                          className="dark:bg-neutral-900 border-gray-700 text-white w-full"
+                          className="border border-[#FFFFFF]/10 bg-gradient-to-b from-[#FFFFFF]/-10 to-[#FFFFFF]/0 hover:bg-[#FFFFFF]/10 text-white w-full"
                           {...field}
                         />
                       </FormControl>
@@ -349,7 +435,6 @@ export default function WithdrawForm({
                     </FormItem>
                   )}
                 />
-
                 <Button
                   type="submit"
                   disabled={
@@ -357,20 +442,27 @@ export default function WithdrawForm({
                     form.formState.isSubmitting ||
                     withdrawMutation.isPending
                   }
-                  className="w-full flex items-center justify-center gap-2 bg-gradient-brand-pink text-white font-semibold py-3 cursor-pointer"
+                  className={cn(
+                    'w-full flex items-center justify-center gap-2 text-white font-semibold py-3 cursor-pointer mt-2 bg-gradient-to-b from-[#EE4FFB]/40 to-[#EE4FFB]/20 border border-brand-pink hover:bg-gradient-to-b from-[#EE4FFB]/40 to-[#EE4FFB]/20',
+                    !form.formState.isValid ||
+                      form.formState.isSubmitting ||
+                      withdrawMutation.isPending
+                      ? 'opacity-0'
+                      : 'text-white'
+                  )}
                 >
                   {withdrawMutation.isPending && (
                     <Loader2 className="w-4 h-4 animate-spin" />
                   )}
                   <span>Withdraw</span>
                 </Button>
+                <p className="text-gray-400 text-xs mt-2">
+                  Over 10 USD will need admin approval.{' '}
+                  <span className="text-[#EE4FFB] font-semibold">
+                    POWERBLOCKS does not process withdrawals of less than 5 USD
+                  </span>
+                </p>
               </div>
-              <p className="text-gray-400 text-xs">
-                Over 10 USD will need admin approval.{' '}
-                <span className="text-[#6F6BFF]">
-                  POWERBLOCKS does not process withdrawals of less than 5 USD
-                </span>
-              </p>
             </div>
           </div>
         </form>
