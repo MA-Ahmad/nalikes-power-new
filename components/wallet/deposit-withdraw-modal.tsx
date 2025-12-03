@@ -300,6 +300,8 @@ export function DepositWithdrawModal({
 
   useEffect(() => {
     if (!open) return
+    // Only generate QR code when on deposit tab
+    if (activeAction.label !== 'Deposit') return
 
     const generateQRCode = async () => {
       const address =
@@ -358,7 +360,7 @@ export function DepositWithdrawModal({
     }
 
     generateQRCode()
-  }, [currency, user?.depositWalletAddresses, open])
+  }, [currency, user?.depositWalletAddresses, open, activeAction.label])
 
   const getCurrencyDisplayName = (currency: string) => {
     const currencyMap: Record<string, string> = {

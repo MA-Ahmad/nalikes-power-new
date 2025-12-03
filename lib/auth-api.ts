@@ -14,7 +14,8 @@ export interface VerifyCodeData {
 }
 
 export interface SignupData {
-  usernameOrEmail: string
+  username: string
+  email: string
   password: string
   referralCode?: string
 }
@@ -31,6 +32,7 @@ export interface AuthResponse {
     username: string
     email: string
     emailVerified?: boolean
+    profileCompleted?: boolean
     createdAt: Date
     lastLogin?: Date
     depositWalletAddresses?: {

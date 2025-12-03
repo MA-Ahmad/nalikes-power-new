@@ -92,6 +92,12 @@ export default function WithdrawForm({
   setCurrency: (currency: string) => void
 }) {
   const { user } = useAuthStore()
+
+  // Check if user can withdraw
+  const canWithdraw = user?.emailVerified && user?.profileCompleted
+  const isEmailNotVerified = !user?.emailVerified
+  const isProfileNotCompleted = !user?.profileCompleted
+
   const form = useForm({
     mode: 'onChange',
     defaultValues: {
@@ -147,6 +153,24 @@ export default function WithdrawForm({
 
   return (
     <div className="">
+      {/* Show warning messages if email is not verified or profile is not completed */}
+      {(isEmailNotVerified || isProfileNotCompleted) && (
+        <div className="mb-6 p-4 border border-yellow-500/50 bg-yellow-500/10 rounded-lg">
+          <div className="flex flex-col gap-2">
+            {isEmailNotVerified && (
+              <p className="text-yellow-400 text-sm">
+                ⚠️ Please verify your email address to enable withdrawals.
+              </p>
+            )}
+            {isProfileNotCompleted && (
+              <p className="text-yellow-400 text-sm">
+                ⚠️ Please complete your profile to enable withdrawals.
+              </p>
+            )}
+          </div>
+        </div>
+      )}
+
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
@@ -177,6 +201,7 @@ export default function WithdrawForm({
                             setCurrency(value)
                           }}
                           value={field.value}
+                          disabled={!canWithdraw}
                           modal={false}
                         >
                           <SelectTrigger className="w-full border border-[#FFFFFF]/10 bg-gradient-to-b from-[#FFFFFF]/-10 to-[#FFFFFF]/0 hover:bg-[#FFFFFF]/10 text-white max-w-[12rem]">
@@ -383,7 +408,8 @@ export default function WithdrawForm({
                           type="number"
                           step="any"
                           placeholder="0.1"
-                          className="border border-[#FFFFFF]/10 bg-gradient-to-b from-[#FFFFFF]/-10 to-[#FFFFFF]/0 hover:bg-[#FFFFFF]/10 text-white w-full"
+                          disabled={!canWithdraw}
+                          className="border border-[#FFFFFF]/10 bg-gradient-to-b from-[#FFFFFF]/-10 to-[#FFFFFF]/0 hover:bg-[#FFFFFF]/10 text-white w-full disabled:opacity-50 disabled:cursor-not-allowed"
                           {...field}
                         />
                       </FormControl>
@@ -427,7 +453,8 @@ export default function WithdrawForm({
                           id="withdraw-address"
                           type="text"
                           placeholder="0x..."
-                          className="border border-[#FFFFFF]/10 bg-gradient-to-b from-[#FFFFFF]/-10 to-[#FFFFFF]/0 hover:bg-[#FFFFFF]/10 text-white w-full"
+                          disabled={!canWithdraw}
+                          className="border border-[#FFFFFF]/10 bg-gradient-to-b from-[#FFFFFF]/-10 to-[#FFFFFF]/0 hover:bg-[#FFFFFF]/10 text-white w-full disabled:opacity-50 disabled:cursor-not-allowed"
                           {...field}
                         />
                       </FormControl>
@@ -438,30 +465,36 @@ export default function WithdrawForm({
                 <Button
                   type="submit"
                   disabled={
+                    !canWithdraw ||
                     !form.formState.isValid ||
                     form.formState.isSubmitting ||
                     withdrawMutation.isPending
                   }
                   className={cn(
                     'w-full flex items-center justify-center gap-2 text-white font-semibold py-3 cursor-pointer mt-2 bg-gradient-to-b from-[#EE4FFB]/40 to-[#EE4FFB]/20 border border-brand-pink hover:bg-gradient-to-b from-[#EE4FFB]/40 to-[#EE4FFB]/20',
-                    !form.formState.isValid ||
+                    !canWithdraw ||
+                      !form.formState.isValid ||
                       form.formState.isSubmitting ||
                       withdrawMutation.isPending
-                      ? 'opacity-0'
+                      ? 'opacity-50 cursor-not-allowed'
                       : 'text-white'
                   )}
                 >
                   {withdrawMutation.isPending && (
                     <Loader2 className="w-4 h-4 animate-spin" />
                   )}
-                  <span>Withdraw</span>
+                  <span>
+                    {!canWithdraw
+                      ? 'Complete Profile & Verify Email to Withdraw'
+                      : 'Withdraw'}
+                  </span>
                 </Button>
-                <p className="text-gray-400 text-xs mt-2">
+                {/* <p className="text-gray-400 text-xs mt-2">
                   Over 10 USD will need admin approval.{' '}
                   <span className="text-[#EE4FFB] font-semibold">
                     POWERBLOCKS does not process withdrawals of less than 5 USD
                   </span>
-                </p>
+                </p> */}
               </div>
             </div>
           </div>

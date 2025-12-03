@@ -6,6 +6,7 @@ export interface OAuthResult {
     username: string
     email: string
     emailVerified?: boolean
+    profileCompleted?: boolean
     createdAt: Date | string
     lastLogin?: Date | string
     depositWalletAddresses?: {

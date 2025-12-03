@@ -57,7 +57,7 @@ export function RequestPasswordResetDialog({
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="bg-neutral-900 border-neutral-400">
+      <DialogContent className="bg-[linear-gradient(to_bottom,#11042F_0%,#04010E_100%)] !border-[0] !ring-[0] z-[5555] ">
         <DialogTitle className="text-white text-2xl font-semibold">
           Reset Your Password
         </DialogTitle>
@@ -76,7 +76,7 @@ export function RequestPasswordResetDialog({
               id="reset-email"
               type="email"
               {...form.register('email')}
-              className="bg-gray-700 border-gray-600 text-white placeholder:text-gray-400"
+              className="!bg-transparent border-[#2E263F] h-10 text-white placeholder:text-gray-400 !outline-none focus-visible:ring-[0] focus-visible:border-[2px] focus-visible:border-[#342c44]"
               placeholder="Enter your email"
               disabled={isRequestingReset}
             />
@@ -93,14 +93,22 @@ export function RequestPasswordResetDialog({
               variant="outline"
               onClick={() => handleOpenChange(false)}
               disabled={isRequestingReset}
-              className="flex-1 border-gray-600 text-white hover:bg-gray-700"
+              className="flex-1 border !border-[#2E263F] text-white bg-gradient-to-b from-[#FFFFFF]/-10 to-[#FFFFFF]/0 hover:bg-[#FFFFFF]/10"
             >
               Cancel
             </Button>
-            <Button
+            {/* <Button
               type="submit"
               disabled={isRequestingReset}
               className="flex-1 bg-[linear-gradient(to_right,_#6A2A97_0%,_#C753FD_53%,_#FA96FF_100%)] text-white font-semibold"
+            >
+              {isRequestingReset ? 'Sending...' : 'Send Reset Link'}
+            </Button> */}
+
+            <Button
+              type="submit"
+              disabled={isRequestingReset}
+              className="flex-1 border border-[#6F6BFF] text-white font-semibold py-3 h-10 purple-glow-btn text-brand-purple hover:text-white hover:scale-101 active:scale-98 transition-all duration-300 cursor-pointer"
             >
               {isRequestingReset ? 'Sending...' : 'Send Reset Link'}
             </Button>
