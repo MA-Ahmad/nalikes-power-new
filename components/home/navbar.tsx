@@ -266,7 +266,7 @@ export default function Navbar() {
         <div className="hidden lg:flex items-center gap-2">
           <Link href="/" className="flex items-center justify-center">
             <Image
-              src="/logo.svg"
+              src="/images/power.svg"
               alt="Powerblocks"
               width={33}
               height={42}

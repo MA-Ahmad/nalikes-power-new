@@ -150,11 +150,11 @@ export function Header({ onSignInClick }: HeaderProps) {
       {/* Logo - responsive sizing */}
       <div className="flex-shrink-0">
         <Image
-          src="/root-page/logo.svg"
+          src="/images/power.svg"
           alt="Power.win Logo"
           width={192}
           height={112}
-          className="w-32 h-auto sm:w-40 md:w-48"
+          className="w-20 h-auto sm:w-24 md:w-28"
           priority
         />
       </div>
