@@ -26,9 +26,9 @@ const geistMono = Geist_Mono({
 })
 
 export const metadata: Metadata = {
-  title: 'PowerBlocks - From the Streets to the Jet',
+  title: 'Power.win - Crypto Casino where the edge belongs to the player',
   description:
-    'Play games, win prizes, and climb the leaderboard with PowerBlocks',
+    'Play games, win prizes, and climb the leaderboard with Power.win',
 }
 
 export default function RootLayout({
