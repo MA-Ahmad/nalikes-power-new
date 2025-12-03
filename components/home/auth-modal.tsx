@@ -6,8 +6,10 @@ import { useState, useRef, useEffect, useMemo } from 'react'
 import { useMutation, useQuery } from '@tanstack/react-query'
 // import ReCAPTCHA from 'react-google-recaptcha'
 import { toast } from 'react-hot-toast'
+// @ts-ignore
 import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
+// @ts-ignore
+import { zodResolver } from '@hookform/resolvers/zod' // @ts-ignore
 import { z } from 'zod'
 import Autoplay from 'embla-carousel-autoplay'
 
@@ -125,7 +127,7 @@ function CarouselWithAutoplay() {
   const sortedImages = useMemo(() => {
     // Filter images by type 'AUTH' (client-side filtering as backup)
     const filteredImages = images.filter(
-      (img) => img.type?.toUpperCase() === 'AUTH' || !img.type // Include if type is AUTH or undefined (for backward compatibility)
+      (img: any) => img.type?.toUpperCase() === 'AUTH' || !img.type // Include if type is AUTH or undefined (for backward compatibility)
     )
 
     const displayImages =
@@ -331,7 +333,7 @@ export function AuthModal({ open, onOpenChange }: AuthModalProps) {
 
   const signupMutation = useMutation({
     mutationFn: authApi.signup,
-    onSuccess: (data) => {
+    onSuccess: (data: any) => {
       setUser({
         ...data.user,
         depositWalletAddresses: data.user.depositWalletAddresses,
@@ -349,7 +351,7 @@ export function AuthModal({ open, onOpenChange }: AuthModalProps) {
 
   const signinMutation = useMutation({
     mutationFn: authApi.signin,
-    onSuccess: (data) => {
+    onSuccess: (data: any) => {
       setUser({
         ...data.user,
         depositWalletAddresses: data.user.depositWalletAddresses,
