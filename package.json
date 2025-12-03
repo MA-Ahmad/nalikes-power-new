@@ -32,6 +32,7 @@
     "canvas-confetti": "^1.9.3",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "country-flag-icons": "^1.6.4",
     "embla-carousel-autoplay": "^8.6.0",
     "embla-carousel-react": "^8.6.0",
     "framer-motion": "^12.23.12",
@@ -51,6 +52,7 @@
     "use-sound": "^5.0.0",
     "viem": "^2.33.2",
     "wagmi": "^2.16.1",
+    "world-countries": "^5.1.0",
     "zod": "^4.0.14",
     "zustand": "^5.0.7"
   },
