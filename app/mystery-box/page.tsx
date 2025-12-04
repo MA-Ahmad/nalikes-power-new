@@ -32,7 +32,7 @@ export default function MysteryBoxPage() {
   useEffect(() => {
     if (mounted && !loading) {
       if (!isAuthenticated) {
-        router.push('/')
+        router.push('/home')
       }
     }
   }, [mounted, loading, isAuthenticated, router])

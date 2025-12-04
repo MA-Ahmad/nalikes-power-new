@@ -27,7 +27,7 @@ export default function GameIframePage() {
       toast.error('Failed to load game. Please try again.')
       // Redirect back to home after a short delay
       setTimeout(() => {
-        router.push('/')
+        router.push('/home')
       }, 2000)
     },
   })
@@ -44,7 +44,7 @@ export default function GameIframePage() {
   }, [gameId])
 
   const handleCloseGame = () => {
-    router.push('/')
+    router.push('/home')
   }
 
   const handleRefetchBalance = async () => {

@@ -49,7 +49,7 @@ export default function Home() {
             <div className="flex items-center justify-between px-48">
               <Button
                 className="bg-neutral-600 text-white hover:bg-neutral-700 transition-all duration-300 ease-in-out cursor-pointer"
-                onClick={() => router.push('/')}
+                onClick={() => router.push('/home')}
               >
                 Back
               </Button>
