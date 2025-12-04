@@ -158,12 +158,6 @@ export default function VerifyEmailPage() {
             <h2 className="text-2xl font-bold text-white">Email Verified</h2>
             <p className="text-gray-300">{message}</p>
             <div className="flex gap-3 mt-4 w-full">
-              {/* <Button
-                onClick={() => router.push('/dashboard')}
-                className="flex-1 bg-gradient-to-b from-[#EE4FFB]/40 to-[#EE4FFB]/20 border border-brand-pink hover:bg-gradient-to-b from-[#EE4FFB]/40 to-[#EE4FFB]/20 text-white"
-              >
-                Go to Dashboard
-              </Button> */}
               <Button
                 onClick={() => router.push('/')}
                 variant="outline"
@@ -188,13 +182,6 @@ export default function VerifyEmailPage() {
                 className="flex-1 bg-gradient-to-b from-[#EE4FFB]/40 to-[#EE4FFB]/20 border border-brand-pink hover:bg-gradient-to-b from-[#EE4FFB]/40 to-[#EE4FFB]/20 text-white"
               >
                 Go Home
-              </Button>
-              <Button
-                onClick={() => router.push('/dashboard')}
-                variant="outline"
-                className="flex-1 border-[#4A2F4C] text-gray-300 hover:bg-[#2a1f3e]"
-              >
-                Dashboard
               </Button>
             </div>
           </div>
