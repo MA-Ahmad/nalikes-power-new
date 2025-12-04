@@ -1,15 +1,21 @@
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { miniGameApi, Game, EnterGameRequest } from '@/lib/api/mini-game'
 
+// Cache duration: 48 hours in milliseconds
+const CACHE_DURATION = 48 * 60 * 60 * 1000 // 172800000 ms
+
 // React Query Hook for fetching games list
-// Cache for 24 hours (24 * 60 * 60 * 1000 = 86400000 ms)
+// Cache for 48 hours
 export const useMiniGames = (enabled: boolean = true) => {
   return useQuery({
     queryKey: ['mini-games'],
     queryFn: () => miniGameApi.getGamesList(),
     enabled,
-    staleTime: 24 * 60 * 60 * 1000, // 24 hours
-    gcTime: 24 * 60 * 60 * 1000, // 24 hours (formerly cacheTime)
+    staleTime: CACHE_DURATION, // Data stays fresh for 48 hours
+    gcTime: CACHE_DURATION, // Keep in cache for 48 hours (React Query v5)
+    refetchOnWindowFocus: false, // Don't refetch on window focus
+    refetchOnMount: false, // Don't refetch on mount if data is fresh
+    refetchOnReconnect: false, // Don't refetch on reconnect if data is fresh
   })
 }
 

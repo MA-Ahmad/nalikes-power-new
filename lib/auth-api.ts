@@ -14,8 +14,10 @@ export interface VerifyCodeData {
 }
 
 export interface SignupData {
-  usernameOrEmail: string
+  username: string
+  email: string
   password: string
+  referralCode?: string
 }
 
 export interface SigninData {
@@ -30,6 +32,7 @@ export interface AuthResponse {
     username: string
     email: string
     emailVerified?: boolean
+    profileCompleted?: boolean
     createdAt: Date
     lastLogin?: Date
     depositWalletAddresses?: {
@@ -90,6 +93,10 @@ export interface ResetPasswordData {
 
 export interface ResetPasswordResponse {
   success: boolean
+  message: string
+}
+
+export interface SendEmailVerificationResponse {
   message: string
 }
 
@@ -167,5 +174,82 @@ export const authApi = {
   ): Promise<ResetPasswordResponse> => {
     const response = await api.post('/auth/reset-password', data)
     return response.data
+  },
+
+  sendEmailVerification: async (): Promise<SendEmailVerificationResponse> => {
+    const response = await api.post('/auth/send-email-verification')
+    return response.data
+  },
+
+  verifyEmailToken: async (
+    token: string
+  ): Promise<{
+    success: boolean
+    message: string
+    alreadyVerified?: boolean
+  }> => {
+    try {
+      const response = await api.get(`/auth/verify-email?token=${token}`, {
+        showToast: false, // Don't show toast for this, we'll handle it in the component
+        maxRedirects: 5, // Allow following redirects
+      })
+
+      // Check if response has JSON data with success field
+      if (
+        response.data &&
+        typeof response.data === 'object' &&
+        response.data !== null &&
+        !Array.isArray(response.data)
+      ) {
+        if ('success' in response.data) {
+          return response.data as {
+            success: boolean
+            message: string
+            alreadyVerified?: boolean
+          }
+        }
+      }
+
+      // If we get a successful status (200-299), the verification succeeded
+      // The backend would have redirected to an error page if it failed
+      if (response.status >= 200 && response.status < 300) {
+        return {
+          success: true,
+          message: 'Email verified successfully!',
+        }
+      }
+
+      // If we get here, something unexpected happened
+      return {
+        success: true,
+        message: 'Email verified successfully!',
+      }
+    } catch (error: any) {
+      // Check if it's a 4xx error (client error - invalid token, etc.)
+      if (error.response?.status >= 400 && error.response?.status < 500) {
+        const errorData = error.response?.data
+        const errorMessage = errorData?.message || 'Verification failed.'
+
+        // Check if the error response contains redirect info
+        if (
+          errorMessage.includes('invalid') ||
+          errorMessage.includes('expired')
+        ) {
+          return {
+            success: false,
+            message:
+              'Invalid or expired verification link. Please request a new one.',
+          }
+        }
+
+        return {
+          success: false,
+          message: errorMessage,
+        }
+      }
+
+      // For other errors (network, timeout, etc.), re-throw to be handled by component
+      throw error
+    }
   },
 }

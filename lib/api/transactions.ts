@@ -6,9 +6,21 @@ export interface TransactionDto {
   chainId?: number
 }
 
+export interface ProfileData {
+  firstName?: string
+  lastName?: string
+  address1?: string
+  address2?: string
+  city?: string
+  zipCode?: string
+  country?: string
+  dateOfBirth?: string
+}
+
 export interface WithdrawRequest extends TransactionDto {
   amount: number
   address: string
+  profileData?: ProfileData
 }
 
 export interface WithdrawResponse {
@@ -52,14 +64,21 @@ export interface TransactionListResponse {
 export const transactionsApi = {
   // Submit withdrawal request
   withdraw: async (data: WithdrawRequest): Promise<WithdrawResponse> => {
+    const requestBody: any = {
+      amount: data.amount,
+      toAddress: data.address,
+      tokenAddress: data.tokenAddress,
+      chainId: data.chainId,
+    }
+
+    // Include profileData if provided
+    if (data.profileData) {
+      requestBody.profileData = data.profileData
+    }
+
     const response = await api.post<WithdrawResponse>(
       '/transactions/withdraw',
-      {
-        amount: data.amount,
-        toAddress: data.address,
-        tokenAddress: data.tokenAddress,
-        chainId: data.chainId,
-      }
+      requestBody
     )
     return response.data
   },
