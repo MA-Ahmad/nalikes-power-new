@@ -6,6 +6,7 @@ import { QueryProvider } from '@/context/query-provider'
 import { AuthProvider } from '@/context/auth-provider'
 import { Toaster } from 'react-hot-toast'
 import { AppLoader } from '@/components/app-loader'
+import { MobileBottomNavbar } from '@/components/home/mobile-bottom-navbar'
 import {
   aeonikBold,
   aeonikLight,
@@ -52,6 +53,7 @@ export default function RootLayout({
             >
               <AppLoader>
                 {children}
+                <MobileBottomNavbar />
                 <Toaster
                   position="top-right"
                   toastOptions={{
