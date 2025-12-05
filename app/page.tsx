@@ -16,6 +16,7 @@ import { motion, useInView } from 'framer-motion'
 import { useMiniGames } from '@/hooks/use-mini-games'
 import { Game } from '@/lib/api/mini-game'
 import { ResetPasswordDialog } from '@/components/home/reset-password-dialog'
+import { cn } from '@/lib/utils'
 // import { HeroCarousel } from '@/components/home/hero-carousel'
 
 export default function Home() {
@@ -180,6 +181,57 @@ const TypingText = ({ text, delay = 0 }: { text: string; delay?: number }) => {
 // Game display order: crash, dice, mines, roulette, plinko, blackjack
 const GAME_ORDER = ['crash', 'dice', 'mines', 'roulette', 'plinko', 'blackjack']
 
+const Badge = ({
+  text,
+  arrowUp = true,
+  className,
+}: {
+  text: string
+  arrowUp?: boolean
+  className?: string
+}) => {
+  return (
+    <div
+      className={cn(
+        'absolute top-3 right-0 text-[10px] font-bold px-1 py-1 rounded-l-md flex items-center justify-center gap-1',
+        arrowUp
+          ? 'bg-[#E3DF96] border-[#C5BB00] text-[#978F00]'
+          : 'bg-[#98DAB8] border-[#18653E] text-[#18653E]'
+      )}
+    >
+      {arrowUp ? (
+        <svg
+          width="14"
+          height="9"
+          viewBox="0 0 14 9"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          className="w-3 h-3"
+        >
+          <path
+            d="M13.391 0.0982637C13.6671 0.104292 13.886 0.332982 13.88 0.609059L13.7818 5.10799C13.7758 5.38406 13.5471 5.60298 13.271 5.59695C12.9949 5.59093 12.776 5.36223 12.782 5.08616L12.8693 1.08711L8.87029 0.999795C8.59421 0.993767 8.37529 0.765077 8.38132 0.489C8.38735 0.212923 8.61604 -0.00599384 8.89211 3.33786e-05L13.391 0.0982637ZM8.03592 5.71397L7.69016 5.35278L8.03592 5.71397ZM3.87129 4.51351L3.49121 4.18865L3.87129 4.51351ZM0.380127 8.59814L4.16934e-05 8.27328L3.49121 4.18865L3.87129 4.51351L4.25138 4.83838L0.760212 8.92301L0.380127 8.59814ZM5.32297 4.44086L5.66872 4.07968L6.99866 5.35278L6.65291 5.71397L6.30716 6.07516L4.97722 4.80205L5.32297 4.44086ZM8.03592 5.71397L7.69016 5.35278L13.0344 0.236958L13.3801 0.598145L13.7259 0.959332L8.38167 6.07516L8.03592 5.71397ZM6.65291 5.71397L6.99866 5.35278C7.19201 5.53787 7.49682 5.53787 7.69016 5.35278L8.03592 5.71397L8.38167 6.07516C7.80163 6.63041 6.8872 6.63041 6.30716 6.07516L6.65291 5.71397ZM3.87129 4.51351L3.49121 4.18865C4.05103 3.53367 5.0463 3.48386 5.66872 4.07968L5.32297 4.44086L4.97722 4.80205C4.76974 4.60344 4.43799 4.62005 4.25138 4.83838L3.87129 4.51351Z"
+            fill="#978F00"
+          />
+        </svg>
+      ) : (
+        <svg
+          width="14"
+          height="9"
+          viewBox="0 0 14 9"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M13.391 8.82459C13.6671 8.81856 13.886 8.58987 13.88 8.31379L13.7818 3.81486C13.7758 3.53879 13.5471 3.31987 13.271 3.3259C12.9949 3.33193 12.776 3.56062 12.782 3.83669L12.8693 7.83574L8.87029 7.92306C8.59421 7.92908 8.37529 8.15777 8.38132 8.43385C8.38735 8.70993 8.61604 8.92885 8.89211 8.92282L13.391 8.82459ZM8.03592 3.20888L7.69016 3.57007L8.03592 3.20888ZM3.87129 4.40934L3.49121 4.7342L3.87129 4.40934ZM0.380127 0.324707L4.16934e-05 0.649569L3.49121 4.7342L3.87129 4.40934L4.25138 4.08448L0.760212 -0.000154793L0.380127 0.324707ZM5.32297 4.48199L5.66872 4.84318L6.99866 3.57007L6.65291 3.20888L6.30716 2.84769L4.97722 4.1208L5.32297 4.48199ZM8.03592 3.20888L7.69016 3.57007L13.0344 8.68589L13.3801 8.32471L13.7259 7.96352L8.38167 2.84769L8.03592 3.20888ZM6.65291 3.20888L6.99866 3.57007C7.19201 3.38498 7.49682 3.38498 7.69016 3.57007L8.03592 3.20888L8.38167 2.84769C7.80163 2.29244 6.8872 2.29244 6.30716 2.84769L6.65291 3.20888ZM3.87129 4.40934L3.49121 4.7342C4.05103 5.38919 5.0463 5.439 5.66872 4.84318L5.32297 4.48199L4.97722 4.1208C4.76974 4.31941 4.43799 4.30281 4.25138 4.08448L3.87129 4.40934Z"
+            fill="#18653E"
+          />
+        </svg>
+      )}
+      {text}
+    </div>
+  )
+}
+
 function sortGamesByOrder(games: Game[]): Game[] {
   return [...games].sort((a, b) => {
     const indexA = GAME_ORDER.indexOf(a.slug)
@@ -282,6 +334,9 @@ function GameCardsDesktop({
               animate={isHovered ? { filter: 'brightness(1.15)' } : {}}
               transition={{ duration: 0.3 }}
             >
+              {index < 3 && <Badge text="75%" arrowUp={true} />}
+              {index === 3 && <Badge text="65%" arrowUp={false} />}
+
               <Image
                 src={`/images/games/${game.slug}.svg`}
                 alt={`Game ${game.name}`}
