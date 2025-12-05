@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
 import { useIsMobile } from '@/hooks/use-mobile'
+import { useEffect, useState } from 'react'
 
 interface NavItem {
   label: string
@@ -115,12 +116,22 @@ const navItems: NavItem[] = [
 export function MobileBottomNavbar() {
   const pathname = usePathname()
   const isMobile = useIsMobile()
+  const [shouldHide, setShouldHide] = useState(false)
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const isPowerWin = window.location.hostname === 'power.win'
+      const isRootPage = pathname === '/'
+      setShouldHide(isPowerWin && isRootPage)
+    }
+  }, [pathname])
 
   if (!isMobile) {
     return null
   }
 
-  if (pathname === '/' && window?.location?.hostname === 'power.win') {
+  // Hide navbar on power.win root page
+  if (shouldHide) {
     return null
   }
 
