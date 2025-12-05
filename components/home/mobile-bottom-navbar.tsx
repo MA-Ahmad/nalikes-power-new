@@ -120,7 +120,9 @@ export function MobileBottomNavbar() {
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      const isPowerWin = window.location.hostname === 'power.win'
+      const hostname = window.location.hostname
+      const isPowerWin =
+        hostname === 'power.win' || hostname === 'www.power.win'
       const isRootPage = pathname === '/'
       setShouldHide(isPowerWin && isRootPage)
     }
