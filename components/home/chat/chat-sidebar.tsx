@@ -302,7 +302,9 @@ export function ChatSidebar({ isOpen, onToggle }: ChatSidebarProps) {
                                 src={message.senderImage || '/placeholder.svg'}
                               />
                               <AvatarFallback className="bg-neutral-700 text-white text-sm">
-                                {message.senderName.slice(0, 2).toUpperCase()}
+                                {(message.senderName || 'AN')
+                                  .slice(0, 2)
+                                  .toUpperCase()}
                               </AvatarFallback>
                             </Avatar>
                             <div className="flex-1 min-w-0">
@@ -556,13 +558,15 @@ export function ChatSidebar({ isOpen, onToggle }: ChatSidebarProps) {
                               src={message.senderImage || '/placeholder.svg'}
                             />
                             <AvatarFallback className="bg-neutral-700 text-white text-sm">
-                              {message.senderName.slice(0, 2).toUpperCase()}
+                              {(message.senderName || 'AN')
+                                .slice(0, 2)
+                                .toUpperCase()}
                             </AvatarFallback>
                           </Avatar>
                           <div className="flex-1 min-w-0">
                             <div className="flex flex-col">
                               <span className="font-semibold text-gray-300 text-sm">
-                                {message.senderName}
+                                {message.senderName || 'Anonymous'}
                               </span>
                               {message.formattedDate && (
                                 <span className="text-gray-500 text-xs">

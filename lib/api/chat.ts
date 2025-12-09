@@ -8,7 +8,7 @@ export interface ChatMessageResponse {
   formattedDate: string
   sender: {
     id: string
-    username: string
+    username: string | null
     avatarUrl: string | null
     country: string | null
   }
@@ -51,7 +51,7 @@ export const chatApi = {
     return response.data.map((msg) => ({
       id: msg.id,
       content: msg.content,
-      senderName: msg.sender.username,
+      senderName: msg.sender.username || 'Anonymous',
       senderImage: msg.sender.avatarUrl || undefined,
       senderCountry: msg.sender.country || undefined,
       formattedDate: msg.formattedDate,
