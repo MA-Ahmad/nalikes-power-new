@@ -4,10 +4,11 @@ import Navbar from '@/components/home/navbar'
 import { useState, useEffect } from 'react'
 import { ChatSidebar } from '@/components/home/chat/chat-sidebar'
 import { useRouter, useParams } from 'next/navigation'
-import { useEnterGame } from '@/hooks/use-mini-games'
+import { useEnterGame, useMiniGames } from '@/hooks/use-mini-games'
 import { useAuthStore } from '@/store/auth'
 import { toast } from 'react-hot-toast'
 import { RefreshCcw, ArrowLeft } from 'lucide-react'
+import { getEnterGameId } from '@/lib/api/mini-game'
 
 export default function GameIframePage() {
   const [isChatOpen, setIsChatOpen] = useState(false)
@@ -17,6 +18,7 @@ export default function GameIframePage() {
   const params = useParams()
   const gameId = params?.id as string
   const { syncWalletStatus } = useAuthStore()
+  const { data: games = [] } = useMiniGames()
 
   const enterGameMutation = useEnterGame({
     onSuccess: (url) => {
@@ -33,15 +35,49 @@ export default function GameIframePage() {
   })
 
   useEffect(() => {
-    if (gameId) {
-      enterGameMutation.mutate({
-        gameid: gameId,
-        currency: 'usd',
-        screen_mode: 1,
-      })
+    if (gameId && games.length > 0) {
+      // Find the game by either:
+      // 1. Backend game ID (for backward compatibility)
+      // 2. Mapped game ID (the URL game ID like 501, 502, 503)
+      let game = games.find((g) => g.gameid === gameId)
+
+      // If not found by backend ID, try finding by mapped ID
+      if (!game) {
+        game = games.find((g) => {
+          const mappedId = getEnterGameId(g.slug, g.gameid, g.name)
+          return mappedId === gameId
+        })
+      }
+
+      if (game) {
+        // Use the mapping function to get the correct game ID for entering
+        // Pass both slug and name for more robust matching
+        const enterGameId = getEnterGameId(game.slug, game.gameid, game.name)
+
+        console.log('Game mapping:', {
+          urlGameId: gameId,
+          backendGameId: game.gameid,
+          slug: game.slug,
+          name: game.name,
+          enterGameId,
+        })
+
+        enterGameMutation.mutate({
+          gameid: enterGameId,
+          currency: 'usd',
+          screen_mode: 1,
+        })
+      } else {
+        // If game not found, try using the gameId directly (fallback)
+        enterGameMutation.mutate({
+          gameid: gameId,
+          currency: 'usd',
+          screen_mode: 1,
+        })
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [gameId])
+  }, [gameId, games])
 
   const handleCloseGame = () => {
     router.push('/home')
@@ -121,9 +157,9 @@ function GameIframe({
   isRefetching: boolean
 }) {
   return (
-    <div className="relative w-full bg-black rounded-lg overflow-hidden shadow-lg">
+    <div className="relative w-full bg-black rounded-lg overflow-hidden shadow-lg mt-16">
       {/* Close button */}
-      <div className="flex justify-end gap-2 w-full p-2 sm:p-4 mt-10 sm:mt-6">
+      {/* <div className="flex justify-end gap-2 w-full p-2 sm:p-4 mt-10 sm:mt-6">
         <button
           onClick={onRefetchBalance}
           disabled={isRefetching}
@@ -146,7 +182,7 @@ function GameIframe({
           <ArrowLeft className="w-3 h-3 sm:w-4 sm:h-4" />
           <span>Close</span>
         </button>
-      </div>
+      </div> */}
       {/* Game iframe */}
       <div className="w-full relative h-[calc(100vh-180px)] sm:h-auto sm:pb-[56.25%]">
         <iframe
