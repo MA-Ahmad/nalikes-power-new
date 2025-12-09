@@ -53,6 +53,54 @@ const GAME_NAME_TO_SLUG: Record<string, string> = {
   crash: 'crash',
 }
 
+// Map game slugs to the correct game ID for the enter game API
+// These are the game IDs that should be sent to the backend when entering a game
+const GAME_SLUG_TO_ENTER_GAME_ID: Record<string, string> = {
+  plinko: '501',
+  mines: '502',
+  dice: '503',
+  // Add other games as needed, or they will use the gameid from the backend
+}
+
+/**
+ * Get the correct game ID to use when entering a game or in URLs
+ * @param slug - The game slug (e.g., 'plinko', 'mines', 'dice')
+ * @param backendGameId - The game ID from the backend (fallback if no mapping exists)
+ * @param gameName - Optional game name for additional matching
+ * @returns The game ID to use for entering the game or in URLs
+ */
+export const getEnterGameId = (
+  slug: string,
+  backendGameId: string,
+  gameName?: string
+): string => {
+  // Normalize slug to lowercase for matching
+  const normalizedSlug = slug.toLowerCase()
+  
+  // First try by slug (normalized to lowercase)
+  if (GAME_SLUG_TO_ENTER_GAME_ID[normalizedSlug]) {
+    return GAME_SLUG_TO_ENTER_GAME_ID[normalizedSlug]
+  }
+  
+  // If slug didn't match, try to get slug from game name and check again
+  if (gameName) {
+    const normalizedName = gameName.toLowerCase()
+    // Check if the normalized name matches any slug in our mapping
+    if (GAME_SLUG_TO_ENTER_GAME_ID[normalizedName]) {
+      return GAME_SLUG_TO_ENTER_GAME_ID[normalizedName]
+    }
+  }
+  
+  // Fallback to backend game ID
+  return backendGameId
+}
+
+/**
+ * Get the URL game ID for a game (mapped ID for URL purposes)
+ * This is the same as getEnterGameId but with a clearer name for URL usage
+ */
+export const getUrlGameId = getEnterGameId
+
 export const miniGameApi = {
   // Get games list
   getGamesList: async (): Promise<Game[]> => {
@@ -73,7 +121,9 @@ export const miniGameApi = {
 
   // Enter game
   enterGame: async (data: EnterGameRequest): Promise<string> => {
+    console.log('Entering game with payload:', JSON.stringify(data, null, 2))
     const response = await api.post<EnterGameResponse>('/mini-game/enter', data)
+    console.log('Game URL received:', response.data.data.gameurl)
     return response.data.data.gameurl
   },
 }
