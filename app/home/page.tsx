@@ -14,7 +14,7 @@ import { x1Testnet } from 'viem/chains'
 import { useIsMobile } from '@/hooks/use-mobile'
 import { motion, useInView } from 'framer-motion'
 import { useMiniGames } from '@/hooks/use-mini-games'
-import { Game } from '@/lib/api/mini-game'
+import { Game, getUrlGameId } from '@/lib/api/mini-game'
 import { ResetPasswordDialog } from '@/components/home/reset-password-dialog'
 import { cn } from '@/lib/utils'
 // import { HeroCarousel } from '@/components/home/hero-carousel'
@@ -39,7 +39,9 @@ export default function Home() {
   }, [searchParams])
 
   const handleGameClick = (game: Game) => {
-    router.push(`/game/${game.gameid}`)
+    // Use the mapped game ID for the URL (e.g., 501, 502, 503) instead of backend ID
+    const urlGameId = getUrlGameId(game.slug, game.gameid, game.name)
+    router.push(`/game/${urlGameId}`)
   }
 
   const toggleChat = () => {
@@ -181,17 +183,6 @@ const TypingText = ({ text, delay = 0 }: { text: string; delay?: number }) => {
 // Game display order: crash, dice, mines, roulette, plinko, blackjack
 const GAME_ORDER = ['crash', 'dice', 'mines', 'roulette', 'plinko', 'blackjack']
 
-function sortGamesByOrder(games: Game[]): Game[] {
-  return [...games].sort((a, b) => {
-    const indexA = GAME_ORDER.indexOf(a.slug)
-    const indexB = GAME_ORDER.indexOf(b.slug)
-    // If game not in order list, put it at the end
-    if (indexA === -1) return 1
-    if (indexB === -1) return -1
-    return indexA - indexB
-  })
-}
-
 const Badge = ({
   text,
   arrowUp = true,
@@ -241,6 +232,17 @@ const Badge = ({
       {text}
     </div>
   )
+}
+
+function sortGamesByOrder(games: Game[]): Game[] {
+  return [...games].sort((a, b) => {
+    const indexA = GAME_ORDER.indexOf(a.slug)
+    const indexB = GAME_ORDER.indexOf(b.slug)
+    // If game not in order list, put it at the end
+    if (indexA === -1) return 1
+    if (indexB === -1) return -1
+    return indexA - indexB
+  })
 }
 
 function GameCardsDesktop({
