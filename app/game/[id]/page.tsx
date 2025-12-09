@@ -157,9 +157,9 @@ function GameIframe({
   isRefetching: boolean
 }) {
   return (
-    <div className="relative w-full bg-black rounded-lg overflow-hidden shadow-lg">
+    <div className="relative w-full bg-black rounded-lg overflow-hidden shadow-lg mt-16">
       {/* Close button */}
-      <div className="flex justify-end gap-2 w-full p-2 sm:p-4 mt-10 sm:mt-6">
+      {/* <div className="flex justify-end gap-2 w-full p-2 sm:p-4 mt-10 sm:mt-6">
         <button
           onClick={onRefetchBalance}
           disabled={isRefetching}
@@ -182,7 +182,7 @@ function GameIframe({
           <ArrowLeft className="w-3 h-3 sm:w-4 sm:h-4" />
           <span>Close</span>
         </button>
-      </div>
+      </div> */}
       {/* Game iframe */}
       <div className="w-full relative h-[calc(100vh-180px)] sm:h-auto sm:pb-[56.25%]">
         <iframe
