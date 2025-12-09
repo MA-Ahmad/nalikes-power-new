@@ -111,10 +111,11 @@ export default function GameIframePage() {
         >
           <div className="mt-4 sm:mt-8 px-2 sm:px-4">
             {enterGameMutation.isPending ? (
-              <div className="flex flex-col items-center justify-center min-h-[400px] sm:min-h-[600px] gap-4">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white"></div>
-                <p className="text-white text-lg">Loading game...</p>
-              </div>
+              // <div className="flex flex-col items-center justify-center min-h-[400px] sm:min-h-[600px] gap-4">
+              //   <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white"></div>
+              //   <p className="text-white text-lg">Loading game...</p>
+              // </div>
+              ''
             ) : gameUrl ? (
               <GameIframe
                 url={gameUrl}
@@ -145,7 +146,7 @@ export default function GameIframePage() {
 }
 
 // Game iframe component
-function GameIframe({
+function GameIframe2({
   url,
   onClose,
   onRefetchBalance,
@@ -190,6 +191,71 @@ function GameIframe({
           className="absolute top-0 left-0 w-full h-full border-0"
           allow="fullscreen"
           allowFullScreen
+        />
+      </div>
+    </div>
+  )
+}
+
+// Game iframe component - only show iframe after it's fully loaded
+// Game iframe component - only show iframe after it's fully loaded
+function GameIframe({
+  url,
+  onClose,
+  onRefetchBalance,
+  isRefetching,
+}: {
+  url: string
+  onClose: () => void
+  onRefetchBalance: () => void
+  isRefetching: boolean
+}) {
+  const [isLoaded, setIsLoaded] = useState(false)
+
+  // Lock scroll when loading
+  useEffect(() => {
+    if (!isLoaded) {
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = 'unset'
+    }
+
+    // Cleanup on unmount
+    return () => {
+      document.body.style.overflow = 'unset'
+    }
+  }, [isLoaded])
+
+  return (
+    <div className="relative w-full bg-[#040315] rounded-lg overflow-hidden shadow-lg mt-16">
+      {/* Game iframe container */}
+      <div className="w-full relative h-[calc(100vh-180px)] sm:h-auto sm:pb-[56.25%] bg-[#040315]">
+        {/* Loading overlay - show until iframe is loaded */}
+        {!isLoaded && (
+          <div className="absolute inset-0 bg-[#040315] flex items-center justify-center z-10">
+            <div className="flex flex-col items-center gap-4">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white"></div>
+              <p className="text-white text-lg">Loading game...</p>
+            </div>
+          </div>
+        )}
+
+        {/* iframe - hidden until loaded */}
+        <iframe
+          src={url}
+          className={`absolute top-0 left-0 w-full h-full border-0 transition-opacity duration-300 ${
+            isLoaded ? 'opacity-100' : 'opacity-0'
+          }`}
+          allow="fullscreen"
+          allowFullScreen
+          onLoad={() => {
+            // Wait 5 seconds for game to fully load and hide its white background
+            setTimeout(() => setIsLoaded(true), 5000)
+          }}
+          style={{
+            backgroundColor: '#040315',
+            colorScheme: 'dark',
+          }}
         />
       </div>
     </div>
